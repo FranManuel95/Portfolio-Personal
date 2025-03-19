@@ -1,4 +1,4 @@
-// components/ProjectCard.tsx
+
 interface ProjectCardProps {
     title: string;
     description: string;
