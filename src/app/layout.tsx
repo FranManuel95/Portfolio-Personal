@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Portfolio App",
+  title: "Portfolio FM",
   description: "A modern portfolio built with Next.js and Tailwind CSS",
 };
 
@@ -25,6 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+      <link rel="icon" href="/favicon.png" sizes="any" />
+      
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
