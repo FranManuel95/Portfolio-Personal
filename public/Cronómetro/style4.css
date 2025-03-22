@@ -1,0 +1,37 @@
+body{
+    background-image: url(maderas.jpg);
+    
+}
+.contenedor{
+    border: 3px solid black;
+    height: 350px;
+    width: 550px;
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background-color: white;
+    display: flex;
+    justify-content:space-evenly;
+    align-items: center;
+    flex-direction: column;
+}
+.crono{
+    font-size: 60px;
+}
+.boton{
+    height: 60px;
+    width: 60px;
+    box-sizing:content-box;
+    margin-right: 15px;
+    border: 1px solid black;
+
+}
+
+.boton:hover{
+    background-color: rgb(185, 177, 177);
+}
+.boton img{
+    height: 45px;
+    width: 45px;
+}

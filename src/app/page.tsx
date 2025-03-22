@@ -7,12 +7,14 @@ import About from "../components/About";
 import Projects from "../components/Projects";
 import Footer from "../components/Footer";
 import Experience from "../components/Experience";
+import OtherProjects from "../components/OtherProjects";
 
 const Home = () => {
   // Estado para controlar si el menú está abierto o cerrado
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  useEffect(() => {
+  useEffect(() => { 
+    
     // Este código solo se ejecutará en el cliente
     const rootElement = document.getElementById('root');
     if (rootElement) {
@@ -31,6 +33,7 @@ const Home = () => {
       <Experience />
       <About />
       <Projects />
+      <OtherProjects />
       <Footer />
     </>
   );

@@ -43,3 +43,8 @@ a {
 a:hover {
   color: var(--secondary-color);
 }
+
+image{
+  width: 200;
+  height: 200;
+}

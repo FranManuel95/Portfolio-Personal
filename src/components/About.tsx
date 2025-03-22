@@ -23,7 +23,7 @@ const technologies = [
 
 const About = () => {
   return (
-    <section id="about" className="py-12 bg-gray-200">
+    <section id="sobremí" className="py-18 bg-gray-200">
       <div className="max-w-5xl mx-auto text-center px-4 sm:px-14">
         <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-indigo-400">Sobre mí</h2>
         <p className="md:text-2xl text-gray-800 leading-relaxed">

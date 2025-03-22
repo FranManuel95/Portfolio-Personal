@@ -1,0 +1,10 @@
+/* Barra de navegación */
+.nav-contenedor{
+    justify-content: end
+}
+
+@media screen and (max-width: 767px) {
+    .navbar-brand {
+        display: none; /* Ocultar solo si es necesario */
+    }
+}

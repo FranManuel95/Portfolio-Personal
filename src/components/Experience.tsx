@@ -19,7 +19,7 @@ const experiences = [
 
 const Experience = () => {
   return (
-    <section id="experience" className="py-16 bg-gray-300 text-white px-6 sm:px-14">
+    <section id="experiencia" className="py-18 bg-gray-300 text-white px-6 sm:px-14">
       <div className="max-w-screen-xl mx-auto text-center">
         <h2 className="text-2xl font-bold mb-8 text-indigo-400 flex justify-center items-center gap-2 sm:text-3xl">
           <FaBriefcase className="mb-1.5" /> Experiencia Profesional

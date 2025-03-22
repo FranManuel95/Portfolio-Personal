@@ -38,7 +38,7 @@ const Header = ({ isMenuOpen, setIsMenuOpen }: { isMenuOpen: boolean, setIsMenuO
             isMenuOpen ? "top-16" : "-top-96"
           } sm:top-0`}
         >
-          {["Sobre mí", "Proyectos", "Contacto", "Experiencia"].map((item, index) => (
+          {["Contacto", "Experiencia", "Sobre mí", "Proyectos"].map((item, index) => (
             <li key={index} className="text-center text-sm sm:text-base text-[var(--primary-color)]">
               <Link
                 href={`#${item.toLowerCase().replace(" ", "")}`}
