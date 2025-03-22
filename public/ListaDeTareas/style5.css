@@ -1,0 +1,116 @@
+body{
+    background-image: url(descarga.jpg);
+    background-size: 200%;
+    background-repeat: no-repeat;
+}
+.contenedor{
+    display: flex;
+    background: rgb(255,255,255);
+    background: radial-gradient(circle, rgba(255,255,255,1) 43%, rgba(228,228,228,1) 100%);
+    align-items: center;
+    flex-direction: column;
+    min-height: 300px;
+    max-height: 600px;
+    width: 600px;
+    border: 3px solid black;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+    padding: 25px;
+    border-radius: 25px;
+}
+
+.encabezado{
+    margin: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.titulo{
+    margin: 10PX;
+    font-size: 2.5rem;
+}
+.input{
+    padding: 5px;
+    font-size: 1rem;
+    
+}
+.boton-agregar{
+    margin: 15px;
+    border: none;
+    background-color: rgb(60, 113, 247);
+    padding: 10px;
+    border-radius: 15px;
+    font-size: 1rem;
+    color: white;
+    cursor: pointer;
+}
+
+.tareas-contenedor{
+    display: block;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    box-sizing: border-box;
+    overflow-y: auto;
+    
+
+}
+
+.tarea{
+    
+    display: flex;
+    justify-content: space-between ;
+    align-items: center;
+    box-sizing:;
+    width: 500px;
+    border: 2px solid black;
+    margin: 4px;
+    font-size: 1.8rem;
+    /* width: 24px;
+    height: 24px; */
+}
+
+.tarea p{ 
+    margin: 30PX;
+    overflow-wrap:anywhere;
+    
+}
+.contenedor-botones{
+    display: flex;
+    height: 35px;
+    width: 35px;
+    
+    margin: 40px;
+    justify-content: center;
+    
+
+}
+
+.botones{
+    margin-right: 15px;
+    
+}
+
+.botones img{
+    height: 25px;
+    width: 25px;
+    box-sizing: content-box;
+    
+}
+
+.tarea-parrafo-no{
+    text-decoration: line-through;
+    background-color: rgb(97, 95, 95);
+}
+
+.eliminar:hover{
+    background-color: red;
+}
+
+.botones:hover{
+    cursor: pointer;
+}

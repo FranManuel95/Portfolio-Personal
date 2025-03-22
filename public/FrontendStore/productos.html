@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FrontEnd Store</title>
+    
+    <link rel="stylesheet" href="css/normalize.css">
+    <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <a href="index.html">
+            <img class="header__img" src="Imágenes/img/logo.png" alt="Logotipo">
+        </a>
+    </header>
+
+    <nav class="navPrincipal">
+        <a class="navPrincipal__enlace navPrincipal__enlace--activo" href="index.html">Tienda</a>
+        <a class="navPrincipal__enlace" href="nosotros.html">Nosotros</a>
+    </nav>
+    
+    <main class="contenedor_producto">
+        <h1 class="contenedor__encabezado" id="nombreProducto">Cargando...</h1>
+        <div class="contenedor_camiseta">
+            <div class="camiseta">
+                <img class="camiseta__img" id="imagenProducto" src="" alt="">
+                <div class="camiseta__descripcion">
+                    <p class="camiseta__caracteristicas" id="descripcionProducto">Cargando...</p>
+    
+                    <form class="camiseta__formulario">
+                        <select class="formulario__campo" name="" id="" placeholder="Cantidad">
+                            <option disabled selected value="">--Seleccionar Talla--</option>
+                            <option value="">Pequeña</option>
+                            <option value="">Mediana</option>
+                            <option value="">Grande</option>
+                        </select>
+                        
+                        <input class="formulario__campo" type="number" min="0" placeholder="Cantidad">
+                        <input class="formulario__submit" type="submit" value="Agregar al carrito">
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+
+    <footer class="footer">
+        <p class="footer__texto">Front end store - Todos los derechos reservados 2024.</p>
+    </footer>
+
+    <script>
+        // Función para obtener los parámetros de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productoId = urlParams.get('producto'); // Obtenemos el parámetro 'producto'
+
+        // Productos disponibles (puedes agregar más productos aquí si lo deseas)
+        const productos = [
+            { id: 1, nombre: 'Vuejs', descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium iure dolore aperiam saepe sed, enim minus explicabo ipsam maxime totam, beatae vero deserunt quidem voluptas ullam voluptatem. Neque, possimus voluptates. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus maxime eum sit debitis animi blanditiis numquam dolorum pariatur tempore, aliquam sunt iste itaque nam incidunt alias praesentium voluptatem cumque non?', imagen: 'Imágenes/img/1.jpg' },
+            { id: 2, nombre: 'Angularjs', descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium iure dolore aperiam saepe sed, enim minus explicabo ipsam maxime totam, beatae vero deserunt quidem voluptas ullam voluptatem. Neque, possimus voluptates. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus maxime eum sit debitis animi blanditiis numquam dolorum pariatur tempore, aliquam sunt iste itaque nam incidunt alias praesentium voluptatem cumque non?', imagen: 'Imágenes/img/2.jpg' },
+            { id: 3, nombre: 'Reactjs', descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium iure dolore aperiam saepe sed, enim minus explicabo ipsam maxime totam, beatae vero deserunt quidem voluptas ullam voluptatem. Neque, possimus voluptates. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus maxime eum sit debitis animi blanditiis numquam dolorum pariatur tempore, aliquam sunt iste itaque nam incidunt alias praesentium voluptatem cumque non?', imagen: 'Imágenes/img/3.jpg' },
+            { id: 4, nombre: 'Redux', descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium iure dolore aperiam saepe sed, enim minus explicabo ipsam maxime totam, beatae vero deserunt quidem voluptas ullam voluptatem. Neque, possimus voluptates. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus maxime eum sit debitis animi blanditiis numquam dolorum pariatur tempore, aliquam sunt iste itaque nam incidunt alias praesentium voluptatem cumque non?', imagen: 'Imágenes/img/4.jpg' },
+            { id: 5, nombre: 'Node.js', descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium iure dolore aperiam saepe sed, enim minus explicabo ipsam maxime totam, beatae vero deserunt quidem voluptas ullam voluptatem. Neque, possimus voluptates. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus maxime eum sit debitis animi blanditiis numquam dolorum pariatur tempore, aliquam sunt iste itaque nam incidunt alias praesentium voluptatem cumque non?', imagen: 'Imágenes/img/5.jpg' },
+            { id: 6, nombre: 'Sass', descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium iure dolore aperiam saepe sed, enim minus explicabo ipsam maxime totam, beatae vero deserunt quidem voluptas ullam voluptatem. Neque, possimus voluptates. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus maxime eum sit debitis animi blanditiis numquam dolorum pariatur tempore, aliquam sunt iste itaque nam incidunt alias praesentium voluptatem cumque non?', imagen: 'Imágenes/img/6.jpg' },
+            { id: 7, nombre: 'Htmls', descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium iure dolore aperiam saepe sed, enim minus explicabo ipsam maxime totam, beatae vero deserunt quidem voluptas ullam voluptatem. Neque, possimus voluptates. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus maxime eum sit debitis animi blanditiis numquam dolorum pariatur tempore, aliquam sunt iste itaque nam incidunt alias praesentium voluptatem cumque non?', imagen: 'Imágenes/img/7.jpg' },
+            { id: 8, nombre: 'Github', descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium iure dolore aperiam saepe sed, enim minus explicabo ipsam maxime totam, beatae vero deserunt quidem voluptas ullam voluptatem. Neque, possimus voluptates. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus maxime eum sit debitis animi blanditiis numquam dolorum pariatur tempore, aliquam sunt iste itaque nam incidunt alias praesentium voluptatem cumque non?', imagen: 'Imágenes/img/8.jpg' },
+            { id: 9, nombre: 'Bulmacss', descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium iure dolore aperiam saepe sed, enim minus explicabo ipsam maxime totam, beatae vero deserunt quidem voluptas ullam voluptatem. Neque, possimus voluptates. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus maxime eum sit debitis animi blanditiis numquam dolorum pariatur tempore, aliquam sunt iste itaque nam incidunt alias praesentium voluptatem cumque non?', imagen: 'Imágenes/img/9.jpg' },
+            { id: 10, nombre: 'Typescript', descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium iure dolore aperiam saepe sed, enim minus explicabo ipsam maxime totam, beatae vero deserunt quidem voluptas ullam voluptatem. Neque, possimus voluptates. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus maxime eum sit debitis animi blanditiis numquam dolorum pariatur tempore, aliquam sunt iste itaque nam incidunt alias praesentium voluptatem cumque non?', imagen: 'Imágenes/img/10.jpg' },
+            { id: 11, nombre: 'Drupal', descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium iure dolore aperiam saepe sed, enim minus explicabo ipsam maxime totam, beatae vero deserunt quidem voluptas ullam voluptatem. Neque, possimus voluptates. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus maxime eum sit debitis animi blanditiis numquam dolorum pariatur tempore, aliquam sunt iste itaque nam incidunt alias praesentium voluptatem cumque non?', imagen: 'Imágenes/img/11.jpg' },
+            { id: 12, nombre: 'JavaScript', descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium iure dolore aperiam saepe sed, enim minus explicabo ipsam maxime totam, beatae vero deserunt quidem voluptas ullam voluptatem. Neque, possimus voluptates. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus maxime eum sit debitis animi blanditiis numquam dolorum pariatur tempore, aliquam sunt iste itaque nam incidunt alias praesentium voluptatem cumque non?', imagen: 'Imágenes/img/12.jpg' },
+            { id: 13, nombre: 'Graphql', descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium iure dolore aperiam saepe sed, enim minus explicabo ipsam maxime totam, beatae vero deserunt quidem voluptas ullam voluptatem. Neque, possimus voluptates. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus maxime eum sit debitis animi blanditiis numquam dolorum pariatur tempore, aliquam sunt iste itaque nam incidunt alias praesentium voluptatem cumque non?', imagen: 'Imágenes/img/13.jpg' },
+            { id: 14, nombre: 'WordPress', descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium iure dolore aperiam saepe sed, enim minus explicabo ipsam maxime totam, beatae vero deserunt quidem voluptas ullam voluptatem. Neque, possimus voluptates. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus maxime eum sit debitis animi blanditiis numquam dolorum pariatur tempore, aliquam sunt iste itaque nam incidunt alias praesentium voluptatem cumque non?', imagen: 'Imágenes/img/14.jpg' }
+        ];
+
+        // Buscar el producto correspondiente al ID
+        const productoSeleccionado = productos.find(p => p.id == productoId);
+
+        // Si se encuentra el producto, mostramos la información
+        if (productoSeleccionado) {
+            document.getElementById('nombreProducto').innerText = productoSeleccionado.nombre;
+            document.getElementById('imagenProducto').src = productoSeleccionado.imagen;
+            document.getElementById('descripcionProducto').innerText = productoSeleccionado.descripcion;
+        } else {
+            // Si no se encuentra el producto, mostramos un mensaje de error
+            document.getElementById('nombreProducto').innerText = 'Producto no encontrado';
+            document.getElementById('descripcionProducto').innerText = '';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "sass",
+  "version": "1.0.0",
+  "description": "Aprendiendo SaSS y NPM",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "sass": "sass --watch src/scss:build/css",
+    "dev": "gulp"
+  },
+  "keywords": [
+    "SaSS",
+    "NPM",
+    "Gulp"
+  ],
+  "author": "Efe Eme",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^5.0.0",
+    "gulp-sass": "^6.0.0",
+    "sass": "^1.81.1"
+  }
+}

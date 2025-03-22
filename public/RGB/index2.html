@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambio color de fondo RGB</title>
+    <link rel="icon" href="paleta-de-color.png" type="image/x-icon">
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+
+    <div class="contenedor">
+        <div class="interior rojo">
+            <h2 class="titulo">Rojo (R)</h2>
+            <input class="valor"
+                type="range"
+                name="valor"
+                id="valor"
+                min="0"
+                max="255"
+                value="127"
+            />
+            <output class="valor-output" for="valor"></output>
+        </div>
+        <div class="interior verde">
+            <h2 class="titulo">Verde (V)</h2>
+            <input class="valor1"
+                type="range"
+                name="valor1"
+                id="valor"
+                min="0"
+                max="255"
+                value="127"
+            />
+            <output class="valor-output1" for="valor1"></output>
+        </div>
+        <div class="interior azul">
+            <h2 class="titulo">Azul (A)</h2>
+            <input class="valor2"
+                type="range"
+                name="valor2"
+                id="valor"
+                min="0"
+                max="255"
+                value="127"
+            />
+            <output class="valor-output2" for="valor2"></output>
+        </div>
+    </div>
+    <script src="app2.js"></script>
+</body>
+</html>
