@@ -22,7 +22,7 @@ const projects = [
   {
     title: "Frontend Academía",
     description: "Otra descripción corta del proyecto",
-    link: "/PortfolioBootstrap/index.html",
+    link: "/PortafolioBootstrap/index.html",
   },
 
 ];
