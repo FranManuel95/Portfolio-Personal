@@ -14,7 +14,7 @@
 /* Main */
 
 .principal-img{
-    margin-bottom: 10px;
+    margin-bottom: 30px;
     
 }
 
@@ -25,7 +25,8 @@
 /* Origenes */
 .origenes{
     max-width: 720px;
-    margin-top: 30px;
+    margin-top: 60px;
+    margin-bottom: 60px;
 }
 
 .origenes-parrafo{
@@ -34,7 +35,7 @@
 
 /* Personajes */
 
-.personajes{}
+.personajes{ margin-bottom: 60px;}
 .carta:hover{
     transform: scale(1.05);
 }
@@ -43,83 +44,24 @@
     transform: scale(1.05);
 }
 
-/* Contacto */
 
-.contacto .container{
-    max-width: 1100px;
-    min-height: 200px;
-    padding: 20px;
-}
-
-.contacto .rectangulo{
-    margin-bottom: rem;
-    background-color:  rgb(0,177,202);
-    border-radius: 10px;
-    box-shadow: 0px 1px 4px 1px white;
-    position: relative;
-}
-
-.contacto .row{
-    width: 100%;
-    display: flex;
-    align-items: center;
-    font-size: 1.6rem;
-    font-weight: bold;
-}
-
-.contacto .descripcion{
-    color: white;
-    font-size: 1.3rem;
-    font-weight: 500;
-}
-
-.contacto button{
-    color: white;
-    font-size: 1.3rem;
-    font-weight: bold;
-    background-color: transparent;
-    border: 2px solid white;
-    padding: 1.25em 2em;
-    margin: 10px;
-    border-radius: 100px;
-    transition: all 0.2s ease-in-out;
-}
-
-.contacto button:hover{
-    background-color: white;
-    color:black
-}
-
-.contacto button i{
-    color: white;
-    font-size: 1.3rem;
-    transition: all 0.2s ease-in-out;
-}
-
-.contacto button:hover i{
-    color: black;
-}
 
 /* Footer*/
 .background-color{
     background-color: rgba(0,0,0,0.8 ) ;
-    margin-top:-80px;
+    
     margin-bottom: 0px;
     padding-top: 0px;
 }
 
 .footer {
-    min-height: 500px;
+    min-height: 400px;
+    margin-top: 10px;
   }
   
-  .footer-logo {
-    height: 80px;
-    width: 80px;
-    margin: 10px;
-  }
   
   .footer-texto {
-    margin-top: 65px;
+    margin-top: 20px;
     font-size: 1.5rem;
     padding: 20px;
     margin-bottom: 0px;
