@@ -1,14 +1,21 @@
-body{
+body {
     background-color: rgb(127, 127, 127);
+    min-height: 100vh; /* Asegura que cubra toda la pantalla */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
 }
 
-.contenedor{
+/* Contenedor principal */
+.contenedor {
     position: absolute;
-    top:50%;
+    top: 50%;
     left: 50%;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
     min-height: 400px;
-    min-width: 250px;
+    width: auto;
+    max-width: 90%; /* Se adapta en móviles */
     background-color: white;
     box-sizing: border-box;
     display: flex;
@@ -16,16 +23,33 @@ body{
     align-items: center;
     flex-direction: column;
     border-radius: 15px;
+    padding: 20px;
 }
 
-.interior{
+/* Interior */
+.interior {
     margin: 15px;
 }
 
-.rojo{
+/* Ajuste para el margen superior en la clase .rojo */
+.rojo {
     margin-top: 0px;
 }
 
-output{
+/* Tamaño del texto de salida */
+output {
     font-size: 25px;
+}
+
+/* Responsivo */
+@media screen and (max-width: 600px) {
+    .contenedor {
+        width: 80%;
+        min-height: auto; /* Permite que crezca según el contenido */
+        padding: 15px;
+    }
+
+    output {
+        font-size: 20px;
+    }
 }

@@ -1,37 +1,78 @@
-body{
+body {
     background-image: url(maderas.jpg);
-    
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh; /* Para que el fondo cubra toda la pantalla */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
 }
-.contenedor{
+
+/* Contenedor */
+.contenedor {
     border: 3px solid black;
-    height: 350px;
     width: 550px;
-    position:absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
+    min-height: 350px; /* Mínimo 350px, pero permite crecer si es necesario */
     background-color: white;
     display: flex;
-    justify-content:space-evenly;
+    justify-content: space-evenly;
     align-items: center;
     flex-direction: column;
+    padding: 20px;
+    border-radius: 10px;
 }
-.crono{
+
+/* Cronómetro */
+.crono {
     font-size: 60px;
 }
-.boton{
+
+/* Botones */
+.boton {
     height: 60px;
     width: 60px;
-    box-sizing:content-box;
+    box-sizing: content-box;
     margin-right: 15px;
     border: 1px solid black;
-
 }
 
-.boton:hover{
+.boton:hover {
     background-color: rgb(185, 177, 177);
 }
-.boton img{
+
+.boton img {
     height: 45px;
     width: 45px;
+}
+
+/* 🔻 Responsividad para móviles 🔻 */
+@media screen and (max-width: 600px) {
+    .contenedor {
+        width: 80%; /* Ajusta el ancho al 90% de la pantalla */
+        min-height: 250px; /* Reduce un poco la altura mínima */
+        padding: 15px;
+    }
+
+    .crono {
+        font-size: 45px; /* Reduce el tamaño del cronómetro */
+    }
+
+    .botones {
+        display: flex;
+        justify-content: center;
+        gap: 10px; /* Espacio entre botones */
+    }
+
+    .boton {
+        height: 50px;
+        width: 50px;
+        margin-right: 5px;
+    }
+
+    .boton img {
+        height: 35px;
+        width: 35px;
+    }
 }

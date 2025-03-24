@@ -1,44 +1,53 @@
-body{
+body {
     background-image: url(descarga.jpg);
-    background-size: 200%;
+    background-size: cover;
     background-repeat: no-repeat;
-}
-.contenedor{
+    background-position: center;
+    min-height: 100vh;
     display: flex;
-    background: rgb(255,255,255);
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+/* Contenedor principal */
+.contenedor {
+    display: flex;
     background: radial-gradient(circle, rgba(255,255,255,1) 43%, rgba(228,228,228,1) 100%);
     align-items: center;
     flex-direction: column;
-    min-height: 300px;
-    max-height: 600px;
     width: 600px;
-    border: 3px solid black;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    text-align: center;
+    max-width: 80%; /* Mejor adaptación a pantallas pequeñas */
+    min-height: 300px;
     padding: 25px;
+    border: 3px solid black;
     border-radius: 25px;
+    text-align: center;
 }
 
-.encabezado{
+/* Encabezado */
+.encabezado {
     margin: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
 }
-.titulo{
-    margin: 10PX;
-    font-size: 2.5rem;
+
+.titulo {
+    margin: 10px;
+    font-size: 2rem;
 }
-.input{
+
+.input {
     padding: 5px;
     font-size: 1rem;
-    
+    width: 90%;
+    max-width: 400px;
 }
-.boton-agregar{
+
+/* Botón agregar */
+.boton-agregar {
     margin: 15px;
     border: none;
     background-color: rgb(60, 113, 247);
@@ -49,68 +58,81 @@ body{
     cursor: pointer;
 }
 
-.tareas-contenedor{
-    display: block;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    box-sizing: border-box;
+/* Contenedor de tareas */
+.tareas-contenedor {
+    width: 100%;
+    max-height: 300px; /* Permite desplazamiento en Y */
     overflow-y: auto;
-    
-
+    overflow-x: hidden; /* Evita desplazamiento horizontal */
+    padding: 10px;
+    box-sizing: border-box; /* Evita desbordes */
 }
 
-.tarea{
-    
+/* Estilos de las tareas */
+.tarea {
     display: flex;
-    justify-content: space-between ;
+    justify-content: space-between;
     align-items: center;
-    box-sizing:;
-    width: 500px;
+    width: auto; /* Se ajusta al contenedor */
+    max-width: 100%; /* Se adapta a pantallas pequeñas */
     border: 2px solid black;
     margin: 4px;
-    font-size: 1.8rem;
-    /* width: 24px;
-    height: 24px; */
+    font-size: 1.4rem;
+    word-wrap: break-word;
+    white-space: normal; /* Evita que las palabras largas causen scroll horizontal */
+    box-sizing: border-box; /* Evita desbordes */
 }
 
-.tarea p{ 
-    margin: 30PX;
-    overflow-wrap:anywhere;
-    
+/* Ajuste para evitar desbordes */
+.tarea p {
+    margin: 15px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
 }
-.contenedor-botones{
+
+/* Contenedor de botones */
+.contenedor-botones {
     display: flex;
-    height: 35px;
-    width: 35px;
-    
-    margin: 40px;
     justify-content: center;
-    
-
+    align-items: center;
 }
 
-.botones{
-    margin-right: 15px;
-    
+/* Botones */
+.botones {
+    margin-right: 10px;
 }
 
-.botones img{
+.botones img {
     height: 25px;
     width: 25px;
     box-sizing: content-box;
-    
 }
 
-.tarea-parrafo-no{
+/* Efecto al tachar tarea */
+.tarea-parrafo-no {
     text-decoration: line-through;
     background-color: rgb(97, 95, 95);
 }
 
-.eliminar:hover{
+/* Botón eliminar */
+.eliminar:hover {
     background-color: red;
 }
 
-.botones:hover{
-    cursor: pointer;
+/* Ajustes responsivos */
+@media screen and (max-width: 600px) {
+    .titulo {
+        font-size: 1.8rem;
+    }
+
+    .tarea {
+        font-size: 1.2rem;
+        padding: 10px;
+    }
+
+    .botones img {
+        height: 20px;
+        width: 20px;
+    }
 }
