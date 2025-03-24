@@ -8,28 +8,28 @@ const otherprojects = [
     title: "Citas motivacionales ",
     description: "Web de citas motivacionales, con frases de personajes célebres y un botón para generar una nueva cita.",
     link: "/CitasMotivacionales/index3.html",
-    image: "/citas.png",
+    image: "/citas.PNG",
     technologies: ['html', 'css', 'javascript'], // Añadimos las tecnologías usadas
   },
   {
     title: "Lista de tareas",
     description: "Web de lista de tareas, con la posibilidad de añadir, eliminar y marcar como completadas las tareas.",
     link: "/ListaDeTareas/index5.html",
-    image: "/tareas.png",
+    image: "/tareas.PNG",
     technologies: ['html', 'css', 'javascript'], // Añadimos las tecnologías usadas
   },
   {
     title: "RGB",
     description: "Web para generar colores RGB aleatorios.",
     link: "/RGB/index2.html",
-    image: "/colores.png",
+    image: "/colores.PNG",
     technologies: ['html', 'css', 'javascript'], // Añadimos las tecnologías usadas
   },
   {
     title: "Cronómetro",
     description: "Web de cronómetro con botones para iniciar, pausar y reiniciar el tiempo.",
     link: "/Cronómetro/index4.html",
-    image: "/crono.png",
+    image: "/crono.PNG",
     technologies: ['html', 'css', 'javascript'], // Añadimos las tecnologías usadas
   },
 ];

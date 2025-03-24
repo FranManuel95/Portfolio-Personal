@@ -6,14 +6,14 @@ const projects = [
     title: "Web Techno Festival",
     description: "Web de un festival de música electrónica, con información sobre el evento, artistas, horarios y venta de entradas.",
     link: "/SaSS/index.html",
-    image: "/techno.png",
+    image: "/techno.PNG",
     technologies: ['html', 'css', 'javascript', 'sass', 'gulp'],  // Aquí añadimos las tecnologías
   },
   {
     title: "Blog Rick and Morty",
     description: "Web de blog sobre la serie Rick and Morty, con información sobre personajes, episodios y curiosidades.",
     link: "/Creación/index.html",
-    image: "/rick-morty.png",
+    image: "/rick-morty.PNG",
     technologies: ['html', 'css', 'javascript'],  // Aquí añadimos las tecnologías
   },
 
@@ -21,14 +21,14 @@ const projects = [
     title: "Frontend Academia",
     description: "Web de una academia de formación online, con información sobre cursos, proyectos, testimonios y contacto.",
     link: "/PortafolioBootstrap/index.html",
-    image: "/academia.png",
+    image: "/academia.PNG",
     technologies: ['html', 'css', 'bootstrap'],  // Aquí añadimos las tecnologías
   },
   {
     title: "Frontend Store",
     description: "Web de tienda de ropa online, con catálogo de productos y carrito de compra.",
     link: "/FrontendStore/index.html",
-    image: "/front.png",
+    image: "/front.PNG",
     technologies: ['html', 'css'],  // Aquí añadimos las tecnologías
   },
   
