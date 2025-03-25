@@ -56,7 +56,7 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
             <FaGithub /> GitHub
           </a>
           <a
-            href="mailto:perejonfcomanuel@gmail.com?subject=Estoy€interesado%20en%20tu%20trabajo."
+            href="mailto:perejonfcomanuel@gmail.com?subject=Estoy%20interesado%20en%20tu%20trabajo."
             className="flex items-center gap-2 bg-green-600 hover:bg-green-800 text-white px-4 py-2 rounded-lg transition duration-300 justify-center text-center"
           >
             <FaEnvelope /> Email
