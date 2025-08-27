@@ -1,28 +1,51 @@
 'use client';
 
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { FaLinkedin, FaGithub, FaEnvelope, FaDownload } from "react-icons/fa";
 
+const MENU_ANIM_MS = 5; // debe coincidir con la duración del menú
+
 const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
+  // Estado "con retardo" para layout: mantiene el padding mientras el menú se cierra
+  const [menuOpenForLayout, setMenuOpenForLayout] = useState(isMenuOpen);
+  const prev = useRef(isMenuOpen);
+
+  useEffect(() => {
+    let t: number | undefined;
+    const abriendo = !prev.current && isMenuOpen;
+    const cerrando = prev.current && !isMenuOpen;
+
+    if (abriendo) {
+      // Aplica el espacio extra inmediatamente al abrir
+      setMenuOpenForLayout(true);
+    } else if (cerrando) {
+      // Espera a que el menú termine su animación antes de quitar el espacio
+      t = window.setTimeout(() => setMenuOpenForLayout(false), MENU_ANIM_MS);
+    }
+    prev.current = isMenuOpen;
+    return () => { if (t) window.clearTimeout(t); };
+  }, [isMenuOpen]);
+
   return (
     <section
-      className={`bg-gradient-to-r from-gray-900 to-black text-white flex flex-col lg:flex-row justify-center items-center text-center lg:text-left px-8 pt-16 mt-2 gap-2 ${
-        isMenuOpen ? "pt-40" : "pt-16" // Cambia el padding-top cuando el menú está abierto
-      }`}
+      className={`bg-gradient-to-r from-gray-900 to-black text-white
+                  flex flex-col lg:flex-row justify-center items-center
+                  text-center lg:text-left px-8 mt-2 gap-2
+                  transition-[padding] duration-300 ease-in-out
+                  ${menuOpenForLayout ? "pt-[8.5rem]" : "pt-16"}`}
     >
-      {/* Imagen de perfil sin modificaciones de tamaño con CSS */}
       <div className="lg:mb-14 lg:mr-12 flex justify-center">
         <Image
           src="/SinFondo.png"
           alt="Fran"
-          width={200} // Mantén el tamaño aquí
-          height={200} // Mantén el tamaño aquí
+          width={200}
+          height={200}
           className="rounded-full object-cover shadow-xl w-auto h-auto"
           priority
         />
       </div>
 
-      {/* Texto y descripción */}
       <div className="min-h-82 flex flex-col justify-center items-center lg:items-start">
         <h1 className="text-4xl md:text-5xl font-semibold mb-4 tracking-tight drop-shadow-xl animate-fade-in">
           Hola, soy <span className="text-indigo-400">Fran</span>
@@ -37,35 +60,21 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
           Sevilla, España
         </p>
 
-        {/* Botones de contacto */}
         <div className="grid grid-cols-2 gap-4 mb-6 sm:flex sm:flex-wrap sm:justify-center">
-          <a
-            href="https://www.linkedin.com/in/francisco-manuel-perej%C3%B3n-carmona-7bbb1214a/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-800 text-white px-4 py-2 rounded-lg transition duration-300"
-          >
+          <a href="https://www.linkedin.com/in/francisco-manuel-perej%C3%B3n-carmona-7bbb1214a/" target="_blank" rel="noopener noreferrer"
+             className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-800 text-white px-4 py-2 rounded-lg transition duration-300">
             <FaLinkedin /> LinkedIn
           </a>
-          <a
-            href="https://github.com/FranManuel95"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-gray-700 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition duration-300 justify-center text-center"
-          >
+          <a href="https://github.com/FranManuel95" target="_blank" rel="noopener noreferrer"
+             className="flex items-center gap-2 bg-gray-700 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition duration-300 justify-center text-center">
             <FaGithub /> GitHub
           </a>
-          <a
-            href="mailto:perejonfcomanuel@gmail.com?subject=Estoy%20interesado%20en%20tu%20trabajo."
-            className="flex items-center gap-2 bg-green-600 hover:bg-green-800 text-white px-4 py-2 rounded-lg transition duration-300 justify-center text-center"
-          >
+          <a href="mailto:perejonfcomanuel@gmail.com?subject=Estoy%20interesado%20en%20tu%20trabajo."
+             className="flex items-center gap-2 bg-green-600 hover:bg-green-800 text-white px-4 py-2 rounded-lg transition duration-300 justify-center text-center">
             <FaEnvelope /> Email
           </a>
-          <a
-            href="/CV_Fran.pdf"
-            download
-            className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-800 text-white px-4 py-2 rounded-lg transition duration-300 text-center"
-          >
+          <a href="/CV_Fran.pdf" download
+             className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-800 text-white px-4 py-2 rounded-lg transition duration-300 text-center">
             <FaDownload /> CV
           </a>
         </div>

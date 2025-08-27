@@ -2,18 +2,18 @@ import { FaBriefcase } from "react-icons/fa";
 
 const experiences = [
   {
-    role: "Desarrollador Full-Stack en prácticas",
+    role: "Desarrollador Full-Stack",
     company: "CodeArts Solutions",
     period: "Enero / 2025 - Marzo / 2025",
     description:
-      "Comencé mis prácticas en un proyecto integral que involucraba Docker, Php, Symfony, Next.js, React y TypeScript. En este proyecto, realicé tareas de diversa índole, lo que me permitió adaptarme al trabajo en equipo y adquirir experiencia con diversas tecnologías. Posteriormente, pasé a un proyecto en el que trabajamos en la mejora de funcionalidades y optimización de aspectos de una aplicación móvil desarrollada por la empresa DPTelemetry, utilizando Unity y C#.",
+      "Analizar y desarrollar un proyecto integral utilizando Docker, Php, Symfony, Next.js, React y TypeScript. En este proyecto, realicé tareas de diversa índole, lo que me permitió adaptarme al trabajo en equipo y adquirir experiencia con diversas tecnologías. Posteriormente, pasé a un proyecto en el que trabajamos en la mejora de funcionalidadesu y optimización de aspectos de una aplicación móvil desarrollada por la empresa DPTelemetry, utilizando Unity y C#.",
   },
   {
     role: "Desarrollador Frontend",
     company: "Amograe Internacional",
     period: "2024",
     description:
-      "Siendo trabajador como montador de eventos (decoración/atrezo), durante una cena, surgió la conversación sobre un sistema CRM que utilizaban para gestionar diversos procesos de la empresa, y mencionaron que querían mejorar la apariencia y algunas funcionalidades de la sección de facturas, que estaba desarrollado en Django (Python). De manera desinteresada, me ofrecí a colaborar con ellos, aprovechando la oportunidad para poner a prueba mis habilidades. Finalmente, logré optimizar la interfaz y funcionalidades, obteniendo un alto nivel de satisfacción por parte de la empresa.",
+      "Colaboré en la mejora de un sistema CRM desarrollado en Django (Python), centrándome en optimizar la sección de facturas. Implementé mejoras en la interfaz y en diversas funcionalidades, lo que permitió una gestión más ágil.",
   },
 ];
 
