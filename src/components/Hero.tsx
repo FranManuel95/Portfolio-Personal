@@ -35,7 +35,7 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
                   transition-[padding] duration-300 ease-in-out
                   ${menuOpenForLayout ? "pt-[8.5rem]" : "pt-16"}`}
     >
-      <div className="lg:mb-14 lg:mr-12 flex justify-center">
+      <div className="lg:mb-14 lg:mr-12 flex justify-center mb-2">
         <Image
           src="/SinFondo.png"
           alt="Fran"
