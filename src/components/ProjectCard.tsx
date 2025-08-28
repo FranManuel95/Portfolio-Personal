@@ -37,57 +37,50 @@ const ProjectCard = ({ title, description, link, image, technologies, isOpen, on
     >
       {/* Capa imagen (fondo) */}
       <div
-        className={`absolute inset-0 bg-cover bg-center rounded-xl transition-all duration-500 ease-in-out
-          ${isMobile
-            ? (imgHiddenMobile ? 'opacity-0 z-10' : 'opacity-100 z-20')     // En móvil, la imagen está por encima cuando cerrado
-            : 'opacity-100 z-20 group-hover:opacity-0 group-hover:z-10'     // En desktop, se oculta al hover
-          }`}
-        style={{
-          backgroundImage: `url('${image}')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-        aria-hidden={isMobile ? isOpen : false}
-      ></div>
+  className={`absolute inset-0 bg-cover bg-center rounded-xl transition-all duration-500 ease-in-out
+    ${isMobile
+      ? (imgHiddenMobile ? 'opacity-0 z-10' : 'opacity-100 z-20')
+      : 'opacity-100 z-20 group-hover:opacity-0 group-hover:z-10 group-hover:pointer-events-none'
+    }`}
+  style={{ backgroundImage: `url('${image}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+  aria-hidden={isMobile ? isOpen : false}
+/>
 
       {/* Capa contenido */}
       <div
-        className={`absolute inset-0 flex items-center justify-center text-center bg-white p-6 transition-opacity duration-500 ease-in-out rounded-xl
-          ${isMobile
-            ? (contentVisibleMobile ? 'opacity-100 z-20 pointer-events-auto' : 'opacity-0 z-10 pointer-events-none')
-            : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto'
-          }`}
-        aria-hidden={isMobile ? !isOpen : true}
-      >
-        <div>
-          <h3 className="text-2xl font-semibold text-gray-800">{title}</h3>
-          <p className="mt-2 text-gray-600">{description}</p>
+  className={`absolute inset-0 flex items-center justify-center text-center bg-white p-6 transition-opacity duration-500 ease-in-out rounded-xl
+    ${isMobile
+      ? (contentVisibleMobile ? 'opacity-100 z-20 pointer-events-auto' : 'opacity-0 z-10 pointer-events-none')
+      : 'opacity-0 z-10 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto group-hover:z-20'
+    }`}
+  aria-hidden={isMobile ? !isOpen : true}
+>
+  <div>
+    <h3 className="text-2xl font-semibold text-gray-800">{title}</h3>
+    <p className="mt-2 text-gray-600">{description}</p>
 
-          {/* Enlace: solo “activo” cuando el contenido está visible */}
-          <a
-            href={link}
-            className="mt-4 inline-block text-indigo-600 hover:text-indigo-800 font-semibold"
-            target="_blank"
-            rel="noopener noreferrer"
-            tabIndex={isMobile ? (isOpen ? 0 : -1) : -1}             // En móvil: foco solo si visible; en desktop, el foco llega al aparecer en hover
-            aria-disabled={isMobile ? (!isOpen) : true}
-            onClick={(e) => {
-              // Evita que el click en el enlace dispare el onClick del card (toggle)
-              e.stopPropagation();
-              // Si en móvil aún no está visible, no navegues
-              if (isMobile && !isOpen) e.preventDefault();
-            }}
-          >
-            Ver Proyecto
-          </a>
+    <a
+      href={link}
+      className="mt-4 inline-block text-indigo-600 hover:text-indigo-800 font-semibold"
+      target="_blank"
+      rel="noopener noreferrer"
+      tabIndex={isMobile ? (isOpen ? 0 : -1) : -1}
+      aria-disabled={isMobile ? (!isOpen) : undefined}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (isMobile && !isOpen) e.preventDefault();
+      }}
+    >
+      Ver Proyecto
+    </a>
 
-          <div className="mt-4 flex justify-center gap-2">
-            {technologies.map((tech, index) => (
-              <span key={index} className="text-xl">{getTechnologyIcon(tech)}</span>
-            ))}
-          </div>
-        </div>
-      </div>
+    <div className="mt-4 flex justify-center gap-2">
+      {technologies.map((tech, index) => (
+        <span key={index} className="text-xl">{getTechnologyIcon(tech)}</span>
+      ))}
+    </div>
+  </div>
+</div>
     </div>
   );
 };
