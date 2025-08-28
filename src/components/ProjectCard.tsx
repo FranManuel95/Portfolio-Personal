@@ -24,40 +24,63 @@ const ProjectCard = ({ title, description, link, image, technologies, isOpen, on
     }
   };
 
+  // Estados de visibilidad
+  const imgHiddenMobile = isMobile ? isOpen : false; // en móvil la imagen se oculta cuando está abierto
+  const contentVisibleMobile = isMobile ? isOpen : false;
+
   return (
     <div
-      className="relative group bg-white min-h-[300px] rounded-xl shadow-lg transform transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-2xl"
-      onClick={isMobile ? onClick : undefined} // En móviles, usa el evento onClick
+      className="relative group bg-white min-h-[300px] rounded-xl shadow-lg transform transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-2xl overflow-hidden"
+      onClick={isMobile ? onClick : undefined}
+      role={isMobile ? "button" : undefined}
+      aria-expanded={isMobile ? isOpen : undefined}
     >
-      {/* Fondo con la imagen */}
+      {/* Capa imagen (fondo) */}
       <div
-        className={`absolute inset-0 bg-cover bg-center rounded-xl transition-all duration-500 ease-in-out 
-          ${isMobile ? (isOpen ? 'opacity-0' : 'opacity-100') : 'group-hover:opacity-0'}`}
+        className={`absolute inset-0 bg-cover bg-center rounded-xl transition-all duration-500 ease-in-out
+          ${isMobile
+            ? (imgHiddenMobile ? 'opacity-0 z-10' : 'opacity-100 z-20')     // En móvil, la imagen está por encima cuando cerrado
+            : 'opacity-100 z-20 group-hover:opacity-0 group-hover:z-10'     // En desktop, se oculta al hover
+          }`}
         style={{
           backgroundImage: `url('${image}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
+        aria-hidden={isMobile ? isOpen : false}
       ></div>
 
-      {/* Contenido del proyecto */}
+      {/* Capa contenido */}
       <div
-        className={`absolute inset-0 flex items-center justify-center text-center bg-white p-6 transition-opacity duration-500 ease-in-out rounded-xl 
-          ${isMobile ? (isOpen ? 'opacity-100' : 'opacity-0') : 'opacity-0 group-hover:opacity-100'}`}
+        className={`absolute inset-0 flex items-center justify-center text-center bg-white p-6 transition-opacity duration-500 ease-in-out rounded-xl
+          ${isMobile
+            ? (contentVisibleMobile ? 'opacity-100 z-20 pointer-events-auto' : 'opacity-0 z-10 pointer-events-none')
+            : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto'
+          }`}
+        aria-hidden={isMobile ? !isOpen : true}
       >
         <div>
           <h3 className="text-2xl font-semibold text-gray-800">{title}</h3>
           <p className="mt-2 text-gray-600">{description}</p>
+
+          {/* Enlace: solo “activo” cuando el contenido está visible */}
           <a
             href={link}
             className="mt-4 inline-block text-indigo-600 hover:text-indigo-800 font-semibold"
             target="_blank"
             rel="noopener noreferrer"
+            tabIndex={isMobile ? (isOpen ? 0 : -1) : -1}             // En móvil: foco solo si visible; en desktop, el foco llega al aparecer en hover
+            aria-disabled={isMobile ? (!isOpen) : true}
+            onClick={(e) => {
+              // Evita que el click en el enlace dispare el onClick del card (toggle)
+              e.stopPropagation();
+              // Si en móvil aún no está visible, no navegues
+              if (isMobile && !isOpen) e.preventDefault();
+            }}
           >
             Ver Proyecto
           </a>
 
-          {/* Mostrar las tecnologías con iconos */}
           <div className="mt-4 flex justify-center gap-2">
             {technologies.map((tech, index) => (
               <span key={index} className="text-xl">{getTechnologyIcon(tech)}</span>
