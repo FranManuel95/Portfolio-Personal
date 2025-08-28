@@ -73,7 +73,7 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
              className="flex items-center gap-2 bg-green-600 hover:bg-green-800 text-white px-4 py-2 rounded-lg transition duration-300 justify-center text-center">
             <FaEnvelope /> Email
           </a>
-          <a href="/CV_Fran.pdf" download
+          <a href="/Currículum Fran Perejón Carmona.pdf" download
              className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-800 text-white px-4 py-2 rounded-lg transition duration-300 text-center">
             <FaDownload /> CV
           </a>
