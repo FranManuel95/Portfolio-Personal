@@ -1,4 +1,11 @@
-import { FaBriefcase } from "react-icons/fa";
+"use client";
+
+import React from "react";
+
+/** Tipado de delay sin any */
+type CSSVarName = `--${string}`;
+type StyleWithVars = React.CSSProperties & Record<CSSVarName, string>;
+const delay = (ms: number): StyleWithVars => ({ ["--d"]: `${ms}ms` } as StyleWithVars);
 
 const experiences = [
   {
@@ -19,23 +26,34 @@ const experiences = [
 
 const Experience = () => {
   return (
-    <section id="experiencia" className="py-18 bg-gray-300 text-white px-6 sm:px-14">
-      <div className="max-w-screen-xl mx-auto text-center">
-        <h2 className="text-2xl font-bold mb-8 text-indigo-400 flex justify-center items-center gap-2 sm:text-3xl">
-          <FaBriefcase className="mb-1.5" /> Experiencia Profesional
+    <section className="relative">
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-gradient-to-b from-[var(--bg)] via-[var(--bg-elev-1)] to-[var(--bg)]"
+      />
+      <div className="container relative">
+        <h2 className="headline text-3xl text-center mb-12 text-[var(--text)]">
+          <span className="inline-flex items-center gap-2">
+            Experiencia Profesional
+          </span>
         </h2>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 py-5">
-          {experiences.map((exp, index) => (
-            <div
-              key={index}
-              className="bg-gray-800 p-4 rounded-lg shadow-md hover:scale-102 transition-transform duration-300 w-full"
+        <div className="relative grid gap-8 md:grid-cols-2">
+          <div
+            aria-hidden
+            className="hidden md:block absolute left-1/2 top-0 -translate-x-1/2 h-full w-px bg-gradient-to-b from-transparent via-[var(--line)] to-transparent"
+          />
+          {experiences.map((exp, i) => (
+            <article
+              key={exp.company + i}
+              className="reveal surface p-6"
+              style={delay(i * 100)}
             >
-              <h3 className="text-xl font-semibold mb-1">{exp.role}</h3>
-              <p className="text-indigo-300 mb-1">{exp.company}</p>
-              <p className="text-sm text-gray-400">{exp.period}</p>
-              <p className="mt-2 text-gray-300">{exp.description}</p>
-            </div>
+              <h3 className="text-xl font-semibold text-[var(--text)]">{exp.role}</h3>
+              <p className="text-[var(--accent)] mt-1">{exp.company}</p>
+              <p className="text-sm text-[var(--text-dim)]">{exp.period}</p>
+              <p className="mt-3 text-[var(--text)]/90 leading-relaxed">{exp.description}</p>
+            </article>
           ))}
         </div>
       </div>

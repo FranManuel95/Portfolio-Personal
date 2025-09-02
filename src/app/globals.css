@@ -1,50 +1,200 @@
-/* globals.css */
+/* globals.css – Radical Dark */
+
+/* Tailwind v4 base */
 @import "tailwindcss";
 
+/* =========================
+   TOKENS – ULTRADARK
+   ========================= */
 :root {
-  --background: #ffffff;
-  --foreground: #010203;
-  --primary-color: #7c86ff; /* Un azul vibrante para resaltar */
-  --secondary-color: #f59e0b; /* Un color de acento como el amarillo */
-  --font-sans: 'Geist Sans', sans-serif;
-  --font-mono: 'Geist Mono', monospace;
+  /* Base */
+  --bg: #000000;             /* Dominante absoluto */
+  --bg-elev-1: #060608;      /* Superficie 1 */
+  --bg-elev-2: #0b0c10;      /* Superficie 2 */
+  --bg-elev-3: #111218;      /* Superficie 3 */
+
+  /* Texto */
+  --text: #e8e8ef;
+  --text-dim: #a7a9b4;
+
+  /* Bordes / líneas */
+  --line: #1d1f2a;
+
+  /* Acentos */
+  --accent: #7c86ff;       /* azul violeta (puedes cambiar a #00e5ff si quieres cian) */
+  --accent-2: #ff3b81;     /* magenta punch */
+
+  /* Estados / focus */
+  --ring: #5b63ff;
+
+  /* Easing */
+  --ease: cubic-bezier(.22,1,.36,1); /* easeOutQuint-like */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #f5f5f5;
-    --primary-color: #3b82f6;
-    --secondary-color: #f59e0b;
-  }
+.dark { /* por si luego alternas tema */
+  --bg: #000000;
+  --bg-elev-1: #060608;
+  --bg-elev-2: #0b0c10;
+  --bg-elev-3: #111218;
+
+  --text: #e8e8ef;
+  --text-dim: #a7a9b4;
+
+  --line: #1d1f2a;
+
+  --accent: #7c86ff;
+  --accent-2: #ff3b81;
+
+  --ring: #5b63ff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #f5f5f5;
-    --primary-color: #3b82f6;
-    --secondary-color: #f59e0b;
-  }
-}
+/* =========================
+   BASE
+   ========================= */
+html { scroll-behavior: smooth; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-geist-sans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color .5s var(--ease), color .5s var(--ease);
+  min-height: 100dvh;
+  position: relative;
+  overflow-x: hidden;
 }
 
-a {
-  
-  transition: color 0.3s ease;
+/* Vignette + glow sutil en todo el site */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  pointer-events: none;
+  z-index: -1;
+}
+body::before {
+  /* viñeta negra alrededor */
+  background: radial-gradient(1200px 600px at 50% -10%, rgba(124,134,255,0.12), transparent),
+              radial-gradient(900px 400px at 90% 110%, rgba(255,59,129,0.08), transparent);
+  filter: blur(20px);
+  opacity: .6;
+}
+body::after {
+  /* grano sutil */
+  background-image:
+    linear-gradient(transparent 0, rgba(255,255,255,0.02) 100%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.015), rgba(255,255,255,0.015) 1px, transparent 2px, transparent 3px);
+  mix-blend-mode: overlay;
+  opacity: .4;
 }
 
-a:hover {
-  color: var(--secondary-color);
+/* Contenedor consistente */
+.container {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 1rem;
 }
 
-image{
-  width: 200;
-  height: 200;
+/* Enlaces */
+a { color: inherit; transition: color .25s var(--ease), opacity .25s var(--ease); }
+a:hover { color: var(--accent); }
+
+/* Imágenes */
+img { max-width: 100%; height: auto; display: block; }
+
+/* Focus accesible */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: .5rem;
+}
+
+/* Bordes suaves en superficies */
+.surface {
+  background: var(--bg-elev-1);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  box-shadow: 0 10px 40px -30px rgba(0,0,0,.8);
+}
+
+/* Headings con subrayado glow */
+.headline {
+  position: relative;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.headline::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  width: 120px;
+  height: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  filter: drop-shadow(0 0 12px rgba(124,134,255,.6));
+  opacity: .8;
+}
+
+/* =========================
+   REVEAL UNIVERSAL
+   ========================= */
+/* Añade class="reveal" a cualquier bloque.
+   Usa --d para retraso (stagger), por ej: style="--d:120ms" */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px) scale(.98);
+  filter: blur(6px);
+  transition:
+    opacity .9s var(--ease),
+    transform .9s var(--ease),
+    filter .9s var(--ease);
+  transition-delay: var(--d, 0ms);
+  will-change: opacity, transform, filter;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* Variantes */
+.reveal-x { transform: translateX(-24px) scale(.98); }
+.reveal-x.is-visible { transform: none; }
+
+.reveal-up { transform: translateY(24px) scale(.98); }
+.reveal-up.is-visible { transform: none; }
+
+/* =========================
+   BOTONES – ULTRADARK
+   ========================= */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .7rem 1rem;
+  border-radius: .9rem;
+  font-weight: 600;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--bg-elev-2), var(--bg-elev-1));
+  color: var(--text);
+  transition: transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s var(--ease);
+}
+.btn:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--accent) 35%, var(--line));
+  box-shadow: 0 14px 40px -24px rgba(124,134,255,.6);
+}
+.btn-primary {
+  background: radial-gradient(130% 180% at 50% -20%, color-mix(in oklab, var(--accent) 22%, #000), var(--bg-elev-2));
+  border-color: color-mix(in oklab, var(--accent) 35%, var(--line));
+  color: #eaf0ff;
+}
+.btn-ghost {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--text-dim);
 }
