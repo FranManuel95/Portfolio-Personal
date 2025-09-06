@@ -1,141 +1,136 @@
 "use client";
 
 import Image from "next/image";
-import { JSX, useRef } from "react";
+import React from "react";
 import { FaHtml5, FaCss3Alt, FaJs, FaSass, FaBootstrap, FaGulp } from "react-icons/fa";
 
-type Project = {
+/** Modelo de proyecto */
+export interface Project {
   title: string;
   description: string;
-  link: string;
-  image: string;
+  link: string;             // demo
+  image: string;            // ruta en /public (ideal .webp)
   technologies: string[];
-  code?: string;
-};
+  tags?: string[];
+  repo?: string;            // opcional
+  year?: number | string;
+}
 
-type Props = {
-  project: Project;
+/** Props comunes (opcionales para compat) */
+type Common = {
   featured?: boolean;
   compact?: boolean;
+  isOpen?: boolean;   // ignorado
+  onClick?: () => void; // ignorado
+  isMobile?: boolean; // ignorado
 };
 
-const BLUR_SVG =
-  "data:image/svg+xml;base64," +
-  Buffer.from(
-    `<svg xmlns='http://www.w3.org/2000/svg' width='32' height='20'><filter id='b'><feGaussianBlur stdDeviation='3' /></filter><rect width='100%' height='100%' fill='#0b0c10' /><rect width='100%' height='100%' fill='#7c86ff' opacity='.08' filter='url(#b)'/></svg>`
-  ).toString("base64");
+/** Dos formas válidas de uso */
+type PropsWithProject = { project: Project } & Common;
+type PropsWithFields = Project & Common;
+export type ProjectCardProps = PropsWithProject | PropsWithFields;
 
-const TECH_ICON: Record<string, JSX.Element> = {
-  html: <FaHtml5 className="text-red-500" aria-label="HTML" />,
-  css: <FaCss3Alt className="text-blue-500" aria-label="CSS" />,
-  javascript: <FaJs className="text-yellow-400" aria-label="JavaScript" />,
-  sass: <FaSass className="text-pink-500" aria-label="Sass" />,
-  bootstrap: <FaBootstrap className="text-indigo-500" aria-label="Bootstrap" />,
-  gulp: <FaGulp className="text-orange-500" aria-label="Gulp" />,
+const TechIcon = ({ tech }: { tech: string }) => {
+  switch (tech) {
+    case "html": return <FaHtml5 className="text-red-600" title="HTML" />;
+    case "css": return <FaCss3Alt className="text-blue-600" title="CSS" />;
+    case "javascript": return <FaJs className="text-yellow-400" title="JavaScript" />;
+    case "sass": return <FaSass className="text-pink-600" title="Sass" />;
+    case "bootstrap": return <FaBootstrap className="text-indigo-600" title="Bootstrap" />;
+    case "gulp": return <FaGulp className="text-orange-600" title="Gulp" />;
+    default: return null;
+  }
 };
 
-export default function ProjectCard({ project, featured, compact }: Props) {
-  const ref = useRef<HTMLDivElement>(null);
+export default function ProjectCard(props: ProjectCardProps) {
+  const data: Project =
+    "project" in props
+      ? props.project
+      : {
+          title: props.title,
+          description: props.description,
+          link: props.link,
+          image: props.image,
+          technologies: props.technologies,
+          tags: props.tags,
+          repo: props.repo,
+          year: props.year,
+        };
 
-  // Tilt 3D solo en desktop
-  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!ref.current || window.innerWidth < 1024) return;
-    const r = ref.current.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width - 0.5;
-    const py = (e.clientY - r.top) / r.height - 0.5;
-    ref.current.style.transform = `perspective(900px) rotateX(${(-py * 6).toFixed(
-      2
-    )}deg) rotateY(${(px * 8).toFixed(2)}deg) scale(1.02)`;
-  };
-  const onPointerLeave = () => {
-    if (ref.current) ref.current.style.transform = "";
-  };
+  const featured = props.featured ?? false;
+  const compact = props.compact ?? false;
+
+  const { title, description, link, image, technologies, repo } = data;
+
+  const padding = compact ? "p-4" : "p-5";
+  const titleCls = compact ? "text-lg" : "text-xl";
+  const descCls = compact ? "text-sm" : "text-base";
 
   return (
     <article
-      ref={ref}
-      className={`relative overflow-hidden surface group will-change-transform transition-transform duration-300 ease-out ${
-        featured ? "p-0" : "p-0"
-      }`}
-      onPointerMove={onPointerMove}
-      onPointerLeave={onPointerLeave}
+      className={[
+        "rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-transform duration-300 ease-in-out hover:scale-[1.015]",
+        "bg-[var(--bg-elev-1)] border border-[var(--line)]", // ← fondo oscuro por tema
+        "cv-auto",
+        featured ? "ring-1 ring-[var(--accent)]/60" : "",
+      ].join(" ")}
     >
-      {/* Imagen de portada */}
-      <div className="relative h-[220px] md:h-[260px]">
+      {/* Imagen */}
+      <div className="relative w-full aspect-[16/9] bg-black/10">
         <Image
-          src={project.image}
-          alt={project.title}
+          src={image}
+          alt={title}
           fill
           className="object-cover"
-          placeholder="blur"
-          blurDataURL={BLUR_SVG}
-          sizes="(max-width: 768px) 100vw, 50vw"
-          priority={featured}
+          sizes="(max-width: 768px) 100vw,
+                 (max-width: 1200px) 50vw,
+                 33vw"
+          loading="lazy"
+          decoding="async"
+          
         />
-        {/* Overlay gradiente para legibilidad */}
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
-        />
+        
       </div>
 
-      {/* Contenido */}
-      <div className="p-5 flex flex-col gap-3">
-        <header className="flex items-start justify-between gap-3">
-          <h4 className={`text-lg font-semibold ${featured ? "text-xl" : ""}`}>
-            {project.title}
-          </h4>
-        </header>
+      {/* Contenido (mismo fondo oscuro) */}
+      <div className={`${padding} border-t border-[var(--line)] bg-[var(--bg-elev-1)]`}>
+        <h3 className={`${titleCls} font-semibold text-[var(--text)]`}>{title}</h3>
+        <p className={`mt-2 text-[var(--text-dim)] ${descCls}`}>{description}</p>
 
-        <p className={`text-[var(--text-dim)] ${compact ? "line-clamp-3" : ""}`}>
-          {project.description}
-        </p>
-
-        {/* Chips de tecnologías (máximo 5 visibles para consistencia) */}
-        <div className="flex flex-wrap gap-2">
-          {project.technologies.slice(0, 5).map((t) => (
-            <span
-              key={t}
-              className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[var(--line)] text-xs text-[var(--text-dim)]"
-            >
-              <span className="text-base">{TECH_ICON[t] ?? null}</span>
-              {t}
+        {/* Tecnologías */}
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-xl">
+          {technologies.map((t, i) => (
+            <span key={`${t}-${i}`} className="inline-flex items-center">
+              <TechIcon tech={t} />
             </span>
           ))}
         </div>
 
-        {/* CTAs */}
-        <div className="mt-2 flex items-center gap-3">
+        {/* Acciones */}
+        <div className="mt-4 flex gap-3">
           <a
-            href={project.link}
+            href={link}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-primary"
+            className="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium
+                       bg-[var(--accent)] text-black hover:brightness-110 transition"
           >
             Ver demo
           </a>
-          {project.code && (
+
+          {repo && (
             <a
-              href={project.code}
+              href={repo}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn"
+              className="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium
+                         bg-white/5 hover:bg-white/10 transition"
             >
               Código
             </a>
           )}
         </div>
       </div>
-
-      {/* Glow al hover */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
-        style={{
-          background:
-            "radial-gradient(600px 220px at 50% 100%, rgba(124,134,255,0.28), transparent)",
-        }}
-      />
     </article>
   );
 }

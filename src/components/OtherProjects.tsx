@@ -1,30 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProjectCard from "./ProjectCard";
 
-/** Tipado delay para variables CSS (sin any) */
-type CSSVarName = `--${string}`;
-type StyleWithVars = React.CSSProperties & Record<CSSVarName, string>;
-const delay = (ms: number): StyleWithVars => ({ ["--d"]: `${ms}ms` } as StyleWithVars);
-
-/** Tipo de proyecto (igual que el que usa ProjectCard) */
-type Project = {
-  title: string;
-  description: string;
-  link: string;
-  image: string;
-  technologies: string[];
-  code?: string; // opcional, por si más adelante añades repo
-};
-
-const otherprojects: Project[] = [
+const otherprojects = [
   {
-    title: "Citas motivacionales ",
+    title: "Citas motivacionales",
     description:
       "Web de citas motivacionales, con frases de personajes célebres y un botón para generar una nueva cita.",
     link: "/CitasMotivacionales/index3.html",
-    image: "/citas.PNG",
+    image: "/citas.webp",
     technologies: ["html", "css", "javascript"],
   },
   {
@@ -32,14 +17,14 @@ const otherprojects: Project[] = [
     description:
       "Web de lista de tareas, con la posibilidad de añadir, eliminar y marcar como completadas las tareas.",
     link: "/ListaDeTareas/index5.html",
-    image: "/tareas.PNG",
+    image: "/tareas.webp",
     technologies: ["html", "css", "javascript"],
   },
   {
     title: "RGB",
     description: "Web para generar colores RGB aleatorios.",
     link: "/RGB/index2.html",
-    image: "/colores.PNG",
+    image: "/colores.webp",
     technologies: ["html", "css", "javascript"],
   },
   {
@@ -47,32 +32,45 @@ const otherprojects: Project[] = [
     description:
       "Web de cronómetro con botones para iniciar, pausar y reiniciar el tiempo.",
     link: "/Cronómetro/index4.html",
-    image: "/crono.PNG",
+    image: "/crono.webp",
     technologies: ["html", "css", "javascript"],
   },
 ];
 
-const OtherProjects = () => {
-  return (
-    <section className="relative">
-      <div
-        aria-hidden
-        className="absolute inset-0 bg-gradient-to-b from-[var(--bg)] via-[var(--bg-elev-1)] to-[var(--bg)]"
-      />
-      <div className="container relative text-center">
-        <h2 className="headline text-3xl mb-10">Otros proyectos más pequeños</h2>
+export default function OtherProjects() {
+  const [openProject, setOpenProject] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-          {otherprojects.map((project, i) => (
-            <div key={project.title} className="reveal" style={delay(i * 80)}>
-              {/* ✅ Nuevo API: pasamos el objeto completo */}
-              <ProjectCard project={project} compact />
-            </div>
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  return (
+    <section id="otherprojects" className="py-16 bg-gray-100 dark:bg-[var(--bg)]">
+      <div className="max-w-7xl mx-auto text-center px-6">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-[var(--accent)]">
+          Otros proyectos más pequeños
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 cv-auto">
+          {otherprojects.map((p, i) => (
+            <ProjectCard
+              key={i}
+              title={p.title}
+              description={p.description}
+              link={p.link}
+              image={p.image}
+              technologies={p.technologies}
+              isOpen={openProject === i}
+              onClick={() => setOpenProject(openProject === i ? null : i)}
+              isMobile={isMobile}
+            />
           ))}
         </div>
       </div>
     </section>
   );
-};
-
-export default OtherProjects;
+}

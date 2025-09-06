@@ -198,3 +198,10 @@ img { max-width: 100%; height: auto; display: block; }
   border-color: var(--line);
   color: var(--text-dim);
 }
+
+/* Evita trabajo de layout/pintado fuera de pantalla */
+.cv-auto {
+  content-visibility: auto;
+  /* tamaño intrínseco para evitar saltos al revelarse (ajusta a tu altura media) */
+  contain-intrinsic-size: 1px 420px;
+}

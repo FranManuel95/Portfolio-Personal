@@ -136,7 +136,7 @@ export default function ContactForm() {
       />
       <div className="relative surface max-w-3xl mx-auto p-6 md:p-8">
         <h2 className="headline text-3xl text-center mb-2">Contacto</h2>
-        <p className="text-[var(--text-dim)] text-center mb-6">
+        <p className="text-[var(--text-dim)] text-center mt-6 mb-6">
           Verifica tu email para evitar suplantaciones y poder responderte.
         </p>
 

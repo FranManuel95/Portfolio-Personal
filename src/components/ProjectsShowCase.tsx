@@ -253,7 +253,7 @@ export default function ProjectsShowcase() {
         {/* prácticas */}
         <section className="mb-4">
           <h3 className="text-xl font-semibold mb-4 text-[var(--accent)] reveal" style={delay(0)}>
-            prácticas
+            Prácticas
           </h3>
           {labs.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
