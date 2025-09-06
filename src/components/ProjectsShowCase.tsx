@@ -112,7 +112,7 @@ function useRevealWithin<T extends HTMLElement>() {
       {
         threshold: 0,                  // dispara en cuanto toca
         root: null,                    // viewport
-        rootMargin: "0px 0px -20% 0px" // aparece un poco antes de salir por abajo
+        rootMargin: "0px 0px -100% 0px" // aparece un poco antes de salir por abajo
       }
     );
 

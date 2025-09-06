@@ -67,7 +67,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="experiencia" className="py-16" ref={expRef}>
+      <section id="experiencia" className="py-9" ref={expRef}>
         <div className="container">
           <div className="reveal" style={delay(0)}>
             <Experience />
@@ -75,7 +75,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="sobremí" className="py-16" ref={aboutRef}>
+      <section id="sobremí" className="py-9" ref={aboutRef}>
         <div className="container">
           <div className="reveal" style={delay(40)}>
             <About />
@@ -83,7 +83,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="proyectos" className="py-16" ref={showcaseRef}>
+      <section id="proyectos" className="py-9" ref={showcaseRef}>
         <div className="container">
           <div className="reveal" style={delay(0)}>
             <ProjectsShowcase />
@@ -92,7 +92,7 @@ export default function Home() {
       </section>
 
       {/* CONTACTO: Formulario + Footer */}
-      <section id="contacto" className="py-16" ref={contactRef}>
+      <section id="contacto" className="py-9" ref={contactRef}>
         <div className="container">
           <div className="reveal" style={delay(0)}>
             <ContactForm />
