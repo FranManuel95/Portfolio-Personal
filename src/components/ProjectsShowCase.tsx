@@ -109,18 +109,31 @@ function useRevealWithin<T extends HTMLElement>() {
           }
         }
       },
-      { threshold: 0.15 }
+      {
+        threshold: 0,                  // dispara en cuanto toca
+        root: null,                    // viewport
+        rootMargin: "0px 0px -20% 0px" // aparece un poco antes de salir por abajo
+      }
     );
 
     const observeAll = () => {
       const nodes = root.querySelectorAll<HTMLElement>(".reveal:not(.is-visible)");
-      nodes.forEach((n) => io.observe(n));
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+
+      nodes.forEach((n) => {
+        io.observe(n);
+
+        // ✅ Fallback inmediato: si ya está en viewport, muéstralo ya
+        const r = n.getBoundingClientRect();
+        if (r.top <= vh * 0.9 && r.bottom >= 0) {
+          n.classList.add("is-visible");
+          io.unobserve(n);
+        }
+      });
     };
 
-    // Observa cambios en el árbol (filtros agregan/quitán cards)
-    const mo = new MutationObserver(() => {
-      observeAll();
-    });
+    // Si el layout cambia (filtros), reobserva
+    const mo = new MutationObserver(observeAll);
 
     observeAll();
     mo.observe(root, { childList: true, subtree: true });
@@ -133,6 +146,7 @@ function useRevealWithin<T extends HTMLElement>() {
 
   return containerRef;
 }
+
 
 export default function ProjectsShowcase() {
   // === Filtros & búsqueda ===
