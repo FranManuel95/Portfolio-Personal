@@ -1,11 +1,7 @@
 "use client";
 
 import React from "react";
-
-/** Tipado de delay sin any */
-type CSSVarName = `--${string}`;
-type StyleWithVars = React.CSSProperties & Record<CSSVarName, string>;
-const delay = (ms: number): StyleWithVars => ({ ["--d"]: `${ms}ms` } as StyleWithVars);
+import Reveal from "./Reveal";
 
 const experiences = [
   {
@@ -28,34 +24,34 @@ const Experience = () => {
   return (
     <section className="relative">
       <div
-        aria-hidden
+        
         className="absolute inset-0 bg-gradient-to-b from-[var(--bg)] via-[var(--bg-elev-1)] to-[var(--bg)]"
       />
       <div className="container relative">
-        <h2 className="headline text-3xl text-center mb-12 text-[var(--text)]">
-          <span className="inline-flex items-center gap-2">
-            Experiencia Profesional
-          </span>
-        </h2>
+        <Reveal replay>
+          <h2 className="headline text-3xl text-center py-4 mt-6 mb-6 text-[var(--text)]">
+            <span className="inline-flex items-center gap-2">Experiencia Profesional</span>
+          </h2>
+        </Reveal>
 
+        <Reveal replay>
         <div className="relative grid gap-8 md:grid-cols-2">
           <div
-            aria-hidden
-            className="hidden md:block absolute left-1/2 top-0 -translate-x-1/2 h-full w-px bg-gradient-to-b from-transparent via-[var(--line)] to-transparent"
+          
+            className=" md:block absolute left-1/2 top-0 -translate-x-1/2 h-full w-px bg-gradient-to-b from-transparent via-[var(--line)] to-transparent"
           />
           {experiences.map((exp, i) => (
-            <article
-              key={exp.company + i}
-              className="reveal surface p-6"
-              style={delay(i * 100)}
-            >
-              <h3 className="text-xl font-semibold text-[var(--text)]">{exp.role}</h3>
-              <p className="text-[var(--accent)] mt-1">{exp.company}</p>
-              <p className="text-sm text-[var(--text-dim)]">{exp.period}</p>
-              <p className="mt-3 text-[var(--text)]/90 leading-relaxed">{exp.description}</p>
-            </article>
+            <Reveal replay key={`${exp.company}-${i}`}>
+              <article className="surface p-6">
+                <h3 className="text-xl font-semibold text-[var(--text)]">{exp.role}</h3>
+                <p className="text-[var(--accent)] mt-1">{exp.company}</p>
+                <p className="text-sm text-[var(--text-dim)]">{exp.period}</p>
+                <p className="mt-3 text-[var(--text)]/90 leading-relaxed">{exp.description}</p>
+              </article>
+            </Reveal>
           ))}
         </div>
+        </Reveal>
       </div>
     </section>
   );

@@ -4,6 +4,8 @@ export default function FabContact() {
   return (
     <a
       href="#contacto"
+      aria-label="Ir a la sección de contacto"
+      title="Contactar ahora"
       className="
         fixed right-5 bottom-6 z-[60]
         inline-flex items-center gap-2
@@ -12,7 +14,7 @@ export default function FabContact() {
         border border-[color-mix(in_oklab,var(--accent)_40%,var(--line))]
         text-[#eaf0ff] font-semibold
         shadow-[0_18px_40px_-24px_rgba(124,134,255,.7)]
-        hover:translate-y-[-2px] transition-transform
+        focus:outline-none focus:ring-2 focus:ring-[var(--ring)]
       "
       style={{
         boxShadow:
@@ -20,7 +22,7 @@ export default function FabContact() {
       }}
     >
       <span
-        aria-hidden
+        
         className="h-2 w-2 rounded-full"
         style={{
           background:

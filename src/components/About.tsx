@@ -2,23 +2,11 @@
 
 import React from "react";
 import {
-  FaHtml5,
-  FaCss3Alt,
-  FaBootstrap,
-  FaJs,
-  FaReact,
-  FaNodeJs,
-  FaNpm,
-  FaPhp,
-  FaGit,
-  FaDocker,
+  FaHtml5, FaCss3Alt, FaBootstrap, FaJs, FaReact, FaNodeJs, FaNpm, FaPhp, FaGit, FaDocker,
 } from "react-icons/fa";
 import { SiTailwindcss, SiNextdotjs, SiUnity, SiSymfony, SiMysql, SiSharp } from "react-icons/si";
-
-/** Tipado seguro para CSS variables (sin any) */
-type CSSVarName = `--${string}`;
-type StyleWithVars = React.CSSProperties & Record<CSSVarName, string>;
-const delay = (ms: number): StyleWithVars => ({ ["--d"]: `${ms}ms` } as StyleWithVars);
+import Reveal from "./Reveal";
+import TypewriterText from "./TypewriterText";
 
 const technologies = [
   { name: "HTML", icon: <FaHtml5 className="text-orange-500" /> },
@@ -41,53 +29,56 @@ const technologies = [
 
 const About = () => {
   return (
-    // OJO: no ponemos id aquí para evitar duplicados; el id "sobremí" ya lo lleva la sección en app/page.tsx
     <section className="relative">
-      {/* Fondo ultradark con leve gradiente */}
       <div
-        aria-hidden
+        
         className="absolute inset-0 bg-gradient-to-b from-[var(--bg)] via-[var(--bg-elev-1)] to-[var(--bg)]"
       />
       <div className="container relative text-center">
         {/* Heading */}
-        <h2 className="headline text-3xl mb-6 reveal" style={delay(0)}>
-          Sobre mí
-        </h2>
+        <Reveal replay>
+          <h2 className="headline text-3xl py-4 mt-6 mb-6">Sobre mí</h2>
+        </Reveal>
 
-        {/* Texto (contenido intacto) */}
-        <p
-          className="md:text-2xl text-[color-mix(in_oklab,var(--text)_90%,#fff)] leading-relaxed max-w-4xl mx-auto reveal"
-          style={delay(80)}
-        >
-          Me considero una persona{" "}
-          <span className="text-[var(--accent-2)]">constante</span>,{" "}
-          <span className="text-[var(--accent-2)]">resolutiva</span> y con gran{" "}
-          <span className="text-[var(--accent-2)]">capacidad de adaptación</span>. Disfruto
-          aprendiendo nuevas tecnologías y enfrentándome a desafíos que me ayuden a crecer
-          profesionalmente. Tengo{" "}
-          <span className="text-[var(--accent-2)]">facilidad para el aprendizaje</span>, me motiva
-          seguir formándome y mejorar día a día.
-        </p>
+        {/* Texto */}
+        <Reveal replay delayMs={60}>
+         <TypewriterText
+    as="p"  
+        className="md:text-2xl text-[color-mix(in_oklab,var(--text)_90%,#fff)] leading-relaxed max-w-4xl mx-auto"
+    speed={26}                 // ajusta a tu gusto (20–35 suele ir bien)
+    startDelay={120}           // cuando entra en vista
+    punctuationPauseMs={110}   // pausa natural en puntuación
+    inViewMargin="0px 0px -12% 0px" // dispara un poco DESPUÉS de entrar
+    segments={[
+      { text: "Me considero una persona " },
+      { text: "constante", className: "text-[var(--accent-2)]" },
+      { text: ", " },
+      { text: "resolutiva", className: "text-[var(--accent-2)]" },
+      { text: " y con gran " },
+      { text: "capacidad de adaptación", className: "text-[var(--accent-2)]" },
+      { text: ". Disfruto aprendiendo nuevas tecnologías y enfrentándome a desafíos que me ayuden a crecer profesionalmente. Tengo " },
+      { text: "facilidad para el aprendizaje", className: "text-[var(--accent-2)]" },
+      { text: ", me motiva seguir formándome y mejorar día a día." },
+    ]}
+  />
+        </Reveal>
 
         {/* Subheading */}
-        <h3
-          className="text-2xl sm:text-3xl font-semibold mt-12 mb-6 text-[var(--accent)] reveal"
-          style={delay(120)}
-        >
-          Tecnologías con las que he trabajado:
-        </h3>
+        <Reveal replay delayMs={120}>
+          <h3 className="text-2xl sm:text-3xl font-semibold mt-12 mb-6 text-[var(--accent)]">
+            Tecnologías con las que he trabajado:
+          </h3>
+        </Reveal>
 
-        {/* Grid de tecnologías con reveal escalonado */}
+        {/* Grid con stagger simple */}
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
           {technologies.map((tech, i) => (
-            <div
-              key={tech.name}
-              className="reveal surface p-3 flex flex-col items-center"
-              style={delay(160 + i * 40)}
-            >
-              <div className="text-2xl">{tech.icon}</div>
-              <span className="mt-1 text-xs font-medium text-[var(--text-dim)]">{tech.name}</span>
-            </div>
+            <Reveal replay key={tech.name} delayMs={160 + i * 60}>
+              <div className="surface p-3 flex flex-col items-center">
+                <div className="text-2xl">{tech.icon}</div>
+                <span className="mt-1 text-xs font-medium text-[var(--text-dim)]">{tech.name}</span>
+              </div>
+            </Reveal>
           ))}
         </div>
       </div>

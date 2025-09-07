@@ -139,33 +139,34 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 /* =========================
-   REVEAL UNIVERSAL
+   DESACTIVAR REVEAL (no-op)
    ========================= */
-/* Añade class="reveal" a cualquier bloque.
-   Usa --d para retraso (stagger), por ej: style="--d:120ms" */
-.reveal {
-  opacity: 0;
-  transform: translateY(16px) scale(.98);
-  filter: blur(6px);
-  transition:
-    opacity .9s var(--ease),
-    transform .9s var(--ease),
-    filter .9s var(--ease);
-  transition-delay: var(--d, 0ms);
-  will-change: opacity, transform, filter;
-}
-.reveal.is-visible {
-  opacity: 1;
-  transform: none;
-  filter: none;
+.reveal,
+.reveal.is-visible,
+.reveal-x,
+.reveal-x.is-visible,
+.reveal-up,
+.reveal-up.is-visible {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  transition: none !important;
 }
 
-/* Variantes */
-.reveal-x { transform: translateX(-24px) scale(.98); }
-.reveal-x.is-visible { transform: none; }
-
-.reveal-up { transform: translateY(24px) scale(.98); }
-.reveal-up.is-visible { transform: none; }
+/* Accesibilidad: por coherencia si alguien activa reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal.is-visible,
+  .reveal-x,
+  .reveal-x.is-visible,
+  .reveal-up,
+  .reveal-up.is-visible {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+}
 
 /* =========================
    BOTONES – ULTRADARK
@@ -199,9 +200,13 @@ img { max-width: 100%; height: auto; display: block; }
   color: var(--text-dim);
 }
 
-/* Evita trabajo de layout/pintado fuera de pantalla */
+/* Evitar “pop-in” por content-visibility */
 .cv-auto {
-  content-visibility: auto;
-  /* tamaño intrínseco para evitar saltos al revelarse (ajusta a tu altura media) */
-  contain-intrinsic-size: 1px 420px;
+  content-visibility: visible !important;
+  contain-intrinsic-size: auto !important;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }

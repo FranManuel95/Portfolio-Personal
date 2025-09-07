@@ -3,7 +3,7 @@
 import Image from "next/image";
 import React from "react";
 import { FaHtml5, FaCss3Alt, FaJs, FaSass, FaBootstrap, FaGulp } from "react-icons/fa";
-
+import Reveal from "./Reveal";
 /** Modelo de proyecto */
 export interface Project {
   title: string;
@@ -67,16 +67,17 @@ export default function ProjectCard(props: ProjectCardProps) {
   const descCls = compact ? "text-sm" : "text-base";
 
   return (
+    <Reveal replay>
     <article
       className={[
-        "rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-transform duration-300 ease-in-out hover:scale-[1.015]",
-        "bg-[var(--bg-elev-1)] border border-[var(--line)]", // ← fondo oscuro por tema
-        "cv-auto",
+        // Sin overflow-hidden, sin transform/transition/hover-scale
+        "rounded-xl shadow-md",
+        "bg-[var(--bg-elev-1)] border border-[var(--line)]",
         featured ? "ring-1 ring-[var(--accent)]/60" : "",
       ].join(" ")}
     >
-      {/* Imagen */}
-      <div className="relative w-full aspect-[16/9] bg-black/10">
+      {/* Imagen: recorte solo aquí para esquinas superiores */}
+      <div className="relative w-full aspect-[16/9] bg-black/10 rounded-t-xl overflow-hidden">
         <Image
           src={image}
           alt={title}
@@ -87,13 +88,17 @@ export default function ProjectCard(props: ProjectCardProps) {
                  33vw"
           loading="lazy"
           decoding="async"
-          
         />
-        
       </div>
 
-      {/* Contenido (mismo fondo oscuro) */}
-      <div className={`${padding} border-t border-[var(--line)] bg-[var(--bg-elev-1)]`}>
+      {/* Contenido */}
+      <div
+        className={[
+          padding,
+          "border-t border-[var(--line)] bg-[var(--bg-elev-1)]",
+          "rounded-b-xl",
+        ].join(" ")}
+      >
         <h3 className={`${titleCls} font-semibold text-[var(--text)]`}>{title}</h3>
         <p className={`mt-2 text-[var(--text-dim)] ${descCls}`}>{description}</p>
 
@@ -106,14 +111,14 @@ export default function ProjectCard(props: ProjectCardProps) {
           ))}
         </div>
 
-        {/* Acciones */}
+        {/* Acciones (sin transiciones ni efectos hover) */}
         <div className="mt-4 flex gap-3">
           <a
             href={link}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium
-                       bg-[var(--accent)] text-black hover:brightness-110 transition"
+                       bg-[var(--accent)] text-black"
           >
             Ver demo
           </a>
@@ -124,7 +129,7 @@ export default function ProjectCard(props: ProjectCardProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium
-                         bg-white/5 hover:bg-white/10 transition"
+                         bg-white/5"
             >
               Código
             </a>
@@ -132,5 +137,6 @@ export default function ProjectCard(props: ProjectCardProps) {
         </div>
       </div>
     </article>
+    </Reveal>
   );
 }

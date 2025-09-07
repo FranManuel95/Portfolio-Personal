@@ -128,7 +128,7 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
       <div
         className="absolute top-0 left-0 h-[3px] bg-[var(--accent)]/95 shadow-[0_0_18px_rgba(124,134,255,0.8)]"
         style={{ width: `${scrollProgress}%` }}
-        aria-hidden
+        
       />
 
       <nav
@@ -142,7 +142,7 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
         >
           Fran<span className="text-[var(--accent)]">Daw</span>
           <span
-            aria-hidden
+            
             className="pointer-events-none absolute -inset-2 rounded-lg opacity-0 hover:opacity-100 transition"
             style={{
               background:
@@ -161,7 +161,7 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
             {/* Indicador deslizante */}
             <span
               ref={indicatorRef}
-              aria-hidden
+              
               className="pointer-events-none absolute -bottom-1 h-0.5 w-0 bg-[var(--accent)] rounded-full transition-all duration-300"
               style={{
                 left: 0,
@@ -182,7 +182,7 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
                     }`}
                   >
                     <span
-                      aria-hidden
+                      
                       className="pointer-events-none absolute -inset-3 rounded-lg opacity-0 hover:opacity-100 transition"
                       style={{
                         background: 
