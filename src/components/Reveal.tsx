@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   motion,
   useReducedMotion,
@@ -28,33 +28,51 @@ export default function Reveal({
   y = 12,
   replay = false,
   amount = 0,
-  
+  margin = "0px 0px -10% 0px",
   className,
-  
+  duration = 0.45,
 }: RevealProps) {
   const reduce = useReducedMotion();
   const controls = useAnimationControls();
 
+  // Evita start() antes/después del montaje
+  const mountedRef = useRef(false);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      controls.stop(); // por si quedara alguna animación pendiente
+    };
+  }, [controls]);
+
   // Targets (sin variants para evitar tipos conflictivos)
   const hidden: Target = reduce ? { opacity: 1, y: 0 } : { opacity: 0, y };
   const visible: Target = { opacity: 1, y: 0 };
+
+  const handleEnter = () => {
+    if (!mountedRef.current) return;
+    controls.start(visible);
+  };
+
+  const handleLeave = () => {
+    if (!replay) return;
+    if (!mountedRef.current) return;
+    controls.start(hidden);
+  };
 
   return (
     <motion.div
       className={className}
       initial={hidden}
       animate={controls}
-      viewport={{ amount, margin: "0px 0px -12% 0px", once: !replay }}
-      onViewportEnter={() => controls.start(visible)}
-      onViewportLeave={() => {
-        if (replay) controls.start(hidden);
-      }}
-      
+      viewport={{ amount, margin, once: !replay }}
+      onViewportEnter={handleEnter}
+      onViewportLeave={handleLeave}
       transition={{
-  duration: reduce ? 0 : 0.85,          // progresivo pero razonable
-  ease: [0.39, 0.575, 0.565, 1],        // easeOutSine suave y natural
-  delay: (reduce ? 0 : (delayMs + 120)) / 1000
-}}
+        duration: reduce ? 0 : duration,
+        ease: [0.59, 0.575, 0.565, 1],
+        delay: (reduce ? 0 : (delayMs + 120)) / 1000, // opcional: +120ms de aire
+      }}
     >
       {children}
     </motion.div>

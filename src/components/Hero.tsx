@@ -4,8 +4,13 @@ import Image from "next/image";
 import React from "react";
 import { FaLinkedin, FaGithub, FaEnvelope, FaDownload } from "react-icons/fa";
 import Reveal from "./Reveal";
+import { motion, useTransform, useMotionValue } from "framer-motion";
 
 const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
+  const mx = useMotionValue(0.5);
+  const my = useMotionValue(0.5);
+    const glowX = useTransform(mx, [0, 1], ["8%", "92%"]);
+  const glowY = useTransform(my, [0, 1], ["-10%", "85%"])
   return (
     <Reveal replay>
       <section
@@ -14,21 +19,17 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
       >
         {/* FONDOS: siempre detrás */}
         <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 z-0
-                     bg-[radial-gradient(70%_60%_at_20%_0%,rgba(124,134,255,0.25),transparent),
-                         radial-gradient(50%_40%_at_90%_80%,rgba(255,255,255,0.08),transparent)]"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 z-0
-                     [mask-image:radial-gradient(60%_60%_at_50%_40%,black,transparent)]"
-        >
-          <div className="absolute inset-0 opacity-[0.08]
-                          bg-[linear-gradient(to_right,white_1px,transparent_1px),
-                              linear-gradient(to_bottom,white_1px,transparent_1px)]
-                          bg-[size:48px_48px]" />
-        </div>
+        aria-hidden
+        className="absolute inset-0 bg-[radial-gradient(70%_60%_at_20%_0%,rgba(124,134,255,0.25),transparent),radial-gradient(50%_40%_at_90%_80%,rgba(255,255,255,0.08),transparent)]"
+      />
+      <div aria-hidden className="absolute inset-0 [mask-image:radial-gradient(60%_60%_at_50%_40%,black,transparent)]">
+        <div className="absolute inset-0 opacity-[0.08] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:48px_48px]" />
+      </div>
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute w-[44vw] h-[44vw] max-w-[580px] max-h-[580px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl bg-[var(--accent)]/35"
+        style={{ left: glowX, top: glowY }}
+      />
         {/* Glow suave detrás del contenido */}
         
 
@@ -77,7 +78,7 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
                 href="https://www.linkedin.com/in/francisco-manuel-perej%C3%B3n-carmona-7bbb1214a/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-[var(--accent)] text-black px-4 py-2 rounded-lg"
+                className="justify-center inline-flex items-center gap-2 bg-[var(--accent)] text-black px-4 py-2 rounded-lg"
               >
                 <FaLinkedin /> <span>LinkedIn</span>
               </a>
@@ -85,15 +86,17 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
                 href="https://github.com/FranManuel95"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-white/10 text-white px-4 py-2 rounded-lg"
+                className="inline-flex items-center gap-2 bg-white/10 text-white px-4 py-2 rounded-lg justify-center"
               >
                 <FaGithub /> <span>GitHub</span>
               </a>
               <a
-                href="mailto:perejonfcomanuel@gmail.com?subject=Estoy%20interesado%20en%20tu%20trabajo."
-                className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg"
+                href="Carta de Presentación - Fran Perejón Carmona.pdf"
+                className="justify-center inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg box-content"
+                download
+                  
               >
-                <FaEnvelope /> <span>Email</span>
+                <FaEnvelope /> <span>Carta de presentación</span>
               </a>
               <a
                 href="/Currículum Fran Perejón Carmona.pdf"

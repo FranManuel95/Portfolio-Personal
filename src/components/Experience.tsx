@@ -21,6 +21,10 @@ const experiences = [
 ];
 
 const Experience = () => {
+
+
+
+
   return (
     <section className="relative">
       <div
@@ -34,7 +38,7 @@ const Experience = () => {
           </h2>
         </Reveal>
 
-        <Reveal replay>
+        
         <div className="relative grid gap-8 md:grid-cols-2">
           <div
           
@@ -51,7 +55,7 @@ const Experience = () => {
             </Reveal>
           ))}
         </div>
-        </Reveal>
+        
       </div>
     </section>
   );

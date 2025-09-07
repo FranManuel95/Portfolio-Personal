@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 type NavItem = { label: string; id: string };
 
 const NAV: NavItem[] = [
-  { label: "Contacto", id: "contacto" },
+  { label: "Contacto", id: "hero" },
   { label: "Experiencia", id: "experiencia" },
   { label: "Sobre mí", id: "sobremí" }, // coincide con tu sección
   { label: "Proyectos", id: "proyectos" },

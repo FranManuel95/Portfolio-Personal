@@ -96,14 +96,14 @@ export default function ProjectCard(props: ProjectCardProps) {
         className={[
           padding,
           "border-t border-[var(--line)] bg-[var(--bg-elev-1)]",
-          "rounded-b-xl",
+          "rounded-b-xl text-center",
         ].join(" ")}
       >
         <h3 className={`${titleCls} font-semibold text-[var(--text)]`}>{title}</h3>
         <p className={`mt-2 text-[var(--text-dim)] ${descCls}`}>{description}</p>
 
         {/* Tecnologías */}
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-xl">
+        <div className="mt-3 flex justify-center gap-2 text-xl">
           {technologies.map((t, i) => (
             <span key={`${t}-${i}`} className="inline-flex items-center">
               <TechIcon tech={t} />
@@ -112,7 +112,7 @@ export default function ProjectCard(props: ProjectCardProps) {
         </div>
 
         {/* Acciones (sin transiciones ni efectos hover) */}
-        <div className="mt-4 flex gap-3">
+        <div className="mt-4 flex gap-3  items-center justify-center">
           <a
             href={link}
             target="_blank"

@@ -110,6 +110,7 @@ export default function ContactForm() {
   }
 
   return (
+    <Reveal replay>
     <div className="relative">
       <div
         
@@ -120,7 +121,7 @@ export default function ContactForm() {
           <h2 className="headline text-3xl text-center mb-2">Contacto</h2>
         </Reveal>
 
-        <Reveal delayMs={60}>
+        <Reveal replay delayMs={60}>
           <p className="text-[var(--text-dim)] text-center mt-6 mb-6">
             Verifica tu email para evitar suplantaciones y poder responderte.
           </p>
@@ -142,7 +143,7 @@ export default function ContactForm() {
             </label>
           </div>
 
-          <Reveal delayMs={120}>
+          <Reveal replay delayMs={120}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <label className="text-sm text-[var(--text-dim)] text-left">
                 Nombre *
@@ -192,7 +193,7 @@ export default function ContactForm() {
             </div>
           </Reveal>
 
-          <Reveal delayMs={180}>
+          <Reveal replay delayMs={180}>
             <label className="text-sm text-[var(--text-dim)] text-left">
               Código de verificación *
               <input
@@ -209,7 +210,7 @@ export default function ContactForm() {
             </label>
           </Reveal>
 
-          <Reveal delayMs={210}>
+          <Reveal replay delayMs={210}>
             <label className="text-sm text-[var(--text-dim)] text-left">
               Asunto (opcional)
               <input
@@ -222,7 +223,7 @@ export default function ContactForm() {
             </label>
           </Reveal>
 
-          <Reveal delayMs={240}>
+          <Reveal replay delayMs={240}>
             <label className="text-sm text-[var(--text-dim)] text-left">
               Mensaje *
               <textarea
@@ -248,24 +249,29 @@ export default function ContactForm() {
             </div>
           )}
 
-          <Reveal delayMs={300}>
+          <Reveal replay delayMs={300}>
             <div className="flex items-center gap-3 mt-2">
               <button type="submit" className="btn btn-primary" disabled={disabledAll}>
                 {state.status === "submitting" ? "Enviando..." : "Enviar mensaje"}
               </button>
 
-              <a
-                className="btn btn-ghost"
-                href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_TO ?? "tu-email@dominio.com"}?subject=${encodeURIComponent(
-                  subject || "Contacto desde portfolio"
-                )}&body=${encodeURIComponent(`Hola, soy ${name} (${email}).\n\n${message}`)}`}
-              >
-                Prefiero email directo
-              </a>
+            <a
+  className="btn btn-ghost"
+  target="_blank"
+  rel="noopener noreferrer"
+  href={`https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=${encodeURIComponent(
+    process.env.NEXT_PUBLIC_CONTACT_TO ?? "tu-email@dominio.com"
+  )}&su=${encodeURIComponent(
+    `[Oferta de trabajo] ${subject || "Contacto desde portfolio"}`
+  )}`}
+>
+  Prefiero email directo
+</a>
             </div>
           </Reveal>
         </form>
       </div>
     </div>
+    </Reveal>
   );
 }
