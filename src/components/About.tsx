@@ -43,24 +43,41 @@ const About = () => {
         {/* Texto */}
         <Reveal replay delayMs={60}>
          <TypewriterText
-    as="p"  
-        className="md:text-2xl text-[color-mix(in_oklab,var(--text)_90%,#fff)] leading-relaxed max-w-4xl mx-auto"
-    speed={26}                 // ajusta a tu gusto (20–35 suele ir bien)
-    startDelay={120}           // cuando entra en vista
-    punctuationPauseMs={110}   // pausa natural en puntuación
-    inViewMargin="0px 0px -12% 0px" // dispara un poco DESPUÉS de entrar
-    segments={[
-      { text: "Me considero una persona " },
-      { text: "constante", className: "text-[var(--accent-2)]" },
-      { text: ", " },
-      { text: "resolutiva", className: "text-[var(--accent-2)]" },
-      { text: " y con gran " },
-      { text: "capacidad de adaptación", className: "text-[var(--accent-2)]" },
-      { text: ". Disfruto aprendiendo nuevas tecnologías y enfrentándome a desafíos que me ayuden a crecer profesionalmente. Tengo " },
-      { text: "facilidad para el aprendizaje", className: "text-[var(--accent-2)]" },
-      { text: ", me motiva seguir formándome y mejorar día a día." },
-    ]}
-  />
+  as="p"
+  className="md:text-2xl text-[color-mix(in_oklab,var(--text)_90%,#fff)] leading-relaxed max-w-4xl mx-auto"
+  speed={26}
+  startDelay={120}
+  punctuationPauseMs={110}
+  inViewMargin="0px 0px -12% 0px"
+  segments={[
+    { text: "Me defino por la " },
+    { text: "constancia", className: "text-[var(--accent-2)]" },
+    { text: ", la " },
+    { text: "resolución de problemas", className: "text-[var(--accent-2)]" },
+    { text: " y la " },
+    { text: "capacidad de adaptación", className: "text-[var(--accent-2)]" },
+    { text: ". " },
+
+    { text: "Disfruto aprendiendo tecnologías nuevas y llevándolas a la práctica para construir " },
+    { text: "soluciones claras y mantenibles", className: "text-[var(--accent-2)]" },
+    { text: ". " },
+
+    { text: "Soy " },
+    { text: "perseverante", className: "text-[var(--accent-2)]" },
+    { text: ": cuando aparece un reto, profundizo hasta entender el porqué y encontrar el cómo, sin dejarlo a medias. " },
+
+    { text: "Valoro el " },
+    { text: "trabajo en equipo", className: "text-[var(--accent-2)]" },
+    { text: ", comparto lo que sé y trato a los demás como me gustaría que me tratasen. " },
+
+    { text: "Mi objetivo: " },
+    { text: "mejorar un poco cada día", className: "text-[var(--accent-2)]" },
+    { text: " y aportar " },
+    { text: "impacto real", className: "text-[var(--accent-2)]" },
+    { text: " en cada proyecto." },
+  ]}
+/>
+
         </Reveal>
 
         {/* Subheading */}
