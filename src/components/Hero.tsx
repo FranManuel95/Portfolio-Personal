@@ -12,7 +12,7 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
     const glowX = useTransform(mx, [0, 1], ["8%", "92%"]);
   const glowY = useTransform(my, [0, 1], ["-10%", "85%"])
   return (
-    <Reveal replay>
+    <Reveal replay amount={0} margin="0px 0px 0px 0px">
       <section
         id="hero"
         className={`${isMenuOpen ? "pt-[8.5rem]" : "pt-16"} pb-14 md:pb-20 relative overflow-hidden text-white`}
@@ -42,7 +42,7 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
                 src="/SinFondo.webp"
                 alt="Fran"
                 fill
-                className="rounded-full object-cover shadow-[0_20px_60px_-20px_rgba(124,134,255,0.6)] ring-2 ring-white/10"
+                className="rounded-full object-cover shadow-[0_20px_60px_-20px_rgba(124,134,255,0.6)] accent-2 accent-white/10"
                 sizes="(max-width: 1024px) 260px, 260px"
                 priority
               />

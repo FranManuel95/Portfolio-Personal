@@ -122,8 +122,9 @@ export default function ProjectsShowcase() {
   };
 
   // === División en secciones ===
-  const featured = projects.slice(0, 4).filter(matches);
+
   const labs = experiments.filter(matches);
+  const destacados = projects.filter(matches);
 
   return (
     <div className="relative">
@@ -190,7 +191,7 @@ export default function ProjectsShowcase() {
         </Reveal>
 
         {/* DESTACADOS */}
-        {featured.length > 0 && (
+       
           <section className="mb-12">
             <Reveal replay>
               <h3 className="text-xl font-semibold mb-4 text-[var(--accent)]">
@@ -198,15 +199,23 @@ export default function ProjectsShowcase() {
               </h3>
             </Reveal>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {featured.map((p, i) => (
-                <Reveal replay key={`feat-${p.title}`} delayMs={60 + i * 80}>
-                  <ProjectCard project={p} featured />
+            {destacados.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {destacados.map((p, i) => (
+                <Reveal replay key={`dest-${p.title}`} delayMs={60 + i * 60}>
+                  <ProjectCard project={p} compact />
                 </Reveal>
               ))}
             </div>
+          ) : (
+            <Reveal replay delayMs={80}>
+              <p className="text-[var(--text-dim)]">
+                No hay proyectos destacados con esos filtros.
+              </p>
+            </Reveal>
+          )}
           </section>
-        )}
+        
 
         {/* PRÁCTICAS */}
         <section className="mb-4">

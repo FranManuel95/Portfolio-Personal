@@ -159,7 +159,7 @@ export default function ContactForm() {
 
               <label className="text-sm text-[var(--text-dim)] text-left">
                 Email *
-                <div className="mt-1 flex gap-2">
+                <div className="mt-1 grid gap-2 xsm:grid-cols-1 sm:grid-cols-2">
                   <input
                     className="flex-1 rounded-lg bg-[var(--bg-elev-2)] border border-[var(--line)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--ring)]"
                     placeholder="tu@email.com"
@@ -172,7 +172,7 @@ export default function ContactForm() {
                   <button
                     type="button"
                     onClick={requestCode}
-                    className="btn btn-ghost whitespace-nowrap"
+                    className="btn btn-ghost whitespace-nowrap justify-center"
                     disabled={
                       disabledAll ||
                       sendingCode ||

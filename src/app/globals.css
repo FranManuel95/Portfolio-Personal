@@ -25,7 +25,9 @@
   --accent-2: #ff3b81;     /* magenta punch */
 
   /* Estados / focus */
-  --ring: #5b63ff;
+  --ring-rgb: 251 191 36;            /* amber-400 */
+  --ring-alpha: 1;                   /* ajusta 0..1 si quieres */
+  --ring: rgb(var(--ring-rgb) / var(--ring-alpha));
 
   /* Easing */
   --ease: cubic-bezier(.22,1,.36,1); /* easeOutQuint-like */
@@ -42,10 +44,12 @@
 
   --line: #1d1f2a;
 
-  --accent: #7c86ff;
+
   --accent-2: #ff3b81;
 
-  --ring: #5b63ff;
+  
+
+
 }
 
 /* =========================
@@ -99,7 +103,7 @@ body::after {
 
 /* Enlaces */
 a { color: inherit; transition: color .25s var(--ease), opacity .25s var(--ease); }
-a:hover { color: var(--accent); }
+a:hover { color: var(--ring); }
 
 /* Imágenes */
 img { max-width: 100%; height: auto; display: block; }
