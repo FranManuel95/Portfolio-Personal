@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 import React from "react";
-import { FaHtml5, FaCss3Alt, FaJs, FaSass, FaBootstrap, FaGulp } from "react-icons/fa";
+import { FaHtml5, FaCss3Alt, FaJs, FaSass, FaBootstrap, FaGulp,  FaReact, FaDocker, FaNodeJs } from "react-icons/fa";
+import { SiTailwindcss, SiVite, SiExpress,  SiTypescript } from "react-icons/si";
 import Reveal from "./Reveal";
 /** Modelo de proyecto */
 export interface Project {
   title: string;
   description: string;
-  link: string;             // demo
+  link?: string;             // demo
   image: string;            // ruta en /public (ideal .webp)
   technologies: string[];
   tags?: string[];
@@ -38,6 +39,14 @@ const TechIcon = ({ tech }: { tech: string }) => {
     case "sass": return <FaSass className="text-pink-600" title="Sass" />;
     case "bootstrap": return <FaBootstrap className="text-indigo-600" title="Bootstrap" />;
     case "gulp": return <FaGulp className="text-orange-600" title="Gulp" />;
+    case "tailwindcss": return <SiTailwindcss className="text-cyan-400" title="TailwindCSS" />;
+    case "react": return <FaReact className="text-blue-400" title="React" />;
+    case "vite": return <SiVite className="text-purple-500" title="Vite" />;
+    case "docker": return <FaDocker className="text-blue-500" title="Docker" />;
+    case "nodejs": return <FaNodeJs className="text-green-600" title="Node.js" />;
+    case "express": return <SiExpress className="text-gray-300" title="Express" />;
+    case "typescript": return <SiTypescript className="text-blue-500" title="TypeScript" />;
+
     default: return null;
   }
 };
@@ -113,7 +122,8 @@ export default function ProjectCard(props: ProjectCardProps) {
 
         {/* Acciones (sin transiciones ni efectos hover) */}
         <div className="mt-4 flex gap-3  items-center justify-center">
-          <a
+          {link && (
+            <a
             href={link}
             target="_blank"
             rel="noopener noreferrer"
@@ -122,6 +132,8 @@ export default function ProjectCard(props: ProjectCardProps) {
           >
             Ver demo
           </a>
+          )}
+          
 
           {repo && (
             <a
@@ -129,9 +141,9 @@ export default function ProjectCard(props: ProjectCardProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium
-                         bg-white/5"
+                         bg-white/25"
             >
-              Código
+              Ver código
             </a>
           )}
         </div>

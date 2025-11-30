@@ -7,7 +7,8 @@ import Reveal from "./Reveal";
 type Project = {
   title: string;
   description: string;
-  link: string;
+  link?: string;
+  repo?: string;
   image: string;
   technologies: string[];
   code?: string;
@@ -15,6 +16,14 @@ type Project = {
 
 /* Proyectos principales */
 const projects: Project[] = [
+  {
+    title: "Task Manager",
+    description:
+      "TaskManager es una plataforma completa para la gestión avanzada de proyectos y tareas, diseñada para equipos que necesitan organización, control y colaboración en tiempo real.",
+    repo: "https://github.com/FranManuel95/Task-Manager",
+    image: "/CapturaProyectoTareas.webp",
+    technologies: ["html", "tailwindcss", "typescript","react", "vite", "docker", "nodejs", "express"],
+  },
   {
     title: "Web Techno Festival",
     description:
@@ -39,14 +48,7 @@ const projects: Project[] = [
     image: "/academia.webp",
     technologies: ["html", "css", "bootstrap"],
   },
-  {
-    title: "Frontend Store",
-    description:
-      "Web de tienda de ropa online, con catálogo de productos y carrito de compra.",
-    link: "/FrontendStore/index.html",
-    image: "/front.webp",
-    technologies: ["html", "css"],
-  },
+  
 ];
 
 /* Experimentos */

@@ -59,10 +59,10 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
         <div className="flex items-center justify-center lg:justify-end h-full">
           <div className="relative w-[240px] h-[240px] md:w-[260px] md:h-[260px]">
             <Image
-              src="/SinFondo.webp"
+              src="/FotoSinFondo.webp"
               alt="Fran"
               fill
-              className="rounded-full object-cover shadow-[0_20px_60px_-20px_rgba(124,134,255,0.6)]"
+              className="rounded-full object-contain object-center shadow-[0_20px_60px_-20px_rgba(124,134,255,0.6)]"
               sizes="(max-width: 1024px) 260px, 260px"
               priority
             />
