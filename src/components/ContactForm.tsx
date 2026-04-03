@@ -215,7 +215,7 @@ export default function ContactForm() {
               Asunto (opcional)
               <input
                 className="mt-1 w-full rounded-lg bg-[var(--bg-elev-2)] border border-[var(--line)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--ring)]"
-                placeholder="Sobre la vacante..."
+                placeholder="Proyecto de IA, automatización, web..."
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 disabled={disabledAll}

@@ -7,8 +7,21 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Portfolio FM",
-  description: "Portfolio ultradark con transiciones progresivas",
+  title: "Fran Perejón — Desarrollador Web & Especialista en IA",
+  description:
+    "Desarrollador Web y Especialista en IA Aplicada. Diseño sistemas completos con Next.js, agentes conversacionales, automatización con n8n y arquitecturas RAG escalables.",
+  keywords: [
+    "desarrollador web", "IA generativa", "automatización", "Next.js", "React",
+    "TypeScript", "Supabase", "n8n", "RAG", "agentes IA", "VAPI", "OpenAI", "Sevilla",
+  ],
+  authors: [{ name: "Francisco Manuel Perejón Carmona" }],
+  openGraph: {
+    title: "Fran Perejón — Desarrollador Web & Especialista en IA",
+    description:
+      "Diseño y construyo sistemas completos: apps web, agentes conversacionales, flujos automatizados y arquitecturas de IA escalables.",
+    type: "website",
+    locale: "es_ES",
+  },
   icons: { icon: "/favicon.webp" },
 };
 

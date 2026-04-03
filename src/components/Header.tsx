@@ -7,10 +7,11 @@ type NavItem = { label: string; id: string };
 
 const NAV: NavItem[] = [
   { label: "Perfil", id: "hero" },
+  { label: "Servicios", id: "servicios" },
   { label: "Experiencia", id: "experiencia" },
   { label: "Sobre mí", id: "sobremí" },
   { label: "Proyectos", id: "proyectos" },
-  { label: "Contacto", id: "contacto" }, // 👈 lo mantenemos en la lista
+  { label: "Contacto", id: "contacto" },
 ];
 
 type Props = {
@@ -133,7 +134,7 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 
       <nav className="relative container h-full flex items-center justify-between" aria-label="Navegación principal">
         <Link href="#hero" className="relative font-semibold tracking-tight text-lg hover:opacity-90 transition">
-          Fran<span className="text-[var(--accent)]">Daw</span>
+          Fran<span className="text-[var(--accent)]">.dev</span>
           <span
             className="pointer-events-none absolute -inset-2 rounded-lg opacity-0 hover:opacity-100 transition"
             style={{

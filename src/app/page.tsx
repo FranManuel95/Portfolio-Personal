@@ -9,6 +9,7 @@ import Experience from "../components/Experience";
 import ProjectsShowcase from "../components/ProjectsShowCase";
 import FabContact from "../components/FabContact";
 import ContactForm from "../components/ContactForm";
+import Services from "../components/Services";
 
 
 export default function Home() {
@@ -21,6 +22,13 @@ export default function Home() {
       {/* Héroe: sipara que aparezca inmediato */}
       <section id="hero" className="pt-16">
         <Hero isMenuOpen={isMenuOpen} />
+      </section>
+
+      {/* Servicios */}
+      <section id="servicios" className="py-9">
+        <div className="container">
+          <Services />
+        </div>
       </section>
 
       {/* Experiencia */}

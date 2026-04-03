@@ -16,6 +16,15 @@ type Project = {
 
 const projects: Project[] = [
   {
+    title: "LexTutor Agent",
+    description:
+      "Plataforma de tutoría jurídica con IA para estudiantes de Derecho en España. Sistema RAG con arquitectura multi-modelo (OpenAI + Gemini), routing automático por operación y generación de quizzes, exámenes y corrección automática.",
+    link: "https://lextutoragent01.vercel.app",
+    repo: "https://github.com/FranManuel95/Lextutor-Agent",
+    image: "/lextutor.webp",
+    technologies: ["nextjs", "typescript", "tailwindcss", "supabase", "openai", "gemini", "rag"],
+  },
+  {
     title: "Task Manager",
     description:
       "Plataforma completa para la gestión avanzada de proyectos y tareas, diseñada para equipos que necesitan organización, control y colaboración en tiempo real.",
