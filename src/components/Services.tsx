@@ -10,7 +10,7 @@ const services = [
     title: "Desarrollo Web",
     accent: "#60a5fa",        // blue-400
     textColor: "text-blue-400",
-    bgGlow: "rgba(96,165,250,0.07)",
+    bgGlow: "rgba(96,165,250,0.14)",
     borderHover: "hover:border-blue-400/40",
     shadowHover: "hover:shadow-[0_0_40px_-12px_rgba(96,165,250,0.35)]",
     items: [
@@ -25,7 +25,7 @@ const services = [
     title: "IA Generativa",
     accent: "#a78bfa",        // violet-400
     textColor: "text-violet-400",
-    bgGlow: "rgba(167,139,250,0.07)",
+    bgGlow: "rgba(167,139,250,0.14)",
     borderHover: "hover:border-violet-400/40",
     shadowHover: "hover:shadow-[0_0_40px_-12px_rgba(167,139,250,0.35)]",
     items: [
@@ -40,7 +40,7 @@ const services = [
     title: "Automatización",
     accent: "#fb923c",        // orange-400
     textColor: "text-orange-400",
-    bgGlow: "rgba(251,146,60,0.07)",
+    bgGlow: "rgba(251,146,60,0.14)",
     borderHover: "hover:border-orange-400/40",
     shadowHover: "hover:shadow-[0_0_40px_-12px_rgba(251,146,60,0.35)]",
     items: [
@@ -55,7 +55,7 @@ const services = [
     title: "Agentes de Voz",
     accent: "#34d399",        // emerald-400
     textColor: "text-emerald-400",
-    bgGlow: "rgba(52,211,153,0.07)",
+    bgGlow: "rgba(52,211,153,0.14)",
     borderHover: "hover:border-emerald-400/40",
     shadowHover: "hover:shadow-[0_0_40px_-12px_rgba(52,211,153,0.35)]",
     items: [
@@ -73,7 +73,7 @@ const Services = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg)] via-[var(--bg-elev-1)] to-[var(--bg)]" />
       <div className="container relative">
         <Reveal replay>
-          <h2 className="headline text-3xl text-center py-4 mt-6 mb-2">
+          <h2 className="headline text-3xl text-center py-4 mt-6 mb-6">
             ¿En qué puedo ayudarte?
           </h2>
         </Reveal>

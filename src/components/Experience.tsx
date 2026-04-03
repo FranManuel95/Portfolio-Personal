@@ -34,7 +34,7 @@ const Experience = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg)] via-[var(--bg-elev-1)] to-[var(--bg)]" />
       <div className="container relative">
         <Reveal replay>
-          <h2 className="headline text-3xl text-center py-4 mt-6 mb-6 text-[var(--text)]">
+          <h2 className="headline text-3xl text-center py-4 mt-6 mb-12 text-[var(--text)]">
             Experiencia Profesional
           </h2>
         </Reveal>
