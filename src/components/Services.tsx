@@ -6,11 +6,13 @@ import Reveal from "./Reveal";
 
 const services = [
   {
-    icon: <Globe className="w-7 h-7" />,
+    icon: Globe,
     title: "Desarrollo Web",
-    color: "text-blue-400",
-    border: "border-blue-400/20 hover:border-blue-400/50",
-    glow: "hover:shadow-[0_0_32px_-8px_rgba(96,165,250,0.4)]",
+    accent: "#60a5fa",        // blue-400
+    textColor: "text-blue-400",
+    bgGlow: "rgba(96,165,250,0.07)",
+    borderHover: "hover:border-blue-400/40",
+    shadowHover: "hover:shadow-[0_0_40px_-12px_rgba(96,165,250,0.35)]",
     items: [
       "Aplicaciones full-stack con Next.js y React",
       "APIs REST y arquitecturas serverless",
@@ -19,11 +21,13 @@ const services = [
     ],
   },
   {
-    icon: <BrainCircuit className="w-7 h-7" />,
+    icon: BrainCircuit,
     title: "IA Generativa",
-    color: "text-violet-400",
-    border: "border-violet-400/20 hover:border-violet-400/50",
-    glow: "hover:shadow-[0_0_32px_-8px_rgba(167,139,250,0.4)]",
+    accent: "#a78bfa",        // violet-400
+    textColor: "text-violet-400",
+    bgGlow: "rgba(167,139,250,0.07)",
+    borderHover: "hover:border-violet-400/40",
+    shadowHover: "hover:shadow-[0_0_40px_-12px_rgba(167,139,250,0.35)]",
     items: [
       "Sistemas RAG con bases de conocimiento propias",
       "Agentes conversacionales con memoria y herramientas",
@@ -32,11 +36,13 @@ const services = [
     ],
   },
   {
-    icon: <Workflow className="w-7 h-7" />,
+    icon: Workflow,
     title: "Automatización",
-    color: "text-orange-400",
-    border: "border-orange-400/20 hover:border-orange-400/50",
-    glow: "hover:shadow-[0_0_32px_-8px_rgba(251,146,60,0.4)]",
+    accent: "#fb923c",        // orange-400
+    textColor: "text-orange-400",
+    bgGlow: "rgba(251,146,60,0.07)",
+    borderHover: "hover:border-orange-400/40",
+    shadowHover: "hover:shadow-[0_0_40px_-12px_rgba(251,146,60,0.35)]",
     items: [
       "Flujos end-to-end con n8n",
       "Integración de webhooks y APIs externas",
@@ -45,11 +51,13 @@ const services = [
     ],
   },
   {
-    icon: <Mic className="w-7 h-7" />,
+    icon: Mic,
     title: "Agentes de Voz",
-    color: "text-emerald-400",
-    border: "border-emerald-400/20 hover:border-emerald-400/50",
-    glow: "hover:shadow-[0_0_32px_-8px_rgba(52,211,153,0.4)]",
+    accent: "#34d399",        // emerald-400
+    textColor: "text-emerald-400",
+    bgGlow: "rgba(52,211,153,0.07)",
+    borderHover: "hover:border-emerald-400/40",
+    shadowHover: "hover:shadow-[0_0_40px_-12px_rgba(52,211,153,0.35)]",
     items: [
       "Asistentes telefónicos con VAPI y Twilio",
       "Síntesis de voz natural con ElevenLabs",
@@ -77,24 +85,49 @@ const Services = () => {
         </Reveal>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {services.map((s, i) => (
-            <Reveal replay key={s.title} delayMs={80 + i * 60}>
-              <div
-                className={`surface p-6 border transition-all duration-300 ${s.border} ${s.glow} h-full`}
-              >
-                <div className={`mb-4 ${s.color}`}>{s.icon}</div>
-                <h3 className={`text-lg font-semibold mb-3 ${s.color}`}>{s.title}</h3>
-                <ul className="space-y-2">
-                  {s.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-[var(--text-dim)]">
-                      <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-current ${s.color}`} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </Reveal>
-          ))}
+          {services.map((s, i) => {
+            const Icon = s.icon;
+            return (
+              <Reveal replay key={s.title} delayMs={80 + i * 60}>
+                <div
+                  className={[
+                    "group relative h-full rounded-2xl p-6",
+                    "border border-[var(--line)] bg-[var(--bg-elev-1)]",
+                    "transition-all duration-300",
+                    s.borderHover,
+                    s.shadowHover,
+                    "hover:-translate-y-0.5",
+                  ].join(" ")}
+                  style={{
+                    backgroundImage: `radial-gradient(400px 300px at 0% 0%, ${s.bgGlow}, transparent)`,
+                  }}
+                >
+                  {/* Icono */}
+                  <div
+                    className={`inline-flex items-center justify-center w-11 h-11 rounded-xl mb-4 border border-[var(--line)] bg-[var(--bg-elev-2)] ${s.textColor} transition-transform duration-300 group-hover:scale-110`}
+                  >
+                    <Icon className="w-5 h-5" />
+                  </div>
+
+                  {/* Título */}
+                  <h3 className={`text-base font-semibold mb-3 ${s.textColor}`}>{s.title}</h3>
+
+                  {/* Items */}
+                  <ul className="space-y-2.5">
+                    {s.items.map((item) => (
+                      <li key={item} className="flex items-start gap-2.5 text-sm text-[var(--text-dim)]">
+                        <span
+                          className="mt-[6px] w-1 h-1 rounded-full shrink-0"
+                          style={{ background: s.accent }}
+                        />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
+            );
+          })}
         </div>
       </div>
     </section>
