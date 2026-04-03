@@ -47,7 +47,7 @@ const TECH_MAP: Record<string, React.ReactNode> = {
   supabase:    <SiSupabase className="text-emerald-400" title="Supabase" />,
   openai:      <SiOpenai className="text-gray-200" title="OpenAI" />,
   gemini:      <span className="text-blue-400 font-bold text-[10px] leading-none" title="Gemini">G</span>,
-  rag:         <BrainCircuit className="w-4 h-4 text-violet-400" title="RAG" />,
+  rag:         <BrainCircuit className="w-4 h-4 text-violet-400" />,
 };
 
 const TechBadge = ({ tech }: { tech: string }) => {
