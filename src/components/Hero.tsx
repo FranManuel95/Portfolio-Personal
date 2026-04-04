@@ -101,7 +101,7 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
               <FaGithub /> <span>GitHub</span>
             </a>
             <a
-              href="/Currículum Fran Perejón Carmona.pdf"
+              href="/Fran Perejón — CV.pdf"
               download
               className="inline-flex items-center justify-center gap-2 col-span-2 sm:col-span-1 bg-red-600 text-white px-4 py-2 rounded-lg"
             >
