@@ -21,7 +21,7 @@ const projects: Project[] = [
       "Plataforma de tutoría jurídica con IA para estudiantes de Derecho en España. Sistema RAG con arquitectura multi-modelo (OpenAI + Gemini), routing automático por operación y generación de quizzes, exámenes y corrección automática.",
     link: "https://lextutoragent01.vercel.app",
     repo: "https://github.com/FranManuel95/Lextutor-Agent",
-    image: "/lextutor.webp",
+    image: "/Lextutor.GIF",
     technologies: ["nextjs", "typescript", "tailwindcss", "supabase", "openai", "gemini", "rag"],
   },
   {

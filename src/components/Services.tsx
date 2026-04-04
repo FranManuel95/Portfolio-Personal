@@ -52,16 +52,16 @@ const services = [
   },
   {
     icon: Mic,
-    title: "Agentes de Voz",
+    title: "Agentes Inteligentes",
     accent: "#34d399",        // emerald-400
     textColor: "text-emerald-400",
     bgGlow: "rgba(52,211,153,0.14)",
     borderHover: "hover:border-emerald-400/40",
     shadowHover: "hover:shadow-[0_0_40px_-12px_rgba(52,211,153,0.35)]",
     items: [
-      "Asistentes telefónicos con VAPI y Twilio",
-      "Síntesis de voz natural con ElevenLabs",
-      "Agentes autónomos con lógica de negocio",
+      "Agentes de atención al cliente 24/7 (voz y chat)",
+      "Agentes internos para tareas operativas y de empresa",
+      "Asistentes de voz con VAPI, Twilio y ElevenLabs",
       "Integración con CRMs y sistemas internos",
     ],
   },
