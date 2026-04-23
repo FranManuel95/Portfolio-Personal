@@ -932,17 +932,17 @@ function Room({
         </span>
       </div>
 
-      {/* Desk + dual monitors */}
+      {/* Desk + dual monitors — sits just below wall zone (SPLIT=38%) */}
       <div
         className="absolute"
-        style={{ left: "18%", top: "28%", width: "52%", height: "26%", zIndex: 1 }}
+        style={{ left: "12%", top: "33%", width: "60%", height: "26%", zIndex: 1 }}
       >
         <DeskAndMonitor accent={service.accent} />
       </div>
 
       {/* Headset on desk (agents room only) */}
       {service.id === "agents" && (
-        <div className="absolute" style={{ left: "56%", top: "38%", width: "8%", height: "10%", zIndex: 2 }}>
+        <div className="absolute" style={{ left: "56%", top: "42%", width: "8%", height: "10%", zIndex: 2 }}>
           <PixelHeadset accent={service.accent} />
         </div>
       )}
@@ -1283,89 +1283,96 @@ function HCorridor({ accentT, accentB }: { accentT: string; accentB: string }) {
 }
 
 /* =========================================================================
-   CoffeeArea — central break room connecting all corridors
+   CoffeeArea — central break room (now proportional with vw-based corridors)
    ========================================================================= */
 function CoffeeArea() {
   const amber = "#f59e0b";
+  const amberD = "#c47d08";
   return (
     <div
       className="relative overflow-hidden"
       style={{
-        background: "#b8a480",
+        /* Warm oak floor matching office rooms */
+        background: "#c0a87a",
         backgroundImage:`
-          linear-gradient(90deg, rgba(0,0,0,0.14) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0,0,0,0.16) 1px, transparent 1px),
           linear-gradient(0deg, rgba(255,255,255,0.10) 1px, transparent 1px)
         `,
-        backgroundSize:"10px 10px",
+        backgroundSize:"8px 8px",
       }}
     >
-      {/* Round rug under the table */}
-      <div
-        aria-hidden
-        className="absolute pointer-events-none"
-        style={{
-          left: "50%", bottom: "16%",
-          transform: "translateX(-50%)",
-          width: "74%", height: "52%",
-          background: `radial-gradient(ellipse at center, ${amber}28 0%, ${amber}14 40%, transparent 70%)`,
-          border: `1px dashed ${amber}33`,
-          borderRadius: "50%",
-        }}
-      />
+      {/* Wall top-face (bright band — 3D depth) */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0"
+        style={{ height:6, background:"linear-gradient(180deg,rgba(255,255,255,0.5) 0%,rgba(0,0,0,0.3) 100%)",
+          borderBottom:"1px solid rgba(0,0,0,0.4)", zIndex:1 }} />
 
-      {/* Ceiling pendant lamp — glow + cord + shade */}
-      <div
-        aria-hidden
-        className="absolute pointer-events-none"
-        style={{
-          left: "50%", top: 0,
-          transform: "translateX(-50%)",
-          width: "44%", height: "22%",
-          background: `radial-gradient(ellipse at 50% 0%, ${amber}55 0%, ${amber}15 40%, transparent 75%)`,
-        }}
-      />
-      <div aria-hidden className="absolute" style={{ left:"50%", top:0, width:2, height:"20%", marginLeft:-1, background:"#2a2c3a" }} />
+      {/* Back wall zone (~35% of height) */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0"
+        style={{ height:"35%",
+          background:`linear-gradient(180deg, ${amberD}dd 0%, ${amberD}aa 50%, rgba(0,0,0,0.30) 100%)`,
+          zIndex:0 }} />
+
+      {/* Floor AO below wall */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0"
+        style={{ top:"35%", height:"10%",
+          background:"linear-gradient(180deg,rgba(0,0,0,0.38) 0%,transparent 100%)", zIndex:1 }} />
+
+      {/* Ceiling pendant glow */}
+      <div aria-hidden className="absolute pointer-events-none"
+        style={{ left:"50%", top:0, transform:"translateX(-50%)", width:"60%", height:"30%",
+          background:`radial-gradient(ellipse at 50% 0%, ${amber}66 0%, transparent 70%)`, zIndex:2 }} />
+      {/* Cord */}
+      <div aria-hidden className="absolute" style={{ left:"50%", top:0, width:2, height:"22%", marginLeft:-1,
+        background:"#3a3040", zIndex:3 }} />
+      {/* Shade */}
       <div aria-hidden className="absolute"
-        style={{ left:"50%", top:"16%", width:14, height:6, marginLeft:-7,
-          background: amber, borderRadius:"0 0 6px 6px",
-          boxShadow:`0 0 8px ${amber}99, inset 0 -1px 0 rgba(0,0,0,0.4)` }} />
+        style={{ left:"50%", top:"18%", width:"16%", height:"7%", marginLeft:"-8%",
+          background:`linear-gradient(180deg, ${amber} 0%, ${amberD} 100%)`,
+          borderRadius:"0 0 50% 50%",
+          boxShadow:`0 0 12px ${amber}cc, inset 0 -2px 0 rgba(0,0,0,0.3)`, zIndex:3 }} />
 
-      {/* Coffee machine top-left */}
-      <div className="absolute" style={{ top:"8%", left:"4%", width:"28%", height:"46%" }}>
+      {/* Round rug */}
+      <div aria-hidden className="absolute pointer-events-none"
+        style={{ left:"50%", bottom:"10%", transform:"translateX(-50%)", width:"72%", height:"48%",
+          background:`radial-gradient(ellipse at 50% 60%, ${amber}38 0%, ${amber}18 45%, transparent 70%)`,
+          border:`1px dashed ${amber}44`, borderRadius:"50%", zIndex:1 }} />
+
+      {/* Coffee machine — top-left */}
+      <div className="absolute" style={{ top:"6%", left:"4%", width:"30%", height:"44%", zIndex:2 }}>
         <PixelCoffeeMaker accent={amber} />
       </div>
 
-      {/* Plant top-right */}
-      <div className="absolute" style={{ top:"4%", right:"4%", width:"22%", height:"44%" }}>
+      {/* Plant — top-right */}
+      <div className="absolute" style={{ top:"3%", right:"3%", width:"24%", height:"42%", zIndex:2 }}>
         <PixelPlant />
       </div>
 
-      {/* Round table, centered on the rug */}
-      <div className="absolute" style={{ bottom:"14%", left:"50%", transform:"translateX(-50%)", width:"48%", height:"34%" }}>
+      {/* Round table */}
+      <div className="absolute"
+        style={{ bottom:"10%", left:"50%", transform:"translateX(-50%)", width:"52%", height:"36%", zIndex:2 }}>
         <PixelRoundTable accent={amber} />
       </div>
 
-      {/* Two small stools flanking the table */}
-      <div aria-hidden className="absolute"
-        style={{ left:"10%", bottom:"20%", width:7, height:7,
-          background:"#1d2030", borderRadius:"50%",
-          boxShadow:`inset 0 0 0 1px ${amber}88, 0 2px 3px rgba(0,0,0,0.6)` }} />
-      <div aria-hidden className="absolute"
-        style={{ right:"10%", bottom:"20%", width:7, height:7,
-          background:"#1d2030", borderRadius:"50%",
-          boxShadow:`inset 0 0 0 1px ${amber}88, 0 2px 3px rgba(0,0,0,0.6)` }} />
+      {/* Stools — now pixel-art circles scaled to cell */}
+      {[{l:"9%"},{r:"9%"}].map((pos,i) => (
+        <div key={i} aria-hidden className="absolute"
+          style={{ ...pos, bottom:"22%", width:"9%", aspectRatio:"1",
+            background:`radial-gradient(circle at 35% 35%, #3a3c4e, #1d2030)`,
+            borderRadius:"50%",
+            boxShadow:`inset 0 0 0 1px ${amber}99, 0 3px 5px rgba(0,0,0,0.55)`, zIndex:2 }} />
+      ))}
 
-      {/* Label */}
-      <div
-        className="absolute bottom-0.5 inset-x-0 text-center pointer-events-none"
-        style={{ fontSize:6, color:`${amber}aa`, fontFamily:"ui-monospace,monospace", letterSpacing:"0.14em", fontWeight:"bold" }}
-      >
-        ☕ BREAK
+      {/* BREAK label */}
+      <div className="absolute bottom-[2%] inset-x-0 text-center pointer-events-none"
+        style={{ fontSize:"clamp(6px, 1.2vw, 9px)", color:`${amber}cc`,
+          fontFamily:"ui-monospace,monospace", letterSpacing:"0.14em", fontWeight:"bold", zIndex:3 }}>
+        ☕ BREAK ROOM
       </div>
-      {/* Corner wall-join blocks (with top-highlight for 3D) */}
+
+      {/* Corner wall-join blocks */}
       {(["top-0 left-0","top-0 right-0","bottom-0 left-0","bottom-0 right-0"] as const).map(c => (
-        <div key={c} aria-hidden className={`absolute ${c} w-[6px] h-[6px]`}
-          style={{ background:"#605c58", boxShadow:"inset 0 1px 0 rgba(255,255,255,0.25)" }} />
+        <div key={c} aria-hidden className={`absolute ${c} w-[8px] h-[8px]`}
+          style={{ background:"#605c58", boxShadow:"inset 0 1px 0 rgba(255,255,255,0.3)", zIndex:5 }} />
       ))}
     </div>
   );
@@ -1420,12 +1427,15 @@ const Services = () => {
 
         {/* ── Connected office floor plan ── */}
         <Reveal replay delayMs={160}>
-          {/* Perspective wrapper — gives the 70° top-down angle */}
+          {/* Scroll wrapper prevents floor-plan from squishing on narrow screens */}
+          <div className="office-scroll">
+          {/* Perspective wrapper — gives the top-down angle */}
           <div
             className="office-scene"
             style={{
               perspective: "1100px",
               perspectiveOrigin: "50% -10%",
+              minWidth: "400px",
             }}
           >
             <div
@@ -1465,15 +1475,19 @@ const Services = () => {
 
                 {/*
                 3 × 3 grid:
-                [WEB]      [V-corridor] [AI]
-                [H-corridor][COFFEE]   [H-corridor]
-                [AUTO]     [V-corridor] [AGENTS]
+                [WEB]       [V-corridor]  [AI]
+                [H-corridor][COFFEE]      [H-corridor]
+                [AUTO]      [V-corridor]  [AGENTS]
+
+                Corridors are proportional (clamp-based) so the CoffeeArea
+                is a real room, not a microscopic 52×44 px cell.
               */}
                 <div
+                  className="floor-grid"
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "1fr 52px 1fr",
-                    gridTemplateRows: "minmax(185px,22vw) 44px minmax(185px,22vw)",
+                    gridTemplateColumns: "1fr minmax(80px, 11vw) 1fr",
+                    gridTemplateRows: "minmax(180px, 22vw) minmax(70px, 8vw) minmax(180px, 22vw)",
                     background: "#706c68",
                   }}
                 >
@@ -1536,17 +1550,37 @@ const Services = () => {
               pointerEvents: "none",
             }}
           />
+          </div>{/* /office-scroll */}
         </Reveal>
       </div>
 
       <style jsx>{`
-        /* On small screens skip the tilt so rooms stay readable */
+        /* ── Responsive tilt / perspective ─────────────────────────── */
+
+        /* Tablet: softer angle */
+        @media (max-width: 1023px) {
+          .office-tilt { transform: rotateX(14deg) !important; }
+        }
+        /* Mobile: remove 3D tilt entirely */
         @media (max-width: 639px) {
-          .office-tilt {
-            transform: none !important;
-          }
-          .office-scene {
-            perspective: none !important;
+          .office-tilt  { transform: none !important; }
+          .office-scene { perspective: none !important; }
+        }
+
+        /* ── Scroll container on very narrow screens ────────────────── */
+        /* Keeps the floor-plan from squishing below 420 px              */
+        .office-scroll {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        @media (max-width: 540px) {
+          .office-scroll { padding-bottom: 6px; }
+          .floor-grid {
+            grid-template-columns: 1fr minmax(54px, 11vw) 1fr !important;
+            grid-template-rows:
+              minmax(148px, 22vw)
+              minmax(54px,  8vw)
+              minmax(148px, 22vw) !important;
           }
         }
       `}</style>
