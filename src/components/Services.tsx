@@ -848,7 +848,7 @@ function Room({
         </div>
       )}
 
-      {/* Furniture pieces */}
+      {/* Furniture pieces (with drop shadow on floor for 3D depth) */}
       {furniture.map((f, i) => (
         <div
           key={i}
@@ -861,7 +861,22 @@ function Room({
             zIndex: f.zIndex ?? 1,
           }}
         >
-          {f.node}
+          {/* Floor shadow pooled below the item */}
+          <div
+            style={{
+              position: "absolute",
+              left: "-6%", right: "-6%",
+              bottom: "-6%",
+              height: "18%",
+              background:
+                "radial-gradient(ellipse at 50% 100%, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 40%, transparent 75%)",
+              filter: "blur(2px)",
+              zIndex: 0,
+            }}
+          />
+          <div style={{ position: "relative", zIndex: 1, width: "100%", height: "100%" }}>
+            {f.node}
+          </div>
         </div>
       ))}
 
@@ -1129,34 +1144,79 @@ function CoffeeArea() {
       style={{
         background: "#18140a",
         backgroundImage:`
-          linear-gradient(90deg, rgba(200,150,40,0.045) 1px, transparent 1px),
-          linear-gradient(0deg, rgba(200,150,40,0.045) 1px, transparent 1px)
+          linear-gradient(90deg, rgba(200,150,40,0.06) 1px, transparent 1px),
+          linear-gradient(0deg, rgba(200,150,40,0.06) 1px, transparent 1px)
         `,
         backgroundSize:"10px 10px",
       }}
     >
+      {/* Round rug under the table */}
+      <div
+        aria-hidden
+        className="absolute pointer-events-none"
+        style={{
+          left: "50%", bottom: "16%",
+          transform: "translateX(-50%)",
+          width: "74%", height: "52%",
+          background: `radial-gradient(ellipse at center, ${amber}28 0%, ${amber}14 40%, transparent 70%)`,
+          border: `1px dashed ${amber}33`,
+          borderRadius: "50%",
+        }}
+      />
+
+      {/* Ceiling pendant lamp — glow + cord + shade */}
+      <div
+        aria-hidden
+        className="absolute pointer-events-none"
+        style={{
+          left: "50%", top: 0,
+          transform: "translateX(-50%)",
+          width: "44%", height: "22%",
+          background: `radial-gradient(ellipse at 50% 0%, ${amber}55 0%, ${amber}15 40%, transparent 75%)`,
+        }}
+      />
+      <div aria-hidden className="absolute" style={{ left:"50%", top:0, width:2, height:"20%", marginLeft:-1, background:"#2a2c3a" }} />
+      <div aria-hidden className="absolute"
+        style={{ left:"50%", top:"16%", width:14, height:6, marginLeft:-7,
+          background: amber, borderRadius:"0 0 6px 6px",
+          boxShadow:`0 0 8px ${amber}99, inset 0 -1px 0 rgba(0,0,0,0.4)` }} />
+
       {/* Coffee machine top-left */}
-      <div className="absolute" style={{ top:"5%", left:"4%", width:"30%", height:"45%" }}>
+      <div className="absolute" style={{ top:"8%", left:"4%", width:"28%", height:"46%" }}>
         <PixelCoffeeMaker accent={amber} />
       </div>
+
       {/* Plant top-right */}
-      <div className="absolute" style={{ top:"3%", right:"4%", width:"24%", height:"42%" }}>
+      <div className="absolute" style={{ top:"4%", right:"4%", width:"22%", height:"44%" }}>
         <PixelPlant />
       </div>
-      {/* Round table bottom-center */}
-      <div className="absolute" style={{ bottom:"8%", left:"50%", transform:"translateX(-50%)", width:"54%", height:"36%" }}>
+
+      {/* Round table, centered on the rug */}
+      <div className="absolute" style={{ bottom:"14%", left:"50%", transform:"translateX(-50%)", width:"48%", height:"34%" }}>
         <PixelRoundTable accent={amber} />
       </div>
+
+      {/* Two small stools flanking the table */}
+      <div aria-hidden className="absolute"
+        style={{ left:"10%", bottom:"20%", width:7, height:7,
+          background:"#1d2030", borderRadius:"50%",
+          boxShadow:`inset 0 0 0 1px ${amber}88, 0 2px 3px rgba(0,0,0,0.6)` }} />
+      <div aria-hidden className="absolute"
+        style={{ right:"10%", bottom:"20%", width:7, height:7,
+          background:"#1d2030", borderRadius:"50%",
+          boxShadow:`inset 0 0 0 1px ${amber}88, 0 2px 3px rgba(0,0,0,0.6)` }} />
+
       {/* Label */}
       <div
         className="absolute bottom-0.5 inset-x-0 text-center pointer-events-none"
-        style={{ fontSize:6, color:`${amber}70`, fontFamily:"ui-monospace,monospace", letterSpacing:"0.12em" }}
+        style={{ fontSize:6, color:`${amber}aa`, fontFamily:"ui-monospace,monospace", letterSpacing:"0.14em", fontWeight:"bold" }}
       >
-        BREAK
+        ☕ BREAK
       </div>
-      {/* Corner wall faces (connects to corridor walls) */}
+      {/* Corner wall-join blocks (with top-highlight for 3D) */}
       {(["top-0 left-0","top-0 right-0","bottom-0 left-0","bottom-0 right-0"] as const).map(c => (
-        <div key={c} aria-hidden className={`absolute ${c} w-[5px] h-[5px]`} style={{ background:"#07080d" }} />
+        <div key={c} aria-hidden className={`absolute ${c} w-[6px] h-[6px]`}
+          style={{ background:"#06070c", boxShadow:"inset 0 1px 0 rgba(255,255,255,0.15)" }} />
       ))}
     </div>
   );
