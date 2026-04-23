@@ -697,6 +697,82 @@ function PixelRoundTable({ accent }: { accent: string }) {
   );
 }
 
+/* ─── Wall decorations — small pixel art poster / diagram per room type ─── */
+
+/** Web room: terminal code snippet */
+function WallDecoWeb({ accent }: { accent: string }) {
+  const lines = ["#  app/page.tsx", "export default function Page() {", "  return <Hero />", "}", "$ npm run build ✓"];
+  return (
+    <svg viewBox="0 0 64 40" width="100%" height="100%" style={{ imageRendering:"pixelated" }} aria-hidden>
+      <rect x="0" y="0" width="64" height="40" fill="#0d1117" shapeRendering="crispEdges"/>
+      <rect x="0" y="0" width="64" height="1"  fill={accent} opacity="0.7" shapeRendering="crispEdges"/>
+      {/* traffic lights */}
+      {[4,10,16].map((x,i) => <rect key={i} x={x} y="3" width="3" height="2" fill={["#ff5f56","#ffbd2e","#27c93f"][i]} shapeRendering="crispEdges"/>)}
+      {lines.map((l, i) => (
+        <text key={i} x="3" y={12 + i * 6} fontSize="4" fill={i===0?"#8b949e":i===4?"#3fb950":accent} fontFamily="monospace">{l}</text>
+      ))}
+    </svg>
+  );
+}
+
+/** AI room: neural network diagram */
+function WallDecoAI({ accent }: { accent: string }) {
+  const nodes: [number, number][] = [[8,8],[8,20],[8,32],[28,5],[28,14],[28,24],[28,33],[48,14],[48,26]];
+  const edges: [number,number,number,number][] = [
+    [8,8,28,5],[8,8,28,14],[8,20,28,14],[8,20,28,24],[8,32,28,24],[8,32,28,33],
+    [28,5,48,14],[28,14,48,14],[28,24,48,26],[28,33,48,26],
+  ];
+  return (
+    <svg viewBox="0 0 56 40" width="100%" height="100%" style={{ imageRendering:"pixelated" }} aria-hidden>
+      <rect x="0" y="0" width="56" height="40" fill="#110a1e" shapeRendering="crispEdges"/>
+      {edges.map(([x1,y1,x2,y2],i) => <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={accent} strokeWidth="0.5" strokeOpacity="0.5"/>)}
+      {nodes.map(([x,y],i) => <rect key={i} x={x-2} y={y-2} width="4" height="4" fill={accent} shapeRendering="crispEdges"/>)}
+      <text x="28" y="38" fontSize="3.5" fill={accent} opacity="0.6" fontFamily="monospace" textAnchor="middle">Neural Network</text>
+    </svg>
+  );
+}
+
+/** Auto room: workflow / flowchart */
+function WallDecoAuto({ accent }: { accent: string }) {
+  return (
+    <svg viewBox="0 0 56 40" width="100%" height="100%" style={{ imageRendering:"pixelated" }} aria-hidden>
+      <rect x="0" y="0" width="56" height="40" fill="#1a0e06" shapeRendering="crispEdges"/>
+      {/* boxes */}
+      {([[4,3,20,9],[4,16,20,9],[4,29,20,9],[34,10,20,9],[34,23,20,9]] as [number,number,number,number][]).map(([x,y,w,h],i)=>(
+        <rect key={i} x={x} y={y} width={w} height={h} fill="none" stroke={accent} strokeWidth="0.8" shapeRendering="crispEdges" opacity="0.8"/>
+      ))}
+      {/* arrows */}
+      <line x1="14" y1="12" x2="14" y2="16" stroke={accent} strokeWidth="0.8" opacity="0.7"/>
+      <line x1="14" y1="25" x2="14" y2="29" stroke={accent} strokeWidth="0.8" opacity="0.7"/>
+      <line x1="24" y1="7"  x2="34" y2="14" stroke={accent} strokeWidth="0.8" opacity="0.7"/>
+      <line x1="24" y1="21" x2="34" y2="27" stroke={accent} strokeWidth="0.8" opacity="0.7"/>
+      {/* labels */}
+      <text x="14" y="9"  fontSize="3" fill={accent} fontFamily="monospace" textAnchor="middle">TRIGGER</text>
+      <text x="14" y="22" fontSize="3" fill={accent} fontFamily="monospace" textAnchor="middle">PROCESS</text>
+      <text x="14" y="35" fontSize="3" fill={accent} fontFamily="monospace" textAnchor="middle">OUTPUT</text>
+      <text x="44" y="16" fontSize="3" fill={accent} fontFamily="monospace" textAnchor="middle">n8n</text>
+      <text x="44" y="29" fontSize="3" fill={accent} fontFamily="monospace" textAnchor="middle">API</text>
+    </svg>
+  );
+}
+
+/** Agents room: voice waveform */
+function WallDecoAgents({ accent }: { accent: string }) {
+  const wave = [4,8,14,20,16,10,6,12,18,22,16,10,6,10,14,18,12,8,4,8];
+  return (
+    <svg viewBox="0 0 56 40" width="100%" height="100%" style={{ imageRendering:"pixelated" }} aria-hidden>
+      <rect x="0" y="0" width="56" height="40" fill="#061410" shapeRendering="crispEdges"/>
+      {/* waveform bars */}
+      {wave.map((h, i) => (
+        <rect key={i} x={2 + i * 2.6} y={20 - h / 2} width="2" height={h} fill={accent} opacity={0.6 + i/wave.length*0.4} shapeRendering="crispEdges"/>
+      ))}
+      {/* centre line */}
+      <line x1="2" y1="20" x2="54" y2="20" stroke={accent} strokeWidth="0.4" opacity="0.3"/>
+      <text x="28" y="36" fontSize="3.5" fill={accent} opacity="0.7" fontFamily="monospace" textAnchor="middle">VOICE AGENT ONLINE</text>
+    </svg>
+  );
+}
+
 /** Headset (on desk) */
 function PixelHeadset({ accent }: { accent: string }) {
   return (
@@ -1285,6 +1361,21 @@ function Room({
         }}
       />
 
+      {/* Wall decoration — pixel art poster on back wall, left of window */}
+      <div className="absolute pointer-events-none" aria-hidden
+        style={{ left:"4%", top:"7%", width:"20%", height:"22%",
+          zIndex:2,
+          border:`1px solid ${service.accent}44`,
+          boxShadow:`0 0 8px ${service.accent}22, inset 0 0 4px rgba(0,0,0,0.4)`,
+          borderRadius:"1px",
+          overflow:"hidden",
+        }}>
+        {service.id === "web"    && <WallDecoWeb    accent={service.accent}/>}
+        {service.id === "ai"     && <WallDecoAI     accent={service.accent}/>}
+        {service.id === "auto"   && <WallDecoAuto   accent={service.accent}/>}
+        {service.id === "agents" && <WallDecoAgents accent={service.accent}/>}
+      </div>
+
       {/* Room label — wall plaque */}
       <div className="absolute left-2 top-2 flex items-center gap-1.5 z-10">
         <span
@@ -1501,21 +1592,37 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
 function VCorridor({ accentL, accentR }: { accentL: string; accentR: string }) {
   const DOOR = 32;
   const WALL = 8;
-  // Chunky 3D wall: top light → mid → deep shadow (simulates wall cast by overhead light)
   const wallBg = "linear-gradient(180deg, #d8d2c6 0%, #a39d90 20%, #6f6860 55%, #3a3530 100%)";
   return (
     <div
-      className="relative"
+      className="relative overflow-hidden"
       style={{
-        background: "#8a8680",
+        background: "#9e9890",
         backgroundImage: `
-          linear-gradient(90deg, rgba(0,0,0,0.18) 1px, transparent 1px),
-          linear-gradient(0deg,  rgba(255,255,255,0.10) 1px, transparent 1px),
-          radial-gradient(ellipse 60% 40% at 50% 50%, rgba(255,230,160,0.10), transparent 70%)
+          linear-gradient(90deg, rgba(0,0,0,0.20) 1px, transparent 1px),
+          linear-gradient(180deg, rgba(0,0,0,0.20) 1px, transparent 1px),
+          radial-gradient(ellipse 50% 30% at 50% 50%, rgba(255,235,160,0.14), transparent 70%)
         `,
-        backgroundSize: "13px 13px, 13px 13px, 100% 100%",
+        backgroundSize: "16px 16px, 16px 16px, 100% 100%",
       }}
     >
+      {/* Ceiling lamp strip in centre of corridor */}
+      <div aria-hidden className="absolute pointer-events-none"
+        style={{ left:"50%", top:0, transform:"translateX(-50%)",
+          width:"30%", height:3,
+          background:"linear-gradient(90deg, transparent, rgba(255,245,200,0.95) 30%, rgba(255,248,220,1) 50%, rgba(255,245,200,0.95) 70%, transparent)",
+          boxShadow:"0 0 6px 2px rgba(255,230,150,0.6)", zIndex:3 }} />
+      {/* Lamp cone down */}
+      <div aria-hidden className="absolute pointer-events-none"
+        style={{ left:"50%", top:0, transform:"translateX(-50%)",
+          width:"90%", height:"100%",
+          background:"radial-gradient(ellipse 70% 60% at 50% 0%, rgba(255,235,150,0.16) 0%, transparent 70%)",
+          zIndex:2 }} />
+      {/* Edge AO shadows from room walls */}
+      <div aria-hidden className="absolute inset-y-0 left-0" style={{ width:6,
+        background:"linear-gradient(90deg, rgba(0,0,0,0.35), transparent)", zIndex:4 }} />
+      <div aria-hidden className="absolute inset-y-0 right-0" style={{ width:6,
+        background:"linear-gradient(270deg, rgba(0,0,0,0.35), transparent)", zIndex:4 }} />
       {/* LEFT WALL — above door (with inner face highlight) */}
       <div style={{ position:"absolute", left:0, top:0, width:WALL, height:`calc(50% - ${DOOR/2}px)`,
         background:wallBg,
@@ -1557,22 +1664,36 @@ function VCorridor({ accentL, accentR }: { accentL: string; accentR: string }) {
 function HCorridor({ accentT, accentB }: { accentT: string; accentB: string }) {
   const DOOR = 34;
   const WALL = 8;
-  // Top wall: light-catching top edge → wall body → floor shadow
   const wallTopBg    = "linear-gradient(180deg, #d8d2c6 0%, #a39d90 30%, #6f6860 70%, #3a3530 100%)";
   const wallBottomBg = "linear-gradient(0deg,   #d8d2c6 0%, #a39d90 30%, #6f6860 70%, #3a3530 100%)";
   return (
     <div
-      className="relative"
+      className="relative overflow-hidden"
       style={{
-        background: "#8a8680",
+        background: "#9e9890",
         backgroundImage: `
-          linear-gradient(90deg, rgba(0,0,0,0.18) 1px, transparent 1px),
-          linear-gradient(0deg,  rgba(255,255,255,0.10) 1px, transparent 1px),
-          radial-gradient(ellipse 40% 60% at 50% 50%, rgba(255,230,160,0.10), transparent 70%)
+          linear-gradient(90deg, rgba(0,0,0,0.20) 1px, transparent 1px),
+          linear-gradient(180deg, rgba(0,0,0,0.20) 1px, transparent 1px),
+          radial-gradient(ellipse 30% 50% at 50% 50%, rgba(255,235,160,0.14), transparent 70%)
         `,
-        backgroundSize: "13px 13px, 13px 13px, 100% 100%",
+        backgroundSize: "16px 16px, 16px 16px, 100% 100%",
       }}
     >
+      {/* Ceiling lamp strip in centre of corridor */}
+      <div aria-hidden className="absolute pointer-events-none"
+        style={{ top:"50%", left:0, right:0, transform:"translateY(-50%)",
+          height:"12%",
+          background:"radial-gradient(ellipse 50% 100% at 50% 50%, rgba(255,245,200,0.9) 0%, transparent 70%)",
+          zIndex:3 }} />
+      {/* Lamp glow down/up */}
+      <div aria-hidden className="absolute pointer-events-none inset-0"
+        style={{ background:"radial-gradient(ellipse 60% 80% at 50% 50%, rgba(255,235,150,0.16) 0%, transparent 70%)",
+          zIndex:2 }} />
+      {/* Edge AO from room ceilings */}
+      <div aria-hidden className="absolute inset-x-0 top-0" style={{ height:6,
+        background:"linear-gradient(180deg, rgba(0,0,0,0.35), transparent)", zIndex:4 }} />
+      <div aria-hidden className="absolute inset-x-0 bottom-0" style={{ height:6,
+        background:"linear-gradient(0deg, rgba(0,0,0,0.35), transparent)", zIndex:4 }} />
       {/* TOP WALL — left of door (with bottom-edge shadow where wall meets floor) */}
       <div style={{ position:"absolute", top:0, left:0, height:WALL, width:`calc(50% - ${DOOR/2}px)`,
         background:wallTopBg,
