@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Reveal from "./Reveal";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import TypewriterText from "./TypewriterText";
 
 /* =========================================================================
@@ -265,6 +266,8 @@ type Service = {
   floorA: string;
   floorB: string;
   items: string[];
+  /** Terminal log lines shown in the TerminalLog panel */
+  logs: string[];
   sprite: { rows: string[]; palette: Palette };
   /** multiplier for waypoint durations (<1 faster, >1 slower) so rooms desync */
   paceFactor: number;
@@ -288,6 +291,12 @@ const services: Service[] = [
       "Autenticación, pagos y bases de datos en la nube",
       "Deploy en Vercel con CI/CD",
     ],
+    logs: [
+      "Analyzing stack requirements...",
+      "npm install next@15 ✓",
+      "FILE_EDIT: /app/page.tsx · +42 lines",
+      "Build successful · Deploy ready ✓",
+    ],
     sprite: { rows: devRows, palette: devPalette },
     paceFactor: 1.0,
     startIdx: 0,
@@ -306,6 +315,12 @@ const services: Service[] = [
       "Agentes conversacionales con memoria y herramientas",
       "Orquestación multi-modelo (OpenAI, Claude, Gemini)",
       "Optimización de costes por routing inteligente",
+    ],
+    logs: [
+      "Loading knowledge base vectors...",
+      "RAG pipeline initialized ✓",
+      "Multi-model router: OpenAI→Claude→fallback",
+      "Response quality score: 94% ✓",
     ],
     sprite: { rows: aiRows, palette: aiPalette },
     paceFactor: 1.15,
@@ -326,6 +341,12 @@ const services: Service[] = [
       "Gestión automática de emails y documentos",
       "Pipelines de validación y procesamiento de datos",
     ],
+    logs: [
+      "n8n workflow triggered ✓",
+      "Webhook received: 3 events",
+      "FILE_EDIT: pipeline.json · Processing...",
+      "Emails dispatched · 100% success ✓",
+    ],
     sprite: { rows: autoRows, palette: autoPalette },
     paceFactor: 0.85,
     startIdx: 4,
@@ -344,6 +365,12 @@ const services: Service[] = [
       "Agentes internos para tareas operativas y de empresa",
       "Asistentes de voz con VAPI, Twilio y ElevenLabs",
       "Integración con CRMs y sistemas internos",
+    ],
+    logs: [
+      "Voice agent online · VAPI connected ✓",
+      "CRM sync: Salesforce linked",
+      "Memory context loaded: 2400 tokens",
+      "Agent handoff: human-in-loop ready ✓",
     ],
     sprite: { rows: agentRows, palette: agentPalette },
     paceFactor: 1.05,
@@ -591,10 +618,25 @@ function PixelFilingCabinet({ accent }: { accent: string }) {
 function PixelLamp({ accent }: { accent: string }) {
   return (
     <svg viewBox="0 0 12 30" width="100%" height="100%" style={{ imageRendering: "pixelated" }} aria-hidden>
-      {/* Shade */}
-      <rect x="1"  y="0"  width="10" height="3"  fill={accent}  opacity="0.85" shapeRendering="crispEdges" />
-      <rect x="0"  y="2"  width="12" height="4"  fill={accent}  opacity="0.65" shapeRendering="crispEdges" />
-      <rect x="3"  y="6"  width="6"  height="2"  fill={accent}  opacity="0.3"  shapeRendering="crispEdges" />
+      <defs>
+        {/* Bright inner glow at lamp bulb — warm white core */}
+        <radialGradient id="lampBulbGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stopColor="#ffffff" stopOpacity="1.0" />
+          <stop offset="30%"  stopColor="#fffbe0" stopOpacity="0.9" />
+          <stop offset="70%"  stopColor={accent}  stopOpacity="0.7" />
+          <stop offset="100%" stopColor={accent}  stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      {/* Shade body — solid vivid accent fill */}
+      <rect x="0"  y="0"  width="12" height="6"  fill={accent}  shapeRendering="crispEdges" />
+      {/* Shade top edge highlight */}
+      <rect x="1"  y="0"  width="10" height="1"  fill="#ffffff" opacity="0.45" shapeRendering="crispEdges" />
+      {/* Shade inner warm-white band */}
+      <rect x="1"  y="1"  width="10" height="2"  fill="#fffde8" opacity="0.65" shapeRendering="crispEdges" />
+      {/* Shade lower rim glow */}
+      <rect x="1"  y="4"  width="10" height="2"  fill="#ffffff" opacity="0.40" shapeRendering="crispEdges" />
+      {/* Bulb warm glow visible through shade opening */}
+      <rect x="3"  y="1"  width="6"  height="5"  fill="url(#lampBulbGlow)" shapeRendering="crispEdges" />
       {/* Pole */}
       <rect x="5"  y="7"  width="2"  height="18" fill="#1d1f2a" shapeRendering="crispEdges" />
       {/* Base */}
@@ -701,8 +743,25 @@ function getRoomFurniture(service: Service): FurniturePiece[] {
         { top: "4%",  left: "3%",   width: "11%", height: "38%", node: <PixelBookshelf accent={a} /> },
         // Plant — back-right corner
         { top: "6%",  right: "4%",  width: "7%",  height: "26%", node: <PixelPlant /> },
-        // Floor lamp — mid-right
-        { top: "34%", right: "14%", width: "5%",  height: "26%", node: <PixelLamp accent={a} /> },
+        // Floor lamp — mid-right (with floor pool glow below it)
+        {
+          top: "34%", right: "14%", width: "5%", height: "26%",
+          node: (
+            <div style={{ position: "relative", width: "100%", height: "100%" }}>
+              <PixelLamp accent={a} />
+              {/* Floor pool glow — cast ~20px below lamp base onto floor */}
+              <div aria-hidden style={{
+                position: "absolute",
+                left: "50%", top: "calc(100% + 4px)",
+                transform: "translateX(-50%)",
+                width: "240%", height: "60px",
+                background: `radial-gradient(ellipse at 50% 10%, ${a}55 0%, ${a}22 40%, transparent 75%)`,
+                filter: "blur(4px)",
+                pointerEvents: "none",
+              }} />
+            </div>
+          ),
+        },
         // Chair — in front of desk
         { top: "54%", left: "20%",  width: "11%", height: "22%", node: <PixelChair accent={a} />, zIndex: 2 },
       ];
@@ -733,6 +792,240 @@ function getRoomFurniture(service: Service): FurniturePiece[] {
   }
 }
 
+/* Badge config per pose */
+function PoseBadge({ pose }: { pose: CharPose }) {
+  const config: Record<CharPose, { dot: string; label: string }> = {
+    walking:  { dot: "#f59e0b", label: "WALKING" },
+    sitting:  { dot: "#60a5fa", label: "WORKING" },
+    "at-door":{ dot: "#34d399", label: "BREAK"   },
+    idle:     { dot: "#6b7280", label: "IDLE"     },
+    standing: { dot: "#6b7280", label: "IDLE"     },
+  };
+  const { dot, label } = config[pose] ?? config.idle;
+  return (
+    <div
+      aria-hidden
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "3px",
+        padding: "2px 5px",
+        borderRadius: "999px",
+        background: "rgba(0,0,0,0.42)",
+        border: "1px solid rgba(255,255,255,0.10)",
+        fontFamily: "ui-monospace, Menlo, Consolas, monospace",
+        fontSize: "clamp(7px, 1.1vw, 9px)",
+        color: "#e0e0e8",
+        letterSpacing: "0.08em",
+        whiteSpace: "nowrap",
+        lineHeight: 1,
+      }}
+    >
+      <span style={{
+        display: "inline-block",
+        width: 5, height: 5,
+        borderRadius: "50%",
+        background: dot,
+        boxShadow: `0 0 4px ${dot}`,
+        flexShrink: 0,
+      }} />
+      {label}
+    </div>
+  );
+}
+
+/* =========================================================================
+   TerminalLog — CRT-style activity log panel (replaces speech bubble)
+   ========================================================================= */
+function TerminalLog({
+  service,
+  onClose,
+}: {
+  service: Service;
+  onClose: () => void;
+}) {
+  const allLines = service.logs;
+  const fullText = allLines.map((l) => `> ${l}`).join("\n");
+
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+  const idxRef = useRef(0);
+
+  // Reset when service changes (different room opened)
+  useEffect(() => {
+    idxRef.current = 0;
+    setDisplayed("");
+    setDone(false);
+  }, [service.id]);
+
+  // Typewriter: advance one character every 18ms
+  useEffect(() => {
+    if (done) return;
+    if (idxRef.current >= fullText.length) {
+      setDone(true);
+      return;
+    }
+    const timer = setTimeout(() => {
+      idxRef.current += 1;
+      setDisplayed(fullText.slice(0, idxRef.current));
+    }, 18);
+    return () => clearTimeout(timer);
+  }, [displayed, done, fullText]);
+
+  return (
+    <div
+      role="dialog"
+      aria-label={`${service.title} — terminal log`}
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        position: "absolute",
+        left: "4%",
+        right: "4%",
+        top: "4%",
+        height: "55%",
+        background: "#0d0f14",
+        border: `1px solid ${service.accent}`,
+        borderRadius: "4px",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        zIndex: 30,
+        fontFamily: "ui-monospace, Menlo, Consolas, monospace",
+        boxShadow: `0 0 18px ${service.accent}44, 0 4px 24px rgba(0,0,0,0.7)`,
+      }}
+    >
+      {/* Scanline overlay */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage:
+            "repeating-linear-gradient(0deg, rgba(0,0,0,0.04) 0px, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 2px)",
+          backgroundSize: "100% 2px",
+          pointerEvents: "none",
+          zIndex: 1,
+        }}
+      />
+
+      {/* Header bar */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "4px 8px",
+          background: `${service.accent}1a`,
+          borderBottom: `1px solid ${service.accent}55`,
+          flexShrink: 0,
+          zIndex: 2,
+        }}
+      >
+        <span
+          style={{
+            color: "#4ade80",
+            fontSize: "clamp(7px, 1.15vw, 10px)",
+            letterSpacing: "0.05em",
+            lineHeight: 1.2,
+          }}
+        >
+          {`[AGENTE: ${service.title}] [ROLE: ${service.role}]`}
+          <span
+            aria-hidden
+            style={{
+              display: "inline-block",
+              width: "0.55em",
+              height: "1.1em",
+              background: "#4ade80",
+              marginLeft: "3px",
+              verticalAlign: "text-bottom",
+              animation: "termCursorBlink 1s steps(1) infinite",
+            }}
+          />
+        </span>
+        <button
+          onClick={onClose}
+          aria-label="Cerrar terminal"
+          style={{
+            background: "transparent",
+            border: `1px solid ${service.accent}88`,
+            color: service.accent,
+            fontFamily: "inherit",
+            fontSize: "clamp(7px, 1.1vw, 9px)",
+            padding: "1px 5px",
+            cursor: "pointer",
+            letterSpacing: "0.05em",
+            lineHeight: 1,
+            borderRadius: "2px",
+          }}
+        >
+          [X]
+        </button>
+      </div>
+
+      {/* Log body */}
+      <div
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          padding: "8px 10px",
+          position: "relative",
+          zIndex: 2,
+        }}
+      >
+        <pre
+          style={{
+            margin: 0,
+            color: "#a0e8a0",
+            fontSize: "clamp(7px, 1.1vw, 9px)",
+            lineHeight: 1.6,
+            whiteSpace: "pre-wrap",
+            wordBreak: "break-all",
+          }}
+        >
+          {displayed.split("\n").map((line, i) => {
+            const accentPattern = /(✓|FILE_EDIT:[^\s·]+|[\d]+%)/g;
+            const parts = line.split(accentPattern);
+            return (
+              <span key={i} style={{ display: "block" }}>
+                {parts.map((part, j) =>
+                  accentPattern.test(part) ? (
+                    <span key={j} style={{ color: service.accent, fontWeight: "bold" }}>
+                      {part}
+                    </span>
+                  ) : (
+                    <span key={j}>{part}</span>
+                  )
+                )}
+              </span>
+            );
+          })}
+        </pre>
+        {done && (
+          <div
+            style={{
+              marginTop: "6px",
+              color: "#4ade80",
+              fontSize: "clamp(7px, 1.1vw, 9px)",
+              fontFamily: "inherit",
+              letterSpacing: "0.05em",
+            }}
+          >
+            [TASK COMPLETE]
+          </div>
+        )}
+      </div>
+
+      <style jsx>{`
+        @keyframes termCursorBlink {
+          0%, 49% { opacity: 1; }
+          50%, 100% { opacity: 0; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 function Room({
   service,
   active,
@@ -745,13 +1038,8 @@ function Room({
   doorSides?: Array<"right" | "bottom" | "left" | "top">;
 }) {
   const charRef = useRef<HTMLButtonElement | null>(null);
-
-  const segments = useMemo(
-    () => [
-      { text: `— ${service.role} —\n`, className: "font-bold" },
-      ...service.items.map((it) => ({ text: `• ${it}\n` })),
-    ],
-    [service]
+  const [currentPose, setCurrentPose] = useState<CharPose>(
+    DEFAULT_WAYPOINTS[service.startIdx % DEFAULT_WAYPOINTS.length].pose
   );
 
   const furniture = useMemo(() => getRoomFurniture(service), [service]);
@@ -807,15 +1095,33 @@ function Room({
         }}
       />
 
-      {/* Wall side-corner shadows (ambient occlusion) */}
+      {/* Wall texture — subtle horizontal panel striping every ~8% of height */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0"
+        style={{
+          top: 0,
+          height: `${SPLIT}%`,
+          backgroundImage: `repeating-linear-gradient(
+            180deg,
+            transparent 0px,
+            transparent calc(8% - 1px),
+            rgba(0,0,0,0.10) calc(8% - 1px),
+            rgba(0,0,0,0.10) 8%
+          )`,
+          zIndex: 2,
+        }}
+      />
+
+      {/* Wall side-corner shadows (ambient occlusion) — thin triangular shadows at back corners */}
       <div aria-hidden className="pointer-events-none absolute top-0 left-0"
-        style={{ width: "12px", height: `${SPLIT}%`,
-          background: "linear-gradient(90deg, rgba(0,0,0,0.50) 0%, transparent 100%)",
-          zIndex: 1 }} />
+        style={{ width: "8px", height: `${SPLIT}%`,
+          background: "linear-gradient(90deg, rgba(0,0,0,0.60) 0%, rgba(0,0,0,0.20) 50%, transparent 100%)",
+          zIndex: 3 }} />
       <div aria-hidden className="pointer-events-none absolute top-0 right-0"
-        style={{ width: "12px", height: `${SPLIT}%`,
-          background: "linear-gradient(270deg, rgba(0,0,0,0.50) 0%, transparent 100%)",
-          zIndex: 1 }} />
+        style={{ width: "8px", height: `${SPLIT}%`,
+          background: "linear-gradient(270deg, rgba(0,0,0,0.60) 0%, rgba(0,0,0,0.20) 50%, transparent 100%)",
+          zIndex: 3 }} />
 
       {/* Floor ambient occlusion — wall casts shadow onto floor below */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0"
@@ -885,38 +1191,92 @@ function Room({
         }}
       />
 
-      {/* Ceiling light — small glow on back wall */}
+      {/* Ceiling light fixture — rectangular glowing strip + warm light cone onto floor */}
+      {/* Strip fixture on back wall */}
       <div
         aria-hidden
         className="pointer-events-none absolute"
         style={{
-          top: "4%",
+          top: "6%",
           left: "50%",
           transform: "translateX(-50%)",
-          width: "28%",
-          height: "8%",
-          background: `radial-gradient(ellipse at 50% 0%, ${service.accent}30 0%, transparent 80%)`,
+          width: "30%",
+          height: "4px",
+          background: `linear-gradient(90deg, transparent 0%, rgba(255,240,200,0.9) 20%, rgba(255,248,220,1) 50%, rgba(255,240,200,0.9) 80%, transparent 100%)`,
+          boxShadow: `0 0 8px 2px rgba(255,235,180,0.7), 0 0 2px 1px ${service.accent}88`,
+          borderRadius: "2px",
+          zIndex: 2,
+        }}
+      />
+      {/* Light cone fanning down from fixture — amber-white warm */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute"
+        style={{
+          top: "6%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "80%",
+          height: `${SPLIT - 6}%`,
+          background: `linear-gradient(180deg,
+            rgba(255,235,160,0.22) 0%,
+            rgba(255,235,160,0.10) 40%,
+            rgba(255,235,160,0.04) 70%,
+            transparent 100%)`,
+          clipPath: "polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%)",
+          zIndex: 1,
+        }}
+      />
+      {/* Floor illumination pool from overhead light */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute"
+        style={{
+          top: `${SPLIT}%`,
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "70%",
+          height: "30%",
+          background: `radial-gradient(ellipse at 50% 0%, rgba(255,235,160,0.18) 0%, ${service.accent}08 40%, transparent 75%)`,
+          zIndex: 1,
         }}
       />
 
-      {/* Window on back wall */}
+      {/* Window on back wall — sky-blue interior glow, visible cross-pane dividers */}
       <div
         aria-hidden
-        className="absolute"
+        className="absolute pointer-events-none"
         style={{
           right: "22%",
           top: "6%",
-          width: "18%",
-          height: "22%",
-          background: `linear-gradient(180deg, ${service.accent}28, ${service.accent}0a)`,
-          border: `2px solid ${service.accent}55`,
-          boxShadow: `inset 0 0 0 1px #00000044, 0 0 12px ${service.accent}22`,
+          width: "20%",
+          height: "25%",
+          background: `linear-gradient(160deg, #b8e4f8cc 0%, #8fd0f099 35%, #6ec6ee66 70%, #3daee833 100%)`,
+          border: `2px solid rgba(200,232,255,0.75)`,
+          boxShadow: `inset 0 0 0 1px rgba(255,255,255,0.35), inset 0 1px 0 rgba(255,255,255,0.6), 0 0 18px rgba(140,210,255,0.35), 0 0 4px rgba(140,210,255,0.5)`,
+          zIndex: 2,
         }}
       >
-        {/* Window cross */}
-        <div className="absolute inset-x-0" style={{ top: "50%", height: "1px", background: `${service.accent}55` }} />
-        <div className="absolute inset-y-0" style={{ left: "50%", width: "1px",  background: `${service.accent}55` }} />
+        {/* Horizontal divider */}
+        <div className="absolute inset-x-0" style={{ top: "48%", height: "2px", background: "rgba(180,220,255,0.7)", boxShadow: "0 0 3px rgba(180,220,255,0.5)" }} />
+        {/* Vertical divider */}
+        <div className="absolute inset-y-0" style={{ left: "48%", width: "2px", background: "rgba(180,220,255,0.7)", boxShadow: "0 0 3px rgba(180,220,255,0.5)" }} />
+        {/* Window frame outer border highlight */}
+        <div className="absolute inset-0" style={{ border: "1px solid rgba(255,255,255,0.25)", pointerEvents: "none" }} />
       </div>
+      {/* Window highlight cast on wall below window */}
+      <div
+        aria-hidden
+        className="absolute pointer-events-none"
+        style={{
+          right: "20%",
+          top: "31%",
+          width: "24%",
+          height: "8%",
+          background: "linear-gradient(180deg, rgba(180,225,255,0.18) 0%, transparent 100%)",
+          zIndex: 1,
+        }}
+      />
 
       {/* Room label — wall plaque */}
       <div className="absolute left-2 top-2 flex items-center gap-1.5 z-10">
@@ -930,6 +1290,11 @@ function Room({
         >
           {service.title}
         </span>
+      </div>
+
+      {/* Agent state badge — top-right */}
+      <div className="absolute right-2 top-2 z-10 pointer-events-none">
+        <PoseBadge pose={currentPose} />
       </div>
 
       {/* Desk + dual monitors — sits just below wall zone (SPLIT=38%) */}
@@ -984,76 +1349,13 @@ function Room({
         service={service}
         active={active}
         onToggle={onToggle}
+        onPoseChange={setCurrentPose}
         ref={charRef}
       />
 
-      {/* Speech bubble */}
+      {/* Terminal log panel */}
       {active && (
-        <div
-          role="dialog"
-          aria-label={`${service.title} — diálogo`}
-          onClick={(e) => e.stopPropagation()}
-          className="bubble absolute z-30"
-          style={{
-            left: "4%", right: "4%", top: "5%",
-            background: "#f7f7fa",
-            color: "#111218",
-            border: `3px solid ${service.accent}`,
-            boxShadow: `0 10px 0 -2px #00000040, 0 0 0 3px #00000080`,
-            padding: "10px 12px 12px",
-            borderRadius: "10px",
-            fontFamily: "ui-monospace, Menlo, Consolas, monospace",
-            fontSize: "11px",
-            lineHeight: 1.4,
-            whiteSpace: "pre-wrap",
-          }}
-        >
-          <button
-            onClick={onToggle}
-            aria-label="Cerrar diálogo"
-            className="absolute -top-2 -right-2 w-6 h-6 rounded-full text-[11px] font-bold"
-            style={{
-              background: "#f7f7fa",
-              color: "#111218",
-              border: `3px solid ${service.accent}`,
-              lineHeight: 1,
-            }}
-          >
-            ×
-          </button>
-          <TypewriterText
-            key={service.id + "-bubble"}
-            segments={segments}
-            speed={14}
-            punctuationPauseMs={60}
-            startDelay={0}
-            cursor
-            as="div"
-          />
-          {/* Bubble tail */}
-          <span
-            aria-hidden
-            className="absolute"
-            style={{
-              left: "10%", bottom: -14,
-              width: 0, height: 0,
-              borderLeft: "10px solid transparent",
-              borderRight: "10px solid transparent",
-              borderTop: `14px solid ${service.accent}`,
-            }}
-          />
-          <span
-            aria-hidden
-            className="absolute"
-            style={{
-              left: "10%", marginLeft: 2, bottom: -9,
-              width: 0, height: 0,
-              borderLeft: "7px solid transparent",
-              borderRight: "7px solid transparent",
-              borderTop: "10px solid #f7f7fa",
-            }}
-          />
-        </div>
+        <TerminalLog service={service} onClose={onToggle} />
       )}
 
       <style jsx>{`
@@ -1114,9 +1416,15 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
   service: Service;
   active: boolean;
   onToggle: () => void;
-}>(function CharacterActor({ service, active, onToggle }, ref) {
+  onPoseChange?: (pose: CharPose) => void;
+}>(function CharacterActor({ service, active, onToggle, onPoseChange }, ref) {
   const [wpIdx, setWpIdx] = useState(service.startIdx % DEFAULT_WAYPOINTS.length);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Notify parent of pose changes
+  useEffect(() => {
+    onPoseChange?.(DEFAULT_WAYPOINTS[wpIdx].pose);
+  }, [wpIdx, onPoseChange]);
 
   useEffect(() => {
     if (active) return; // pause state machine while dialog is open
