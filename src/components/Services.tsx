@@ -42,153 +42,173 @@ function spriteRects(rows: string[], palette: Palette) {
 }
 
 /* =========================================================================
-   Character sprites (Simpsons-inspired pixel art)
-   Grid: 16 wide × 22 tall.
+   Character sprites — human pixel art (16 × 22).
    Shared codes:
-     . transparent    Y yellow skin    W white    K black
-     H brown hair     D dark navy      P purple   B brown shoe
-     L blue           O orange         G green    R red
-     N belt brown     T tan (wood)     E emerald book    C red book
-     x red detail
+     . transparent    S skin light     s skin shadow    K eye / outline
+     h hair main      H hair highlight W white (eyes/shirt)
+     M mouth/lips     N shoe dark      w shoe sole
+   Character-specific codes defined per palette.
    ========================================================================= */
 
-// --- DEV (Homer-esque dad) ---------------------------------------------
+// --- DEV — male full-stack engineer ------------------------------------
+//   Brown hair, glasses, blue tee, jeans, navy sneakers.
 const devRows = [
-  "................", // 0
-  "....HHHH........", // 1
-  "...HHHHHH.......", // 2
-  "..HHYYYYHH......", // 3
-  "...YYYYYYH......", // 4
-  "..YYYYYYYY......", // 5
-  "..YWKYYWKY......", // 6 eyes
-  "..YYYYYYYY......", // 7
-  "...YKKKYY.......", // 8 mouth
-  "....YYYY........", // 9 neck
-  "...WWWWWWW......", // 10 shirt
-  "..YWWWWWWWY.....", // 11 arms
-  "..YWWWWWWWY.....", // 12
-  "...WWWWWWW......", // 13
-  "...NNNNNNN......", // 14 belt
-  "...LLLLLLL......", // 15 pants
-  "...LLL.LLL......", // 16
-  "...LLL.LLL......", // 17
-  "...LLL.LLL......", // 18
-  "...LLL.LLL......", // 19
-  "..BBBB.BBBB.....", // 20 shoes
-  "..BBBB.BBBB.....", // 21
+  "....hhhhhh......", // 0  hair top
+  "...hhhhhhhh.....", // 1  hair sides
+  "...hhSSSShh.....", // 2  hair framing forehead
+  "...hSSSSSSh.....", // 3  forehead
+  "...SKWWWWKS.....", // 4  glasses frame
+  "...SKWkWkKS.....", // 5  eyes through glasses (k = pupil)
+  "...sSSSSSSs.....", // 6  cheeks
+  "....sSMMSs......", // 7  mouth
+  ".....SSSS.......", // 8  neck
+  "....BBBBBB......", // 9  collar
+  "...BBBBBBBB.....", // 10 shoulders
+  "..SBBBBBBBBS....", // 11 arms + hands
+  "..SBBBBBBBBS....", // 12
+  "...BBBBBBBB.....", // 13 torso
+  "...JJJJJJJJ.....", // 14 belt/waist
+  "...JJJJJJJJ.....", // 15 pants top
+  "...JJJ..JJJ.....", // 16 legs split
+  "...JJJ..JJJ.....", // 17
+  "...jjj..jjj.....", // 18 pants shadow
+  "..NNNN..NNNN....", // 19 shoes
+  "..NNNN..NNNN....", // 20
+  "..wwww..wwww....", // 21 rubber soles
 ];
 const devPalette: Palette = {
-  Y: "#FFD90F",
-  H: "#4A2A10",
-  W: "#F5F5F7",
-  K: "#101014",
-  N: "#3A2410",
-  L: "#2A5CC4",
-  B: "#3A2410",
+  S: "#eecaa4", // skin light
+  s: "#c69b77", // skin shadow
+  h: "#4a2c15", // hair
+  K: "#1a1a1a", // glasses / outline
+  k: "#2a3a55", // pupil
+  W: "#f5f1e8", // lens white
+  M: "#8a4030", // lips/beard
+  B: "#2563eb", // blue tee
+  J: "#2a3f5a", // jeans
+  j: "#1a2a3e", // jeans shadow
+  N: "#15192a", // sneaker
+  w: "#e6e0d0", // sneaker sole
 };
 
-// --- AI (elegant woman with tall bouffant) -----------------------------
+// --- AI — female AI architect ------------------------------------------
+//   Dark hair tied back, blazer over white blouse, pencil skirt, heels.
 const aiRows = [
-  "....DDDD........", // 0 bouffant top
-  "...DDDDDD.......", // 1
-  "..DDDDDDDD......", // 2
-  "..DDDDDDDD......", // 3
-  "..DDxxxxDD......", // 4 green hair band
-  "..DYYYYYYD......", // 5 head
-  "..DYWKYWKY......", // 6 eyes
-  "..YYYYYYYY......", // 7
-  "..YYYxxYY.......", // 8 red lips
-  "...YYWWYY.......", // 9 neck + pearls
-  "..GGGGGGGG......", // 10 dress top
-  "..GGGWGGGG......", // 11 belt accent
-  "..YGGGGGGY......", // 12 arms out
-  "...GGGGGG.......", // 13 waist
-  "...GGGGGG.......", // 14
-  "....GGGG........", // 15 skirt
-  "....GGGG........", // 16
-  "....YGGY........", // 17 legs
-  "....YGGY........", // 18
-  "....YYYY........", // 19
-  "...GGG.GGG......", // 20 heels
-  "...GG...GG......", // 21
+  "....hhhhhh......", // 0  hair crown
+  "...hhhhhhhh.....", // 1  hair sides
+  "...hhhhhhhh.....", // 2  hair
+  "...hhSSSShh.....", // 3  forehead under bangs
+  "...hSSSSSSh.....", // 4  forehead
+  "...SSKWWKSS.....", // 5  eyes (K lashes, W whites)
+  "...sSSSSSSs.....", // 6  cheeks
+  "....sSMMSs......", // 7  lips
+  ".....SSPS.......", // 8  neck + pearl
+  "....VVVVVV......", // 9  blazer collar
+  "...VVWxxWVV.....", // 10 blazer lapels + blouse + buttons
+  "..SVVWWWWVVS....", // 11 arms + blouse
+  "..SVVVVVVVVS....", // 12 arms closed
+  "...VVVVVVVV.....", // 13 blazer waist
+  "...DDDDDDDD.....", // 14 pencil skirt top
+  "...DDDDDDDD.....", // 15 skirt
+  "...DDDDDDDD.....", // 16 skirt hem
+  "....SSSSSS......", // 17 bare legs top
+  "....SS..SS......", // 18 legs split
+  "....SS..SS......", // 19
+  "...XXX..XXX.....", // 20 heels top
+  "...XX....XX.....", // 21 heel tip
 ];
 const aiPalette: Palette = {
-  Y: "#FFD90F",
-  D: "#1C1A30",
-  W: "#F5F5F7",
+  S: "#eecaa4",
+  s: "#c69b77",
+  h: "#1c1208", // near-black brown
   K: "#101014",
-  G: "#2E8C54",
-  x: "#D23030",
+  W: "#f0eee8", // blouse / eye whites
+  M: "#b03244", // red lips
+  V: "#2a2a44", // navy blazer
+  D: "#14142a", // darker skirt
+  x: "#2a2a44", // buttons (same as blazer for subtle)
+  P: "#e8e4d8", // pearl
+  X: "#0a0a12", // heels
 };
 
-// --- AUTOMATION (Bart-like kid with slingshot) --------------------------
+// --- AUTO — male automation engineer -----------------------------------
+//   Sandy brown short hair, orange henley, olive cargo pants, brown sneakers.
 const autoRows = [
-  "..H.H.H.........", // 0 spikes
-  "..HHHHH.........", // 1
-  ".HHHHHHH........", // 2
-  "..YYYYYYH.......", // 3 head
-  "..YYYYYYY.......", // 4
-  "..YWKYYWKY......", // 5 eyes
-  "..YYYYYYYY......", // 6
-  "...YKKKKY.......", // 7 big grin
-  "....YYYY........", // 8 neck
-  "...OOOOOO.......", // 9 orange shirt
-  "..YOOOOOOY.T....", // 10 arm + slingshot stick
-  "..YOOOOOOY.TT...", // 11
-  "..YOOOOOOY.T....", // 12
-  "...OOOOOO.......", // 13
-  "...LLLLLL.......", // 14 blue shorts
-  "...LLL.LLL......", // 15
-  "...LLL.LLL......", // 16
-  "....YY.YY.......", // 17 legs (bare yellow)
-  "....YY.YY.......", // 18
-  "....YY.YY.......", // 19
-  "...WWW.WWW......", // 20 sneakers
-  "...LLL.LLL......", // 21 sole stripe
+  "....hhhhhh......", // 0  hair
+  "...hhhhhhhh.....", // 1
+  "...hhSSSShh.....", // 2  forehead
+  "...hSSSSSSh.....", // 3
+  "...SSKWWKSS.....", // 4  eyes
+  "...sSSSSSSs.....", // 5  cheeks
+  "....sSMMSs......", // 6  smile
+  ".....SSSS.......", // 7  neck
+  "....OOxxOO......", // 8  henley neckline (x = button placket)
+  "...OOOOOOOO.....", // 9  shoulders
+  "..SOOOOOOOOS....", // 10 arms
+  "..SOOOOOOOOS....", // 11
+  "...OOOOOOOO.....", // 12 torso
+  "...OOOOOOOO.....", // 13 hem
+  "...GGGGGGGG.....", // 14 belt line
+  "...GGGGGGGG.....", // 15 cargo pants top
+  "...GGG..GGG.....", // 16 legs split
+  "...GGG..GGG.....", // 17
+  "...ggg..ggg.....", // 18 pants shadow
+  "..CCCC..CCCC....", // 19 shoes
+  "..CCCC..CCCC....", // 20
+  "..wwww..wwww....", // 21 soles
 ];
 const autoPalette: Palette = {
-  Y: "#FFD90F",
-  H: "#6A3A10",
-  W: "#F5F5F7",
-  K: "#101014",
-  O: "#E86418",
-  L: "#2A5CC4",
-  T: "#9A6A30",
+  S: "#eecaa4",
+  s: "#c69b77",
+  h: "#6a401c", // sandy brown
+  K: "#1a1a1a",
+  W: "#f5f1e8",
+  M: "#8a4030",
+  O: "#ea580c", // orange
+  x: "#b8450a", // orange shadow / placket
+  G: "#3e4030", // olive cargo
+  g: "#2a2c20", // cargo shadow
+  C: "#5a3a20", // brown sneaker
+  w: "#d8d0c0",
 };
 
-// --- AGENT (Lisa-like studious girl with book) --------------------------
+// --- AGENT — female voice/agents specialist ---------------------------
+//   Long auburn hair, red blouse, black pencil skirt, pumps (headset drawn separately).
 const agentRows = [
-  "....PPPP..PP....", // 0 ponytail
-  "...PPPPPPPPP....", // 1
-  "..PPYYYYYYPP....", // 2 bangs
-  "..PYYYYYYYP.....", // 3
-  "..YYWKYYWKY.....", // 4 eyes with glasses
-  "..YKYYKYYKY.....", // 5 glasses bridges
-  "..YYYYYYYYY.....", // 6
-  "...YYxxYYY......", // 7 lips
-  "....YYYY........", // 8 neck
-  "...RRRWRRR......", // 9 collar
-  "..RRRRRRRRR.EE..", // 10 dress + book
-  "..YRRRRRRRYEEE..", // 11
-  "..YRRRRRRRYEE...", // 12
-  "..RRRRRRRRR.....", // 13
-  "...RRRRRRR......", // 14
-  "...RRRRRRR......", // 15 skirt
-  "...YYR.RYY......", // 16 legs
-  "...WYR.RYW......", // 17 socks
-  "...WYY.YYW......", // 18
-  "...WWW.WWW......", // 19
-  "..KKKK.KKKK.....", // 20 mary janes
-  "..KKKK.KKKK.....", // 21
+  "....HHHHHH......", // 0  hair crown
+  "..HHHHHHHHHH....", // 1  hair wide
+  ".HHHHSSSSHHHH...", // 2  forehead framed
+  ".HHHSSSSSSHH....", // 3
+  ".HHSSKWWKSSHH...", // 4  eyes + hair around face
+  ".HHsSSSSSSsH....", // 5  cheeks
+  "..HHsSMMSsHH....", // 6  lips
+  "...HHSSSSHH.....", // 7  neck + hair falling
+  "....RRRRRR......", // 8  blouse collar
+  "...RRRRRRRR.....", // 9  shoulders
+  "..SRRRRRRRRS....", // 10 arms + hands
+  "..SRRRRRRRRS....", // 11
+  "...RRRRRRRR.....", // 12 torso
+  "...RRRRRRRR.....", // 13 waist
+  "...NNNNNNNN.....", // 14 belt
+  "...DDDDDDDD.....", // 15 skirt top
+  "...DDDDDDDD.....", // 16 skirt
+  "...DDDDDDDD.....", // 17 hem
+  "....SSSSSS......", // 18 bare legs top
+  "....SS..SS......", // 19 legs
+  "...XXX..XXX.....", // 20 heels
+  "...XX....XX.....", // 21 heel tip
 ];
 const agentPalette: Palette = {
-  Y: "#FFD90F",
-  P: "#6A2F8C",
-  W: "#F5F5F7",
-  K: "#101014",
-  R: "#D22A2A",
-  E: "#2FAE72",
-  x: "#9A2020",
+  S: "#eecaa4",
+  s: "#c69b77",
+  H: "#5a2a14", // auburn
+  K: "#141018",
+  W: "#f0eee8",
+  M: "#b03244", // red lips
+  R: "#d23844", // red blouse
+  N: "#1a1a22", // belt
+  D: "#14141e", // skirt
+  X: "#0a0a12", // heels
 };
 
 /* =========================================================================
