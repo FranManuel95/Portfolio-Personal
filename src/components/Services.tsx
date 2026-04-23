@@ -235,22 +235,26 @@ type Waypoint = {
   zIndex?: number;
 };
 
-/* Shared loop: walk → sit at desk → stand → stroll → head toward coffee door → return */
+/* Shared loop — 8 waypoints with X+Y movement for 3D depth illusion.
+   bottomPct controls depth: low (near 3%) = front of room = larger scale;
+   high (near 38%) = back of room near wall = smaller scale + higher zIndex layer. */
 const DEFAULT_WAYPOINTS: Waypoint[] = [
-  // 0 — morning stroll right
-  { leftPct: 72, bottomPct: 4, pose: "walking",  dwellMs: 500,  travelMs: 4200, flip: false },
-  // 1 — turn around, head to chair
-  { leftPct: 26, bottomPct: 4, pose: "walking",  dwellMs: 200,  travelMs: 3400, flip: true  },
-  // 2 — sit at desk (legs hidden by desk thanks to lower zIndex + shorter height)
-  { leftPct: 26, topPct: 44, pose: "sitting",   dwellMs: 7500, travelMs: 800,  flip: false, zIndex: 0 },
-  // 3 — stand up
-  { leftPct: 30, bottomPct: 4, pose: "standing", dwellMs: 400,  travelMs: 500,  flip: false },
-  // 4 — coffee break — walk to the right-side door
-  { leftPct: 84, bottomPct: 40, pose: "at-door", dwellMs: 2800, travelMs: 2600, flip: false },
-  // 5 — walk back toward centre of room
-  { leftPct: 50, bottomPct: 4, pose: "walking",  dwellMs: 600,  travelMs: 3000, flip: true  },
-  // 6 — idle near plant / corner
-  { leftPct: 8,  bottomPct: 4, pose: "idle",     dwellMs: 1600, travelMs: 2600, flip: true  },
+  // 0 — stroll across mid-depth
+  { leftPct: 70, bottomPct: 10, pose: "walking",  dwellMs: 400,  travelMs: 3800, flip: false },
+  // 1 — head toward back-left (desk area, going away from viewer)
+  { leftPct: 28, bottomPct: 28, pose: "walking",  dwellMs: 300,  travelMs: 2800, flip: true  },
+  // 2 — sit at desk (topPct anchors above desk, zIndex behind it)
+  { leftPct: 26, topPct: 44,   pose: "sitting",   dwellMs: 7500, travelMs: 700,  flip: false, zIndex: 0 },
+  // 3 — stand up, still near desk (back area)
+  { leftPct: 30, bottomPct: 26, pose: "standing", dwellMs: 300,  travelMs: 450,  flip: false },
+  // 4 — walk diagonally forward-right toward door opening
+  { leftPct: 82, bottomPct: 6,  pose: "at-door",  dwellMs: 2600, travelMs: 2800, flip: false },
+  // 5 — walk back toward front-centre (coming toward viewer)
+  { leftPct: 44, bottomPct: 4,  pose: "walking",  dwellMs: 500,  travelMs: 2800, flip: true  },
+  // 6 — wander to far corner (back-left, near plant)
+  { leftPct: 8,  bottomPct: 30, pose: "idle",     dwellMs: 1800, travelMs: 3200, flip: true  },
+  // 7 — come back forward
+  { leftPct: 36, bottomPct: 8,  pose: "walking",  dwellMs: 400,  travelMs: 2600, flip: false },
 ];
 
 /* =========================================================================
@@ -1166,30 +1170,33 @@ function Room({
         }}
       />
 
-      {/* Floor tile grid — warm wood planks */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0"
-        style={{
-          top: `${SPLIT}%`,
-          bottom: 0,
-          backgroundImage: `
-            linear-gradient(90deg, rgba(0,0,0,0.18) 1px, transparent 1px),
-            linear-gradient(0deg,  rgba(255,255,255,0.12) 1px, transparent 1px)
+      {/* Floor — warm oak planks running left-right with perspective compression */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0"
+        style={{ top:`${SPLIT}%`, bottom:0,
+          backgroundImage:`
+            linear-gradient(90deg,
+              rgba(0,0,0,0.22) 1px, transparent 1px,
+              transparent 27px,
+              rgba(255,255,255,0.07) 27px, transparent 28px),
+            linear-gradient(180deg,
+              rgba(0,0,0,0.0) 0px,
+              rgba(0,0,0,0.0) 8px,
+              rgba(0,0,0,0.14) 9px,
+              rgba(0,0,0,0.0) 10px)
           `,
           backgroundSize: "28px 10px",
-        }}
-      />
-      {/* Subtle floor vignette — warm light from wall above */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0"
-        style={{
-          top: `${SPLIT}%`,
-          bottom: 0,
-          background: `linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0.10) 100%)`,
-        }}
-      />
+        }} />
+      {/* Floor vignette — brighter near wall, darker at front */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0"
+        style={{ top:`${SPLIT}%`, bottom:0,
+          background:`linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.18) 100%)` }} />
+
+      {/* Sunlight beam from window — triangular warm cone on floor */}
+      <div aria-hidden className="pointer-events-none absolute"
+        style={{ right:"4%", top:`${SPLIT}%`, bottom:0, width:"42%",
+          background:`linear-gradient(160deg, rgba(255,240,160,0.20) 0%, rgba(255,235,140,0.06) 50%, transparent 75%)`,
+          clipPath:"polygon(55% 0%, 100% 0%, 45% 100%, 0% 100%)",
+          zIndex:0 }} />
 
       {/* Ceiling light fixture — rectangular glowing strip + warm light cone onto floor */}
       {/* Strip fixture on back wall */}
@@ -1443,6 +1450,13 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
   const isStatic  = isSitting || wp.pose === "idle" || wp.pose === "at-door";
   const travelMs  = Math.round(wp.travelMs * service.paceFactor);
 
+  // Depth scale: bottomPct near 0 = close (front) = large; near 38 = far (back) = small.
+  // Clamped: front 1.12 → back 0.78. Also adjusts zIndex so nearer chars render on top.
+  const rawBottom = wp.topPct !== undefined ? 18 : (wp.bottomPct ?? 4);
+  const depthT    = Math.min(1, rawBottom / 36);           // 0 (close) → 1 (far)
+  const depthScale = isSitting ? 1.0 : 1.12 - depthT * 0.34; // 1.12 (front) → 0.78 (back)
+  const depthZ     = wp.zIndex ?? Math.round(5 - depthT * 3); // z 5 (front) → 2 (back)
+
   const positionStyle: React.CSSProperties = wp.topPct !== undefined
     ? { top: `${wp.topPct}%`,    bottom: "auto" }
     : { bottom: `${wp.bottomPct ?? 4}%`, top: "auto" };
@@ -1458,13 +1472,17 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
         ...positionStyle,
         width: "14%",
         height: isSitting ? "26%" : "42%",
-        zIndex: wp.zIndex ?? 3,
-        transition: `left ${travelMs}ms linear, top ${travelMs}ms ease-out, bottom ${travelMs}ms ease-out, height ${Math.min(travelMs, 600)}ms ease-out`,
+        zIndex: depthZ,
+        transition: `left ${travelMs}ms linear, top ${travelMs}ms ease-out, bottom ${travelMs}ms ease-out, height ${Math.min(travelMs, 600)}ms ease-out, transform ${Math.min(travelMs, 1200)}ms ease-out`,
       }}
     >
       <span
         className={`agent-inner ${isStatic ? "no-bob" : "agent-bob"}`}
-        style={{ transform: wp.flip ? "scaleX(-1)" : "scaleX(1)", transition: "transform 0.2s" }}
+        style={{
+          transform: `scaleX(${wp.flip ? -depthScale : depthScale}) scaleY(${depthScale})`,
+          transformOrigin: "50% 100%",
+          transition: "transform 0.25s ease-out",
+        }}
       >
         <span className="agent-shadow" aria-hidden />
         <PixelSprite
