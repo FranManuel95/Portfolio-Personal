@@ -212,6 +212,47 @@ const agentPalette: Palette = {
 };
 
 /* =========================================================================
+   Character behavior state machine — waypoints the agent visits in a loop.
+   Each waypoint defines: where to go, how long travel takes, and what pose
+   to adopt while there (walk / sit / stand / idle / at-door).
+   ========================================================================= */
+type CharPose = "walking" | "sitting" | "standing" | "idle" | "at-door";
+type Waypoint = {
+  /** horizontal position inside the room (0–100 %) */
+  leftPct: number;
+  /** vertical position anchored from bottom (default) or top if topPct is set */
+  bottomPct?: number;
+  topPct?: number;
+  pose: CharPose;
+  /** ms the actor dwells at this waypoint after arriving */
+  dwellMs: number;
+  /** ms to travel from the previous waypoint (sets CSS transition duration) */
+  travelMs: number;
+  /** true = facing left (mirror sprite) */
+  flip?: boolean;
+  /** optional zIndex override (e.g. behind desk when sitting) */
+  zIndex?: number;
+};
+
+/* Shared loop: walk → sit at desk → stand → stroll → head toward coffee door → return */
+const DEFAULT_WAYPOINTS: Waypoint[] = [
+  // 0 — morning stroll right
+  { leftPct: 72, bottomPct: 4, pose: "walking",  dwellMs: 500,  travelMs: 4200, flip: false },
+  // 1 — turn around, head to chair
+  { leftPct: 26, bottomPct: 4, pose: "walking",  dwellMs: 200,  travelMs: 3400, flip: true  },
+  // 2 — sit at desk (legs hidden by desk thanks to lower zIndex + shorter height)
+  { leftPct: 26, topPct: 44, pose: "sitting",   dwellMs: 7500, travelMs: 800,  flip: false, zIndex: 0 },
+  // 3 — stand up
+  { leftPct: 30, bottomPct: 4, pose: "standing", dwellMs: 400,  travelMs: 500,  flip: false },
+  // 4 — coffee break — walk to the right-side door
+  { leftPct: 84, bottomPct: 40, pose: "at-door", dwellMs: 2800, travelMs: 2600, flip: false },
+  // 5 — walk back toward centre of room
+  { leftPct: 50, bottomPct: 4, pose: "walking",  dwellMs: 600,  travelMs: 3000, flip: true  },
+  // 6 — idle near plant / corner
+  { leftPct: 8,  bottomPct: 4, pose: "idle",     dwellMs: 1600, travelMs: 2600, flip: true  },
+];
+
+/* =========================================================================
    Service definitions
    ========================================================================= */
 type Service = {
@@ -225,8 +266,10 @@ type Service = {
   floorB: string;
   items: string[];
   sprite: { rows: string[]; palette: Palette };
-  /** ms duration for the walk loop so each agent moves at a slightly different pace */
-  walkDuration: number;
+  /** multiplier for waypoint durations (<1 faster, >1 slower) so rooms desync */
+  paceFactor: number;
+  /** initial waypoint index (staggers where each agent starts in the loop) */
+  startIdx: number;
 };
 
 const services: Service[] = [
@@ -246,7 +289,8 @@ const services: Service[] = [
       "Deploy en Vercel con CI/CD",
     ],
     sprite: { rows: devRows, palette: devPalette },
-    walkDuration: 9,
+    paceFactor: 1.0,
+    startIdx: 0,
   },
   {
     id: "ai",
@@ -264,7 +308,8 @@ const services: Service[] = [
       "Optimización de costes por routing inteligente",
     ],
     sprite: { rows: aiRows, palette: aiPalette },
-    walkDuration: 11,
+    paceFactor: 1.15,
+    startIdx: 2,
   },
   {
     id: "auto",
@@ -282,7 +327,8 @@ const services: Service[] = [
       "Pipelines de validación y procesamiento de datos",
     ],
     sprite: { rows: autoRows, palette: autoPalette },
-    walkDuration: 7,
+    paceFactor: 0.85,
+    startIdx: 4,
   },
   {
     id: "agents",
@@ -300,7 +346,8 @@ const services: Service[] = [
       "Integración con CRMs y sistemas internos",
     ],
     sprite: { rows: agentRows, palette: agentPalette },
-    walkDuration: 10,
+    paceFactor: 1.05,
+    startIdx: 6,
   },
 ];
 
@@ -690,13 +737,11 @@ function Room({
   service,
   active,
   onToggle,
-  idx,
   doorSides = [],
 }: {
   service: Service;
   active: boolean;
   onToggle: () => void;
-  idx: number;
   doorSides?: Array<"right" | "bottom" | "left" | "top">;
 }) {
   const charRef = useRef<HTMLButtonElement | null>(null);
@@ -934,30 +979,13 @@ function Room({
         </div>
       ))}
 
-      {/* Character (clickable) */}
-      <button
+      {/* Character — waypoint-driven state machine (walk / sit / stand / idle / at-door) */}
+      <CharacterActor
+        service={service}
+        active={active}
+        onToggle={onToggle}
         ref={charRef}
-        onClick={(e) => { e.stopPropagation(); onToggle(); }}
-        aria-label={`Abrir diálogo de ${service.title}`}
-        className={`agent group absolute focus:outline-none ${active ? "is-active" : ""}`}
-        style={{
-          left: 0,
-          bottom: "3%",
-          width: "14%",
-          height: "42%",
-          "--walk-duration": `${service.walkDuration}s`,
-          "--bob-delay": `${idx * 0.3}s`,
-        } as React.CSSProperties}
-      >
-        <span className="agent-bob block w-full h-full">
-          <span className="agent-shadow" aria-hidden />
-          <PixelSprite
-            rows={service.sprite.rows}
-            palette={service.sprite.palette}
-            className="agent-sprite"
-          />
-        </span>
-      </button>
+      />
 
       {/* Speech bubble */}
       {active && (
@@ -1029,54 +1057,117 @@ function Room({
       )}
 
       <style jsx>{`
-        .agent {
-          animation: walk var(--walk-duration, 9s) linear infinite;
-          will-change: transform;
+        :global(.agent) {
+          will-change: transform, left, top, bottom, height;
           cursor: pointer;
-          z-index: 3;
+          position: absolute;
+          outline: none;
+          background: transparent;
+          border: none;
+          padding: 0;
         }
-        .agent.is-active { animation-play-state: paused; }
-        .agent-bob {
-          animation: bob 0.55s steps(2) infinite;
-          animation-delay: var(--bob-delay, 0s);
+        :global(.agent-inner) {
+          position: relative;
+          width: 100%; height: 100%;
+          display: block;
         }
-        .agent.is-active .agent-bob { animation-play-state: paused; }
-        .agent-shadow {
+        :global(.agent-bob) {
+          animation: bob 0.5s steps(2) infinite;
+        }
+        :global(.agent-bob.no-bob) { animation: none; }
+        :global(.agent-shadow) {
           position: absolute;
           left: 14%; right: 14%; bottom: -4%;
           height: 8%;
           background: radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,0.55), transparent 70%);
           filter: blur(1px);
+          transition: opacity .3s ease;
         }
-        .agent-sprite {
+        :global(.agent.is-sitting .agent-shadow) { opacity: 0; }
+        :global(.agent-sprite) {
           position: relative;
           z-index: 1;
           display: block;
           width: 100%; height: 100%;
           filter: drop-shadow(0 2px 0 rgba(0,0,0,0.35));
-          transition: transform 0.2s var(--ease);
         }
-        .agent:hover .agent-sprite { transform: translateY(-2px) scale(1.04); }
-        @keyframes walk {
-          0%   { left: 2%;  transform: scaleX(1);  }
-          48%  { left: 80%; transform: scaleX(1);  }
-          50%  { left: 80%; transform: scaleX(-1); }
-          98%  { left: 2%;  transform: scaleX(-1); }
-          100% { left: 2%;  transform: scaleX(1);  }
-        }
+        :global(.agent:hover .agent-sprite) { filter: drop-shadow(0 3px 0 rgba(0,0,0,0.5)) brightness(1.08); }
         @keyframes bob {
           0%   { transform: translateY(0);   }
           50%  { transform: translateY(-2px);}
           100% { transform: translateY(0);   }
         }
         @media (prefers-reduced-motion: reduce) {
-          .agent, .agent-bob { animation: none !important; }
-          .agent { left: 40% !important; }
+          :global(.agent-bob) { animation: none !important; }
         }
       `}</style>
     </div>
   );
 }
+
+/* =========================================================================
+   CharacterActor — waypoint-driven state machine
+   Advances through DEFAULT_WAYPOINTS on a setTimeout chain. Pauses when
+   the dialog is open (active=true). CSS transitions handle smooth travel.
+   ========================================================================= */
+const CharacterActor = React.forwardRef<HTMLButtonElement, {
+  service: Service;
+  active: boolean;
+  onToggle: () => void;
+}>(function CharacterActor({ service, active, onToggle }, ref) {
+  const [wpIdx, setWpIdx] = useState(service.startIdx % DEFAULT_WAYPOINTS.length);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (active) return; // pause state machine while dialog is open
+    const wp = DEFAULT_WAYPOINTS[wpIdx];
+    const total = Math.round((wp.travelMs + wp.dwellMs) * service.paceFactor);
+    timerRef.current = setTimeout(() => {
+      setWpIdx((p) => (p + 1) % DEFAULT_WAYPOINTS.length);
+    }, total);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [wpIdx, active, service.paceFactor]);
+
+  const wp = DEFAULT_WAYPOINTS[wpIdx];
+  const isSitting = wp.pose === "sitting";
+  const isStatic  = isSitting || wp.pose === "idle" || wp.pose === "at-door";
+  const travelMs  = Math.round(wp.travelMs * service.paceFactor);
+
+  const positionStyle: React.CSSProperties = wp.topPct !== undefined
+    ? { top: `${wp.topPct}%`,    bottom: "auto" }
+    : { bottom: `${wp.bottomPct ?? 4}%`, top: "auto" };
+
+  return (
+    <button
+      ref={ref}
+      onClick={(e) => { e.stopPropagation(); onToggle(); }}
+      aria-label={`Abrir diálogo de ${service.title}`}
+      className={`agent ${active ? "is-active" : ""} ${isSitting ? "is-sitting" : ""}`}
+      style={{
+        left: `${wp.leftPct}%`,
+        ...positionStyle,
+        width: "14%",
+        height: isSitting ? "26%" : "42%",
+        zIndex: wp.zIndex ?? 3,
+        transition: `left ${travelMs}ms linear, top ${travelMs}ms ease-out, bottom ${travelMs}ms ease-out, height ${Math.min(travelMs, 600)}ms ease-out`,
+      }}
+    >
+      <span
+        className={`agent-inner ${isStatic ? "no-bob" : "agent-bob"}`}
+        style={{ transform: wp.flip ? "scaleX(-1)" : "scaleX(1)", transition: "transform 0.2s" }}
+      >
+        <span className="agent-shadow" aria-hidden />
+        <PixelSprite
+          rows={service.sprite.rows}
+          palette={service.sprite.palette}
+          className="agent-sprite"
+        />
+      </span>
+    </button>
+  );
+});
 
 /* =========================================================================
    VCorridor — vertical strip (column) separating left room from right room
@@ -1387,14 +1478,14 @@ const Services = () => {
                   }}
                 >
                   {/* Row 1 */}
-                  <Room service={services[0]} idx={0}
+                  <Room service={services[0]}
                     active={activeId === services[0].id}
                     onToggle={() => setActiveId(p => p === services[0].id ? null : services[0].id)}
                     doorSides={["right","bottom"]} />
 
                   <VCorridor accentL={services[0].accent} accentR={services[1].accent} />
 
-                  <Room service={services[1]} idx={1}
+                  <Room service={services[1]}
                     active={activeId === services[1].id}
                     onToggle={() => setActiveId(p => p === services[1].id ? null : services[1].id)}
                     doorSides={["left","bottom"]} />
@@ -1405,14 +1496,14 @@ const Services = () => {
                   <HCorridor accentT={services[1].accent} accentB={services[3].accent} />
 
                   {/* Row 3 */}
-                  <Room service={services[2]} idx={2}
+                  <Room service={services[2]}
                     active={activeId === services[2].id}
                     onToggle={() => setActiveId(p => p === services[2].id ? null : services[2].id)}
                     doorSides={["right","top"]} />
 
                   <VCorridor accentL={services[2].accent} accentR={services[3].accent} />
 
-                  <Room service={services[3]} idx={3}
+                  <Room service={services[3]}
                     active={activeId === services[3].id}
                     onToggle={() => setActiveId(p => p === services[3].id ? null : services[3].id)}
                     doorSides={["left","top"]} />
