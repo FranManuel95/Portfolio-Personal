@@ -594,8 +594,67 @@ function PixelHeadset({ accent }: { accent: string }) {
 }
 
 /* =========================================================================
-   Room (one office)
+   Room (one office) — top-down angled view, connected layout
    ========================================================================= */
+type FurniturePiece = {
+  top?: string; bottom?: string; left?: string; right?: string;
+  width: string; height: string;
+  node: React.ReactNode;
+  zIndex?: number;
+};
+
+function getRoomFurniture(service: Service): FurniturePiece[] {
+  const a = service.accent;
+  switch (service.id) {
+    case "web":
+      return [
+        // Server rack — back-right corner
+        { top: "5%",  right: "4%",  width: "9%",  height: "34%", node: <PixelServerRack accent={a} /> },
+        // Plant — back-left corner
+        { top: "5%",  left: "4%",   width: "7%",  height: "28%", node: <PixelPlant /> },
+        // Coffee maker — mid-right, on desk edge
+        { top: "42%", right: "6%",  width: "8%",  height: "18%", node: <PixelCoffeeMaker accent={a} /> },
+        // Chair — in front of desk
+        { top: "54%", left: "22%",  width: "11%", height: "22%", node: <PixelChair accent={a} />, zIndex: 2 },
+      ];
+    case "ai":
+      return [
+        // Bookshelf — back-left
+        { top: "4%",  left: "3%",   width: "11%", height: "38%", node: <PixelBookshelf accent={a} /> },
+        // Plant — back-right corner
+        { top: "6%",  right: "4%",  width: "7%",  height: "26%", node: <PixelPlant /> },
+        // Floor lamp — mid-right
+        { top: "34%", right: "14%", width: "5%",  height: "26%", node: <PixelLamp accent={a} /> },
+        // Chair — in front of desk
+        { top: "54%", left: "20%",  width: "11%", height: "22%", node: <PixelChair accent={a} />, zIndex: 2 },
+      ];
+    case "auto":
+      return [
+        // Filing cabinet — back-right
+        { top: "4%",  right: "4%",  width: "9%",  height: "30%", node: <PixelFilingCabinet accent={a} /> },
+        // Plant — back-left
+        { top: "6%",  left: "4%",   width: "7%",  height: "26%", node: <PixelPlant /> },
+        // Coffee maker — mid-left corner
+        { top: "42%", left: "5%",   width: "8%",  height: "18%", node: <PixelCoffeeMaker accent={a} /> },
+        // Chair — in front of desk
+        { top: "54%", left: "24%",  width: "11%", height: "22%", node: <PixelChair accent={a} />, zIndex: 2 },
+      ];
+    case "agents":
+      return [
+        // Whiteboard — back-left wall
+        { top: "4%",  left: "3%",   width: "15%", height: "28%", node: <PixelWhiteboard accent={a} /> },
+        // Plant — back-right corner
+        { top: "6%",  right: "4%",  width: "7%",  height: "26%", node: <PixelPlant /> },
+        // Round meeting table — mid-right area
+        { top: "50%", right: "5%",  width: "16%", height: "18%", node: <PixelRoundTable accent={a} /> },
+        // Chair — in front of desk
+        { top: "54%", left: "20%",  width: "11%", height: "22%", node: <PixelChair accent={a} />, zIndex: 2 },
+      ];
+    default:
+      return [];
+  }
+}
+
 function Room({
   service,
   active,
@@ -609,7 +668,6 @@ function Room({
 }) {
   const charRef = useRef<HTMLButtonElement | null>(null);
 
-  // Typewriter segments: title in accent + items joined
   const segments = useMemo(
     () => [
       { text: `— ${service.role} —\n`, className: "font-bold" },
@@ -618,90 +676,148 @@ function Room({
     [service]
   );
 
+  const furniture = useMemo(() => getRoomFurniture(service), [service]);
+
+  // Wall/floor split at 32%
+  const SPLIT = 32;
+
   return (
     <div
-      className="room relative overflow-hidden rounded-2xl border border-[var(--line)]"
+      className="room relative overflow-hidden"
       style={{
-        background: `linear-gradient(180deg, ${service.wallA} 0%, ${service.wallB} 62%, ${service.floorA} 62%, ${service.floorB} 100%)`,
-        aspectRatio: "16 / 11",
+        background: `linear-gradient(180deg,
+          ${service.wallA} 0%,
+          ${service.wallB} ${SPLIT}%,
+          ${service.floorA} ${SPLIT}%,
+          ${service.floorB} 100%)`,
+        aspectRatio: "4 / 3",
         boxShadow: active
-          ? `0 0 0 1px ${service.accent}55, 0 20px 60px -20px ${service.accent}55`
-          : undefined,
-        transition: "box-shadow .35s var(--ease)",
+          ? `inset 0 0 0 2px ${service.accent}88`
+          : `inset 0 0 0 1px rgba(255,255,255,0.04)`,
+        transition: "box-shadow .3s var(--ease)",
       }}
     >
+      {/* Baseboard — thin strip at wall/floor junction */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0"
+        style={{
+          top: `${SPLIT}%`,
+          height: "3px",
+          background: `linear-gradient(90deg, ${service.accent}33, ${service.accent}11 50%, ${service.accent}33)`,
+          boxShadow: `0 1px 4px ${service.accent}44`,
+        }}
+      />
+
       {/* Floor tile grid */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0"
         style={{
-          top: "62%",
+          top: `${SPLIT}%`,
           bottom: 0,
           backgroundImage: `
-            linear-gradient(90deg, rgba(0,0,0,0.22) 1px, transparent 1px),
-            linear-gradient(0deg, rgba(255,255,255,0.04) 1px, transparent 1px)
+            linear-gradient(90deg, rgba(0,0,0,0.18) 1px, transparent 1px),
+            linear-gradient(0deg,  rgba(255,255,255,0.035) 1px, transparent 1px)
           `,
-          backgroundSize: "28px 14px, 28px 14px",
+          backgroundSize: "18px 9px",
           mixBlendMode: "overlay",
         }}
       />
 
-      {/* Wall plaque with title */}
-      <div className="absolute left-3 top-3 flex items-center gap-2 z-10">
+      {/* Ceiling light — small glow on back wall */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute"
+        style={{
+          top: "4%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "28%",
+          height: "8%",
+          background: `radial-gradient(ellipse at 50% 0%, ${service.accent}30 0%, transparent 80%)`,
+        }}
+      />
+
+      {/* Window on back wall */}
+      <div
+        aria-hidden
+        className="absolute"
+        style={{
+          right: "22%",
+          top: "6%",
+          width: "18%",
+          height: "22%",
+          background: `linear-gradient(180deg, ${service.accent}28, ${service.accent}0a)`,
+          border: `2px solid ${service.accent}55`,
+          boxShadow: `inset 0 0 0 1px #00000044, 0 0 12px ${service.accent}22`,
+        }}
+      >
+        {/* Window cross */}
+        <div className="absolute inset-x-0" style={{ top: "50%", height: "1px", background: `${service.accent}55` }} />
+        <div className="absolute inset-y-0" style={{ left: "50%", width: "1px",  background: `${service.accent}55` }} />
+      </div>
+
+      {/* Room label — wall plaque */}
+      <div className="absolute left-2 top-2 flex items-center gap-1.5 z-10">
         <span
-          className="inline-block w-2 h-2 rounded-sm"
-          style={{ background: service.accent, boxShadow: `0 0 8px ${service.accent}` }}
+          className="inline-block w-1.5 h-1.5 rounded-sm"
+          style={{ background: service.accent, boxShadow: `0 0 6px ${service.accent}` }}
         />
         <span
-          className="text-[11px] font-semibold tracking-wide uppercase"
-          style={{ color: service.accent, letterSpacing: "0.08em" }}
+          className="text-[10px] font-semibold tracking-widest uppercase"
+          style={{ color: service.accent, letterSpacing: "0.1em" }}
         >
           {service.title}
         </span>
       </div>
 
-      {/* "Window" pattern on back wall (decor) */}
-      <div
-        aria-hidden
-        className="absolute"
-        style={{
-          right: "8%",
-          top: "12%",
-          width: "22%",
-          height: "28%",
-          background: `linear-gradient(180deg, ${service.accent}22, ${service.accent}08)`,
-          border: `2px solid ${service.accent}44`,
-          boxShadow: `inset 0 0 0 2px #00000033`,
-        }}
-      />
-
-      {/* Desk + monitor */}
+      {/* Desk + dual monitors */}
       <div
         className="absolute"
-        style={{ left: "8%", top: "38%", width: "34%", height: "28%" }}
+        style={{ left: "18%", top: "28%", width: "52%", height: "26%", zIndex: 1 }}
       >
         <DeskAndMonitor accent={service.accent} />
       </div>
 
+      {/* Headset on desk (agents room only) */}
+      {service.id === "agents" && (
+        <div className="absolute" style={{ left: "56%", top: "38%", width: "8%", height: "10%", zIndex: 2 }}>
+          <PixelHeadset accent={service.accent} />
+        </div>
+      )}
+
+      {/* Furniture pieces */}
+      {furniture.map((f, i) => (
+        <div
+          key={i}
+          aria-hidden
+          className="absolute pointer-events-none"
+          style={{
+            top: f.top, bottom: f.bottom,
+            left: f.left, right: f.right,
+            width: f.width, height: f.height,
+            zIndex: f.zIndex ?? 1,
+          }}
+        >
+          {f.node}
+        </div>
+      ))}
+
       {/* Character (clickable) */}
       <button
         ref={charRef}
-        onClick={(e) => {
-          e.stopPropagation();
-          onToggle();
-        }}
+        onClick={(e) => { e.stopPropagation(); onToggle(); }}
         aria-label={`Abrir diálogo de ${service.title}`}
         className={`agent group absolute focus:outline-none ${active ? "is-active" : ""}`}
-        style={
-          {
-            left: 0,
-            bottom: "4%",
-            width: "16%",
-            height: "46%",
-            "--walk-duration": `${service.walkDuration}s`,
-            "--bob-delay": `${idx * 0.3}s`,
-          } as React.CSSProperties
-        }
+        style={{
+          left: 0,
+          bottom: "3%",
+          width: "14%",
+          height: "42%",
+          "--walk-duration": `${service.walkDuration}s`,
+          "--bob-delay": `${idx * 0.3}s`,
+        } as React.CSSProperties}
       >
         <span className="agent-bob block w-full h-full">
           <span className="agent-shadow" aria-hidden />
@@ -719,20 +835,18 @@ function Room({
           role="dialog"
           aria-label={`${service.title} — diálogo`}
           onClick={(e) => e.stopPropagation()}
-          className="bubble absolute z-20"
+          className="bubble absolute z-30"
           style={{
-            left: "4%",
-            right: "4%",
-            top: "6%",
+            left: "4%", right: "4%", top: "5%",
             background: "#f7f7fa",
             color: "#111218",
             border: `3px solid ${service.accent}`,
             boxShadow: `0 10px 0 -2px #00000040, 0 0 0 3px #00000080`,
-            padding: "12px 14px 14px",
+            padding: "10px 12px 12px",
             borderRadius: "10px",
             fontFamily: "ui-monospace, Menlo, Consolas, monospace",
-            fontSize: "12px",
-            lineHeight: 1.35,
+            fontSize: "11px",
+            lineHeight: 1.4,
             whiteSpace: "pre-wrap",
           }}
         >
@@ -763,10 +877,8 @@ function Room({
             aria-hidden
             className="absolute"
             style={{
-              left: "12%",
-              bottom: -14,
-              width: 0,
-              height: 0,
+              left: "10%", bottom: -14,
+              width: 0, height: 0,
               borderLeft: "10px solid transparent",
               borderRight: "10px solid transparent",
               borderTop: `14px solid ${service.accent}`,
@@ -776,14 +888,11 @@ function Room({
             aria-hidden
             className="absolute"
             style={{
-              left: "12%",
-              marginLeft: 2,
-              bottom: -9,
-              width: 0,
-              height: 0,
+              left: "10%", marginLeft: 2, bottom: -9,
+              width: 0, height: 0,
               borderLeft: "7px solid transparent",
               borderRight: "7px solid transparent",
-              borderTop: `10px solid #f7f7fa`,
+              borderTop: "10px solid #f7f7fa",
             }}
           />
         </div>
@@ -794,83 +903,45 @@ function Room({
           animation: walk var(--walk-duration, 9s) linear infinite;
           will-change: transform;
           cursor: pointer;
+          z-index: 3;
         }
-        .agent.is-active {
-          animation-play-state: paused;
-        }
+        .agent.is-active { animation-play-state: paused; }
         .agent-bob {
           animation: bob 0.55s steps(2) infinite;
           animation-delay: var(--bob-delay, 0s);
         }
-        .agent.is-active .agent-bob {
-          animation-play-state: paused;
-        }
+        .agent.is-active .agent-bob { animation-play-state: paused; }
         .agent-shadow {
           position: absolute;
-          left: 14%;
-          right: 14%;
-          bottom: -4%;
+          left: 14%; right: 14%; bottom: -4%;
           height: 8%;
-          background: radial-gradient(
-            50% 50% at 50% 50%,
-            rgba(0, 0, 0, 0.55),
-            transparent 70%
-          );
+          background: radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,0.55), transparent 70%);
           filter: blur(1px);
         }
         .agent-sprite {
           position: relative;
           z-index: 1;
           display: block;
-          width: 100%;
-          height: 100%;
-          filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35));
+          width: 100%; height: 100%;
+          filter: drop-shadow(0 2px 0 rgba(0,0,0,0.35));
           transition: transform 0.2s var(--ease);
         }
-        .agent:hover .agent-sprite {
-          transform: translateY(-2px) scale(1.04);
-        }
+        .agent:hover .agent-sprite { transform: translateY(-2px) scale(1.04); }
         @keyframes walk {
-          0% {
-            left: 2%;
-            transform: scaleX(1);
-          }
-          48% {
-            left: 78%;
-            transform: scaleX(1);
-          }
-          50% {
-            left: 78%;
-            transform: scaleX(-1);
-          }
-          98% {
-            left: 2%;
-            transform: scaleX(-1);
-          }
-          100% {
-            left: 2%;
-            transform: scaleX(1);
-          }
+          0%   { left: 2%;  transform: scaleX(1);  }
+          48%  { left: 80%; transform: scaleX(1);  }
+          50%  { left: 80%; transform: scaleX(-1); }
+          98%  { left: 2%;  transform: scaleX(-1); }
+          100% { left: 2%;  transform: scaleX(1);  }
         }
         @keyframes bob {
-          0% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-2px);
-          }
-          100% {
-            transform: translateY(0);
-          }
+          0%   { transform: translateY(0);   }
+          50%  { transform: translateY(-2px);}
+          100% { transform: translateY(0);   }
         }
         @media (prefers-reduced-motion: reduce) {
-          .agent,
-          .agent-bob {
-            animation: none !important;
-          }
-          .agent {
-            left: 40% !important;
-          }
+          .agent, .agent-bob { animation: none !important; }
+          .agent { left: 40% !important; }
         }
       `}</style>
     </div>
