@@ -316,32 +316,279 @@ function PixelSprite({
 }
 
 /* =========================================================================
-   Simple pixel desk + monitor (inline SVG, themed)
+   Furniture components (pixel art, top-down side view)
    ========================================================================= */
+
+/** Dual-monitor desk */
 function DeskAndMonitor({ accent }: { accent: string }) {
   return (
-    <svg
-      viewBox="0 0 40 24"
-      width="100%"
-      height="100%"
-      style={{ imageRendering: "pixelated" }}
-      aria-hidden
-    >
-      {/* Monitor */}
-      <rect x="10" y="2" width="20" height="12" fill="#15161c" shapeRendering="crispEdges" />
-      <rect x="11" y="3" width="18" height="10" fill={accent} opacity="0.18" shapeRendering="crispEdges" />
-      <rect x="12" y="4" width="10" height="1" fill={accent} shapeRendering="crispEdges" />
-      <rect x="12" y="6" width="14" height="1" fill={accent} opacity="0.7" shapeRendering="crispEdges" />
-      <rect x="12" y="8" width="8" height="1" fill={accent} opacity="0.85" shapeRendering="crispEdges" />
-      <rect x="12" y="10" width="12" height="1" fill={accent} opacity="0.55" shapeRendering="crispEdges" />
-      {/* Monitor stand */}
-      <rect x="18" y="14" width="4" height="3" fill="#0d0e13" shapeRendering="crispEdges" />
-      <rect x="14" y="17" width="12" height="1" fill="#0d0e13" shapeRendering="crispEdges" />
-      {/* Desk */}
-      <rect x="4" y="18" width="32" height="3" fill="#2a1a0e" shapeRendering="crispEdges" />
-      <rect x="4" y="21" width="32" height="1" fill="#1a0f08" shapeRendering="crispEdges" />
-      <rect x="5" y="22" width="2" height="2" fill="#1a0f08" shapeRendering="crispEdges" />
-      <rect x="33" y="22" width="2" height="2" fill="#1a0f08" shapeRendering="crispEdges" />
+    <svg viewBox="0 0 58 28" width="100%" height="100%" style={{ imageRendering: "pixelated" }} aria-hidden>
+      {/* Monitor L */}
+      <rect x="3"  y="1" width="18" height="13" fill="#15161c" shapeRendering="crispEdges" />
+      <rect x="4"  y="2" width="16" height="11" fill={accent}  opacity="0.15" shapeRendering="crispEdges" />
+      <rect x="5"  y="3" width="9"  height="1"  fill={accent}  shapeRendering="crispEdges" />
+      <rect x="5"  y="5" width="12" height="1"  fill={accent}  opacity="0.7"  shapeRendering="crispEdges" />
+      <rect x="5"  y="7" width="7"  height="1"  fill={accent}  opacity="0.85" shapeRendering="crispEdges" />
+      <rect x="5"  y="9" width="10" height="1"  fill={accent}  opacity="0.55" shapeRendering="crispEdges" />
+      <rect x="10" y="14" width="3" height="3"  fill="#0d0e13" shapeRendering="crispEdges" />
+      <rect x="7"  y="17" width="9" height="1"  fill="#0d0e13" shapeRendering="crispEdges" />
+      {/* Monitor R */}
+      <rect x="37" y="1" width="18" height="13" fill="#15161c" shapeRendering="crispEdges" />
+      <rect x="38" y="2" width="16" height="11" fill={accent}  opacity="0.15" shapeRendering="crispEdges" />
+      <rect x="39" y="3" width="12" height="1"  fill={accent}  shapeRendering="crispEdges" />
+      <rect x="39" y="5" width="8"  height="1"  fill={accent}  opacity="0.7"  shapeRendering="crispEdges" />
+      <rect x="39" y="7" width="10" height="1"  fill={accent}  opacity="0.85" shapeRendering="crispEdges" />
+      <rect x="39" y="9" width="6"  height="1"  fill={accent}  opacity="0.55" shapeRendering="crispEdges" />
+      <rect x="45" y="14" width="3" height="3"  fill="#0d0e13" shapeRendering="crispEdges" />
+      <rect x="42" y="17" width="9" height="1"  fill="#0d0e13" shapeRendering="crispEdges" />
+      {/* Keyboard */}
+      <rect x="19" y="19" width="20" height="3" fill="#1d1f2a" shapeRendering="crispEdges" />
+      <rect x="20" y="20" width="18" height="1" fill={accent}  opacity="0.2"  shapeRendering="crispEdges" />
+      {/* Mouse */}
+      <rect x="40" y="19" width="4"  height="3" fill="#252840" shapeRendering="crispEdges" />
+      <rect x="41" y="19" width="1"  height="1" fill={accent}  opacity="0.5"  shapeRendering="crispEdges" />
+      {/* Desk surface */}
+      <rect x="0"  y="18" width="58" height="4" fill="#2a1a0e" shapeRendering="crispEdges" />
+      <rect x="0"  y="22" width="58" height="1" fill="#1a0f08" shapeRendering="crispEdges" />
+      {/* Legs */}
+      <rect x="2"  y="23" width="3"  height="5" fill="#1a0f08" shapeRendering="crispEdges" />
+      <rect x="53" y="23" width="3"  height="5" fill="#1a0f08" shapeRendering="crispEdges" />
+    </svg>
+  );
+}
+
+/** Office chair */
+function PixelChair({ accent }: { accent: string }) {
+  return (
+    <svg viewBox="0 0 16 20" width="100%" height="100%" style={{ imageRendering: "pixelated" }} aria-hidden>
+      {/* Headrest */}
+      <rect x="5"  y="0" width="6"  height="2"  fill="#252840" shapeRendering="crispEdges" />
+      {/* Backrest */}
+      <rect x="3"  y="1" width="10" height="8"  fill="#1d2030" shapeRendering="crispEdges" />
+      <rect x="4"  y="2" width="8"  height="6"  fill={accent}  opacity="0.18" shapeRendering="crispEdges" />
+      {/* Armrests */}
+      <rect x="1"  y="8" width="2"  height="4"  fill="#151620" shapeRendering="crispEdges" />
+      <rect x="13" y="8" width="2"  height="4"  fill="#151620" shapeRendering="crispEdges" />
+      {/* Seat */}
+      <rect x="2"  y="9" width="12" height="5"  fill="#1d2030" shapeRendering="crispEdges" />
+      <rect x="3"  y="10" width="10" height="3" fill={accent}  opacity="0.13" shapeRendering="crispEdges" />
+      {/* Center pole */}
+      <rect x="7"  y="14" width="2" height="3"  fill="#0d0e13" shapeRendering="crispEdges" />
+      {/* Star base */}
+      <rect x="4"  y="17" width="8" height="1"  fill="#0d0e13" shapeRendering="crispEdges" />
+      <rect x="7"  y="16" width="2" height="4"  fill="#0d0e13" shapeRendering="crispEdges" />
+      <rect x="2"  y="18" width="3" height="1"  fill="#0d0e13" shapeRendering="crispEdges" />
+      <rect x="11" y="18" width="3" height="1"  fill="#0d0e13" shapeRendering="crispEdges" />
+    </svg>
+  );
+}
+
+/** Potted plant */
+function PixelPlant() {
+  return (
+    <svg viewBox="0 0 14 22" width="100%" height="100%" style={{ imageRendering: "pixelated" }} aria-hidden>
+      {/* Leaves */}
+      <rect x="2"  y="4"  width="5" height="5"  fill="#2d7a30" shapeRendering="crispEdges" />
+      <rect x="7"  y="3"  width="5" height="5"  fill="#3a9a40" shapeRendering="crispEdges" />
+      <rect x="4"  y="1"  width="5" height="5"  fill="#3a9a40" shapeRendering="crispEdges" />
+      <rect x="3"  y="7"  width="3" height="2"  fill="#4ab050" shapeRendering="crispEdges" />
+      <rect x="8"  y="6"  width="3" height="2"  fill="#4ab050" shapeRendering="crispEdges" />
+      <rect x="5"  y="2"  width="1" height="1"  fill="#60c060" shapeRendering="crispEdges" />
+      <rect x="9"  y="4"  width="1" height="1"  fill="#60c060" shapeRendering="crispEdges" />
+      {/* Stem */}
+      <rect x="6"  y="8"  width="2" height="5"  fill="#2d7a30" shapeRendering="crispEdges" />
+      {/* Pot rim */}
+      <rect x="2"  y="13" width="10" height="2" fill="#7a4a28" shapeRendering="crispEdges" />
+      {/* Pot body */}
+      <rect x="3"  y="15" width="8" height="6"  fill="#5a3820" shapeRendering="crispEdges" />
+      <rect x="4"  y="15" width="6" height="2"  fill="#2a1a08" shapeRendering="crispEdges" />
+      <rect x="4"  y="19" width="6" height="1"  fill="#3a2010" shapeRendering="crispEdges" />
+    </svg>
+  );
+}
+
+/** Bookshelf */
+function PixelBookshelf({ accent }: { accent: string }) {
+  const B = ["#d23030","#2a8cd2","#d2a030","#602a8c","#2a8c50","#c06020"];
+  return (
+    <svg viewBox="0 0 24 32" width="100%" height="100%" style={{ imageRendering: "pixelated" }} aria-hidden>
+      {/* Frame */}
+      <rect x="0"  y="0"  width="24" height="32" fill="#2a1a0e" shapeRendering="crispEdges" />
+      <rect x="2"  y="2"  width="20" height="28" fill="#1a0f08" shapeRendering="crispEdges" />
+      {/* Shelves */}
+      <rect x="1"  y="11" width="22" height="2"  fill="#2a1a0e" shapeRendering="crispEdges" />
+      <rect x="1"  y="21" width="22" height="2"  fill="#2a1a0e" shapeRendering="crispEdges" />
+      {/* Books top */}
+      <rect x="3"  y="3"  width="3" height="8"   fill={B[0]}   shapeRendering="crispEdges" />
+      <rect x="6"  y="4"  width="2" height="7"   fill={B[1]}   shapeRendering="crispEdges" />
+      <rect x="8"  y="3"  width="3" height="8"   fill={B[2]}   shapeRendering="crispEdges" />
+      <rect x="11" y="5"  width="2" height="6"   fill={B[3]}   shapeRendering="crispEdges" />
+      <rect x="13" y="3"  width="3" height="8"   fill={B[4]}   shapeRendering="crispEdges" />
+      <rect x="16" y="4"  width="4" height="7"   fill={B[5]}   shapeRendering="crispEdges" />
+      {/* Books middle */}
+      <rect x="3"  y="13" width="4" height="8"   fill={B[2]}   shapeRendering="crispEdges" />
+      <rect x="7"  y="14" width="3" height="7"   fill={B[0]}   shapeRendering="crispEdges" />
+      <rect x="10" y="13" width="2" height="8"   fill={B[5]}   shapeRendering="crispEdges" />
+      <rect x="12" y="14" width="4" height="7"   fill={accent} opacity="0.9" shapeRendering="crispEdges" />
+      <rect x="16" y="13" width="3" height="8"   fill={B[3]}   shapeRendering="crispEdges" />
+      {/* Books bottom */}
+      <rect x="3"  y="23" width="5" height="7"   fill={B[1]}   shapeRendering="crispEdges" />
+      <rect x="8"  y="24" width="3" height="6"   fill={B[4]}   shapeRendering="crispEdges" />
+      <rect x="11" y="23" width="4" height="7"   fill={B[0]}   shapeRendering="crispEdges" />
+      <rect x="15" y="24" width="6" height="6"   fill={accent} opacity="0.7" shapeRendering="crispEdges" />
+    </svg>
+  );
+}
+
+/** Server rack */
+function PixelServerRack({ accent }: { accent: string }) {
+  return (
+    <svg viewBox="0 0 16 32" width="100%" height="100%" style={{ imageRendering: "pixelated" }} aria-hidden>
+      <rect x="0" y="0"  width="16" height="32" fill="#0d0e13" shapeRendering="crispEdges" />
+      <rect x="1" y="1"  width="14" height="30" fill="#15161c" shapeRendering="crispEdges" />
+      {[0,1,2,3,4,5,6].map(i => (
+        <React.Fragment key={i}>
+          <rect x="2"  y={2 + i * 4} width="12" height="3"  fill="#1d1f2a" shapeRendering="crispEdges" />
+          <rect x="3"  y={3 + i * 4} width="5"  height="1"  fill={accent}  opacity="0.55" shapeRendering="crispEdges" />
+          <rect x="13" y={3 + i * 4} width="1"  height="1"  fill={i % 3 === 0 ? "#30d060" : accent} shapeRendering="crispEdges" />
+        </React.Fragment>
+      ))}
+      {/* Power strip */}
+      <rect x="2"  y="30" width="12" height="1"  fill={accent} opacity="0.25" shapeRendering="crispEdges" />
+    </svg>
+  );
+}
+
+/** Standing whiteboard */
+function PixelWhiteboard({ accent }: { accent: string }) {
+  return (
+    <svg viewBox="0 0 28 26" width="100%" height="100%" style={{ imageRendering: "pixelated" }} aria-hidden>
+      {/* Frame */}
+      <rect x="0"  y="0"  width="28" height="20" fill="#2a2a3a" shapeRendering="crispEdges" />
+      {/* Surface */}
+      <rect x="1"  y="1"  width="26" height="18" fill="#eeeef6" shapeRendering="crispEdges" />
+      {/* Content */}
+      <rect x="3"  y="3"  width="8"  height="5"  fill={accent} opacity="0.45" shapeRendering="crispEdges" />
+      <rect x="13" y="3"  width="8"  height="5"  fill={accent} opacity="0.28" shapeRendering="crispEdges" />
+      <rect x="8"  y="8"  width="2"  height="3"  fill={accent} opacity="0.55" shapeRendering="crispEdges" />
+      <rect x="17" y="8"  width="2"  height="3"  fill={accent} opacity="0.38" shapeRendering="crispEdges" />
+      <rect x="3"  y="13" width="22" height="1"  fill="#88889a" opacity="0.4" shapeRendering="crispEdges" />
+      <rect x="3"  y="15" width="15" height="1"  fill="#88889a" opacity="0.3" shapeRendering="crispEdges" />
+      {/* Tray */}
+      <rect x="1"  y="18" width="26" height="2"  fill="#1a1a28" shapeRendering="crispEdges" />
+      <rect x="3"  y="18" width="2"  height="1"  fill={accent} opacity="0.7" shapeRendering="crispEdges" />
+      {/* Legs */}
+      <rect x="5"  y="20" width="3"  height="6"  fill="#2a2a3a" shapeRendering="crispEdges" />
+      <rect x="20" y="20" width="3"  height="6"  fill="#2a2a3a" shapeRendering="crispEdges" />
+      <rect x="3"  y="24" width="6"  height="2"  fill="#2a2a3a" shapeRendering="crispEdges" />
+      <rect x="19" y="24" width="6"  height="2"  fill="#2a2a3a" shapeRendering="crispEdges" />
+    </svg>
+  );
+}
+
+/** Filing cabinet (2 drawers) */
+function PixelFilingCabinet({ accent }: { accent: string }) {
+  return (
+    <svg viewBox="0 0 14 26" width="100%" height="100%" style={{ imageRendering: "pixelated" }} aria-hidden>
+      <rect x="0"  y="0"  width="14" height="26" fill="#1d2030" shapeRendering="crispEdges" />
+      {/* Drawer 1 */}
+      <rect x="1"  y="1"  width="12" height="11" fill="#252840" shapeRendering="crispEdges" />
+      <rect x="1"  y="1"  width="12" height="1"  fill="#2e3050" shapeRendering="crispEdges" />
+      <rect x="4"  y="5"  width="6"  height="2"  fill={accent}  opacity="0.45" shapeRendering="crispEdges" />
+      <rect x="5"  y="5"  width="4"  height="1"  fill={accent}  shapeRendering="crispEdges" />
+      {/* Divider */}
+      <rect x="0"  y="12" width="14" height="2"  fill="#15161c" shapeRendering="crispEdges" />
+      {/* Drawer 2 */}
+      <rect x="1"  y="14" width="12" height="11" fill="#252840" shapeRendering="crispEdges" />
+      <rect x="1"  y="14" width="12" height="1"  fill="#2e3050" shapeRendering="crispEdges" />
+      <rect x="4"  y="18" width="6"  height="2"  fill={accent}  opacity="0.45" shapeRendering="crispEdges" />
+      <rect x="5"  y="18" width="4"  height="1"  fill={accent}  shapeRendering="crispEdges" />
+      {/* Base */}
+      <rect x="0"  y="25" width="14" height="1"  fill="#0d0e13" shapeRendering="crispEdges" />
+    </svg>
+  );
+}
+
+/** Floor lamp */
+function PixelLamp({ accent }: { accent: string }) {
+  return (
+    <svg viewBox="0 0 12 30" width="100%" height="100%" style={{ imageRendering: "pixelated" }} aria-hidden>
+      {/* Shade */}
+      <rect x="1"  y="0"  width="10" height="3"  fill={accent}  opacity="0.85" shapeRendering="crispEdges" />
+      <rect x="0"  y="2"  width="12" height="4"  fill={accent}  opacity="0.65" shapeRendering="crispEdges" />
+      <rect x="3"  y="6"  width="6"  height="2"  fill={accent}  opacity="0.3"  shapeRendering="crispEdges" />
+      {/* Pole */}
+      <rect x="5"  y="7"  width="2"  height="18" fill="#1d1f2a" shapeRendering="crispEdges" />
+      {/* Base */}
+      <rect x="3"  y="25" width="6"  height="2"  fill="#252838" shapeRendering="crispEdges" />
+      <rect x="2"  y="27" width="8"  height="3"  fill="#1d1f2a" shapeRendering="crispEdges" />
+    </svg>
+  );
+}
+
+/** Coffee machine */
+function PixelCoffeeMaker({ accent }: { accent: string }) {
+  return (
+    <svg viewBox="0 0 14 20" width="100%" height="100%" style={{ imageRendering: "pixelated" }} aria-hidden>
+      {/* Body */}
+      <rect x="1"  y="1"  width="12" height="13" fill="#1d1f2a" shapeRendering="crispEdges" />
+      <rect x="2"  y="0"  width="10" height="2"  fill="#252838" shapeRendering="crispEdges" />
+      {/* Display */}
+      <rect x="2"  y="2"  width="10" height="4"  fill={accent}  opacity="0.35" shapeRendering="crispEdges" />
+      <rect x="3"  y="3"  width="4"  height="2"  fill={accent}  opacity="0.6"  shapeRendering="crispEdges" />
+      {/* Buttons */}
+      <rect x="2"  y="7"  width="2"  height="2"  fill={accent}  shapeRendering="crispEdges" />
+      <rect x="5"  y="7"  width="2"  height="2"  fill="#30d060" shapeRendering="crispEdges" />
+      <rect x="8"  y="7"  width="2"  height="2"  fill="#d03030" shapeRendering="crispEdges" />
+      {/* Spout */}
+      <rect x="4"  y="11" width="6"  height="2"  fill="#252838" shapeRendering="crispEdges" />
+      {/* Cup */}
+      <rect x="3"  y="14" width="8"  height="5"  fill="#2a1a08" shapeRendering="crispEdges" />
+      <rect x="4"  y="15" width="6"  height="2"  fill={accent}  opacity="0.55" shapeRendering="crispEdges" />
+      <rect x="11" y="15" width="2"  height="3"  fill="#2a1a08" shapeRendering="crispEdges" />
+      {/* Steam */}
+      <rect x="5"  y="0"  width="1"  height="1"  fill={accent}  opacity="0.4"  shapeRendering="crispEdges" />
+      <rect x="8"  y="0"  width="1"  height="1"  fill={accent}  opacity="0.4"  shapeRendering="crispEdges" />
+    </svg>
+  );
+}
+
+/** Small round meeting table */
+function PixelRoundTable({ accent }: { accent: string }) {
+  return (
+    <svg viewBox="0 0 26 18" width="100%" height="100%" style={{ imageRendering: "pixelated" }} aria-hidden>
+      {/* Shadow */}
+      <rect x="2"  y="14" width="22" height="2"  fill="#000"    opacity="0.2"  shapeRendering="crispEdges" />
+      {/* Tabletop edge */}
+      <rect x="1"  y="4"  width="24" height="8"  fill="#3a2010" shapeRendering="crispEdges" />
+      {/* Tabletop surface */}
+      <rect x="2"  y="3"  width="22" height="8"  fill="#4a2a14" shapeRendering="crispEdges" />
+      <rect x="2"  y="3"  width="22" height="1"  fill="#5a3418" shapeRendering="crispEdges" />
+      {/* Surface gloss */}
+      <rect x="8"  y="5"  width="10" height="4"  fill={accent}  opacity="0.12" shapeRendering="crispEdges" />
+      {/* Leg */}
+      <rect x="12" y="11" width="2"  height="6"  fill="#1a0f08" shapeRendering="crispEdges" />
+      <rect x="9"  y="15" width="8"  height="2"  fill="#1a0f08" shapeRendering="crispEdges" />
+    </svg>
+  );
+}
+
+/** Headset (on desk) */
+function PixelHeadset({ accent }: { accent: string }) {
+  return (
+    <svg viewBox="0 0 18 14" width="100%" height="100%" style={{ imageRendering: "pixelated" }} aria-hidden>
+      {/* Headband */}
+      <rect x="3"  y="1"  width="12" height="2"  fill="#1d1f2a" shapeRendering="crispEdges" />
+      {/* Ear cups */}
+      <rect x="1"  y="2"  width="4"  height="6"  fill={accent}  opacity="0.85" shapeRendering="crispEdges" />
+      <rect x="13" y="2"  width="4"  height="6"  fill={accent}  opacity="0.85" shapeRendering="crispEdges" />
+      <rect x="2"  y="3"  width="2"  height="4"  fill={accent}  opacity="0.4"  shapeRendering="crispEdges" />
+      <rect x="14" y="3"  width="2"  height="4"  fill={accent}  opacity="0.4"  shapeRendering="crispEdges" />
+      {/* Mic arm */}
+      <rect x="5"  y="6"  width="4"  height="1"  fill="#1d1f2a" shapeRendering="crispEdges" />
+      <rect x="5"  y="7"  width="2"  height="5"  fill="#1d1f2a" shapeRendering="crispEdges" />
+      {/* Mic ball */}
+      <rect x="4"  y="11" width="3"  height="3"  fill={accent}  shapeRendering="crispEdges" />
     </svg>
   );
 }
