@@ -435,6 +435,9 @@ function PixelBookshelf({ accent }: { accent: string }) {
       {/* Frame */}
       <rect x="0"  y="0"  width="24" height="32" fill="#2a1a0e" shapeRendering="crispEdges" />
       <rect x="2"  y="2"  width="20" height="28" fill="#1a0f08" shapeRendering="crispEdges" />
+      {/* Top highlight + side light */}
+      <rect x="0"  y="0"  width="24" height="1"  fill="#8b6040" shapeRendering="crispEdges" />
+      <rect x="0"  y="0"  width="1"  height="32" fill="#6a4828" shapeRendering="crispEdges" />
       {/* Shelves */}
       <rect x="1"  y="11" width="22" height="2"  fill="#2a1a0e" shapeRendering="crispEdges" />
       <rect x="1"  y="21" width="22" height="2"  fill="#2a1a0e" shapeRendering="crispEdges" />
@@ -466,6 +469,9 @@ function PixelServerRack({ accent }: { accent: string }) {
     <svg viewBox="0 0 16 32" width="100%" height="100%" style={{ imageRendering: "pixelated" }} aria-hidden>
       <rect x="0" y="0"  width="16" height="32" fill="#0d0e13" shapeRendering="crispEdges" />
       <rect x="1" y="1"  width="14" height="30" fill="#15161c" shapeRendering="crispEdges" />
+      {/* Top face + left highlight */}
+      <rect x="0" y="0"  width="16" height="1"  fill="#3a3e4a" shapeRendering="crispEdges" />
+      <rect x="0" y="0"  width="1"  height="32" fill="#25282e" shapeRendering="crispEdges" />
       {[0,1,2,3,4,5,6].map(i => (
         <React.Fragment key={i}>
           <rect x="2"  y={2 + i * 4} width="12" height="3"  fill="#1d1f2a" shapeRendering="crispEdges" />
@@ -485,6 +491,8 @@ function PixelWhiteboard({ accent }: { accent: string }) {
     <svg viewBox="0 0 28 26" width="100%" height="100%" style={{ imageRendering: "pixelated" }} aria-hidden>
       {/* Frame */}
       <rect x="0"  y="0"  width="28" height="20" fill="#2a2a3a" shapeRendering="crispEdges" />
+      {/* Top edge highlight */}
+      <rect x="0"  y="0"  width="28" height="1"  fill="#5a5a74" shapeRendering="crispEdges" />
       {/* Surface */}
       <rect x="1"  y="1"  width="26" height="18" fill="#eeeef6" shapeRendering="crispEdges" />
       {/* Content */}
@@ -511,6 +519,9 @@ function PixelFilingCabinet({ accent }: { accent: string }) {
   return (
     <svg viewBox="0 0 14 26" width="100%" height="100%" style={{ imageRendering: "pixelated" }} aria-hidden>
       <rect x="0"  y="0"  width="14" height="26" fill="#1d2030" shapeRendering="crispEdges" />
+      {/* Top face + left highlight */}
+      <rect x="0"  y="0"  width="14" height="1"  fill="#454a60" shapeRendering="crispEdges" />
+      <rect x="0"  y="0"  width="1"  height="26" fill="#2d3145" shapeRendering="crispEdges" />
       {/* Drawer 1 */}
       <rect x="1"  y="1"  width="12" height="11" fill="#252840" shapeRendering="crispEdges" />
       <rect x="1"  y="1"  width="12" height="1"  fill="#2e3050" shapeRendering="crispEdges" />
@@ -700,8 +711,8 @@ function Room({
 
   const furniture = useMemo(() => getRoomFurniture(service), [service]);
 
-  // Wall/floor split at 32%
-  const SPLIT = 32;
+  // Wall/floor split — taller wall shows more 3D volume
+  const SPLIT = 38;
 
   return (
     <div
@@ -714,39 +725,58 @@ function Room({
           ${service.floorB} 100%)`,
         height: "100%",
         boxShadow: active
-          ? `inset 0 0 0 2px ${service.accent}88`
+          ? `inset 0 0 0 2px ${service.accent}aa, inset 0 0 30px ${service.accent}22`
           : `inset 0 0 0 1px rgba(255,255,255,0.04)`,
         transition: "box-shadow .3s var(--ease)",
       }}
     >
-      {/* Wall top cap — lighter strip simulating top-of-wall seen from the angle */}
+      {/* Wall top face — bright band catching ceiling light (top of wall as seen from angle) */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0"
         style={{
-          height: "5px",
+          height: "9px",
           background: `linear-gradient(180deg,
-            rgba(255,255,255,0.22) 0%,
-            rgba(255,255,255,0.08) 60%,
-            rgba(0,0,0,0.35) 100%)`,
+            rgba(255,255,255,0.55) 0%,
+            rgba(255,255,255,0.32) 35%,
+            rgba(255,255,255,0.10) 70%,
+            rgba(0,0,0,0.45) 100%)`,
+          borderBottom: `1px solid rgba(0,0,0,0.55)`,
           zIndex: 1,
         }}
       />
 
-      {/* Wall vertical shading — gives the back wall solid mass */}
+      {/* Wall vertical shading — gives the back wall solid mass with stronger 3D */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0"
         style={{
-          top: "5px",
-          height: `calc(${SPLIT}% - 5px)`,
+          top: "9px",
+          height: `calc(${SPLIT}% - 9px)`,
           background: `linear-gradient(180deg,
-            rgba(0,0,0,0.25) 0%,
-            rgba(0,0,0,0) 40%,
-            rgba(0,0,0,0.35) 100%)`,
+            rgba(255,255,255,0.08) 0%,
+            rgba(0,0,0,0.05) 30%,
+            rgba(0,0,0,0.28) 80%,
+            rgba(0,0,0,0.55) 100%)`,
           zIndex: 1,
         }}
       />
+
+      {/* Wall side-corner shadows (ambient occlusion) */}
+      <div aria-hidden className="pointer-events-none absolute top-0 left-0"
+        style={{ width: "12px", height: `${SPLIT}%`,
+          background: "linear-gradient(90deg, rgba(0,0,0,0.50) 0%, transparent 100%)",
+          zIndex: 1 }} />
+      <div aria-hidden className="pointer-events-none absolute top-0 right-0"
+        style={{ width: "12px", height: `${SPLIT}%`,
+          background: "linear-gradient(270deg, rgba(0,0,0,0.50) 0%, transparent 100%)",
+          zIndex: 1 }} />
+
+      {/* Floor ambient occlusion — wall casts shadow onto floor below */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0"
+        style={{ top: `${SPLIT}%`, height: "14px",
+          background: "linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 60%, transparent 100%)",
+          zIndex: 1 }} />
 
       {/* Door openings on corridor-facing walls */}
       {doorSides.map((side) => {
@@ -769,15 +799,19 @@ function Room({
         return <div key={side} aria-hidden style={{ ...base, ...pos }} />;
       })}
 
-      {/* Baseboard — thin strip at wall/floor junction */}
+      {/* Baseboard — chunky strip at wall/floor junction with accent glow */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0"
         style={{
-          top: `${SPLIT}%`,
-          height: "3px",
-          background: `linear-gradient(90deg, ${service.accent}33, ${service.accent}11 50%, ${service.accent}33)`,
-          boxShadow: `0 1px 4px ${service.accent}44`,
+          top: `calc(${SPLIT}% - 2px)`,
+          height: "5px",
+          background: `linear-gradient(180deg,
+            ${service.accent}66 0%,
+            ${service.accent}44 50%,
+            rgba(0,0,0,0.4) 100%)`,
+          boxShadow: `0 2px 8px ${service.accent}55, inset 0 1px 0 ${service.accent}88`,
+          zIndex: 2,
         }}
       />
 
@@ -881,16 +915,16 @@ function Room({
             zIndex: f.zIndex ?? 1,
           }}
         >
-          {/* Floor shadow pooled below the item */}
+          {/* Floor shadow pooled below the item — elongated to sell 3D height */}
           <div
             style={{
               position: "absolute",
-              left: "-6%", right: "-6%",
-              bottom: "-6%",
-              height: "18%",
+              left: "-10%", right: "-2%",
+              bottom: "-10%",
+              height: "24%",
               background:
-                "radial-gradient(ellipse at 50% 100%, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 40%, transparent 75%)",
-              filter: "blur(2px)",
+                "radial-gradient(ellipse at 40% 100%, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.30) 45%, transparent 80%)",
+              filter: "blur(3px)",
               zIndex: 0,
             }}
           />
@@ -1049,51 +1083,53 @@ function Room({
    ========================================================================= */
 function VCorridor({ accentL, accentR }: { accentL: string; accentR: string }) {
   const DOOR = 32;
-  const WALL = 6;
-  // 3D block wall: concrete/stone with top highlight
-  const wallBg = "linear-gradient(180deg, #b0aca4 0%, #888480 25%, #605c58 100%)";
+  const WALL = 8;
+  // Chunky 3D wall: top light → mid → deep shadow (simulates wall cast by overhead light)
+  const wallBg = "linear-gradient(180deg, #d8d2c6 0%, #a39d90 20%, #6f6860 55%, #3a3530 100%)";
   return (
     <div
       className="relative"
       style={{
-        background: "#9a9690",
+        background: "#8a8680",
         backgroundImage: `
-          linear-gradient(90deg, rgba(0,0,0,0.12) 1px, transparent 1px),
-          linear-gradient(0deg,  rgba(255,255,255,0.10) 1px, transparent 1px)
+          linear-gradient(90deg, rgba(0,0,0,0.18) 1px, transparent 1px),
+          linear-gradient(0deg,  rgba(255,255,255,0.10) 1px, transparent 1px),
+          radial-gradient(ellipse 60% 40% at 50% 50%, rgba(255,230,160,0.10), transparent 70%)
         `,
-        backgroundSize: "13px 13px",
+        backgroundSize: "13px 13px, 13px 13px, 100% 100%",
       }}
     >
-      {/* LEFT WALL — above door */}
-      <div style={{ position:"absolute", left:0, top:0, width:WALL, height:`calc(50% - ${DOOR/2}px)`, background:wallBg, boxShadow:"inset -1px 0 0 rgba(0,0,0,0.6)" }} />
-      {/* LEFT door opening */}
+      {/* LEFT WALL — above door (with inner face highlight) */}
+      <div style={{ position:"absolute", left:0, top:0, width:WALL, height:`calc(50% - ${DOOR/2}px)`,
+        background:wallBg,
+        boxShadow:"inset -2px 0 0 rgba(0,0,0,0.55), inset 2px 0 0 rgba(255,255,255,0.18), inset 0 1px 0 rgba(255,255,255,0.35)" }} />
+      {/* LEFT door opening with door frame volume */}
       <div style={{
         position:"absolute", left:0, top:`calc(50% - ${DOOR/2}px)`, width:WALL, height:DOOR,
-        background:`linear-gradient(90deg, ${accentL}70, ${accentL}20 60%, transparent)`,
-        borderTop:`2px solid ${accentL}`, borderBottom:`2px solid ${accentL}`,
-        boxShadow:`inset 2px 0 0 ${accentL}55`,
+        background:`linear-gradient(90deg, ${accentL}88, ${accentL}30 60%, transparent)`,
+        borderTop:`3px solid ${accentL}`, borderBottom:`3px solid ${accentL}`,
+        boxShadow:`inset 3px 0 0 ${accentL}77, 0 0 12px ${accentL}55`,
       }} />
       {/* LEFT WALL — below door */}
-      <div style={{ position:"absolute", left:0, bottom:0, width:WALL, height:`calc(50% - ${DOOR/2}px)`, background:wallBg, boxShadow:"inset -1px 0 0 rgba(0,0,0,0.6)" }} />
+      <div style={{ position:"absolute", left:0, bottom:0, width:WALL, height:`calc(50% - ${DOOR/2}px)`,
+        background:wallBg,
+        boxShadow:"inset -2px 0 0 rgba(0,0,0,0.55), inset 2px 0 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(0,0,0,0.55)" }} />
 
       {/* RIGHT WALL — above door */}
-      <div style={{ position:"absolute", right:0, top:0, width:WALL, height:`calc(50% - ${DOOR/2}px)`, background:wallBg, boxShadow:"inset 1px 0 0 rgba(0,0,0,0.6)" }} />
+      <div style={{ position:"absolute", right:0, top:0, width:WALL, height:`calc(50% - ${DOOR/2}px)`,
+        background:wallBg,
+        boxShadow:"inset 2px 0 0 rgba(0,0,0,0.55), inset -2px 0 0 rgba(255,255,255,0.18), inset 0 1px 0 rgba(255,255,255,0.35)" }} />
       {/* RIGHT door opening */}
       <div style={{
         position:"absolute", right:0, top:`calc(50% - ${DOOR/2}px)`, width:WALL, height:DOOR,
-        background:`linear-gradient(270deg, ${accentR}70, ${accentR}20 60%, transparent)`,
-        borderTop:`2px solid ${accentR}`, borderBottom:`2px solid ${accentR}`,
-        boxShadow:`inset -2px 0 0 ${accentR}55`,
+        background:`linear-gradient(270deg, ${accentR}88, ${accentR}30 60%, transparent)`,
+        borderTop:`3px solid ${accentR}`, borderBottom:`3px solid ${accentR}`,
+        boxShadow:`inset -3px 0 0 ${accentR}77, 0 0 12px ${accentR}55`,
       }} />
       {/* RIGHT WALL — below door */}
-      <div style={{ position:"absolute", right:0, bottom:0, width:WALL, height:`calc(50% - ${DOOR/2}px)`, background:wallBg, boxShadow:"inset 1px 0 0 rgba(0,0,0,0.6)" }} />
-
-      {/* Hallway center light */}
-      <div style={{
-        position:"absolute", inset:0,
-        background:"radial-gradient(ellipse 70% 40% at 50% 50%, rgba(255,255,255,0.18), transparent)",
-        pointerEvents:"none",
-      }} />
+      <div style={{ position:"absolute", right:0, bottom:0, width:WALL, height:`calc(50% - ${DOOR/2}px)`,
+        background:wallBg,
+        boxShadow:"inset 2px 0 0 rgba(0,0,0,0.55), inset -2px 0 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(0,0,0,0.55)" }} />
     </div>
   );
 }
@@ -1103,52 +1139,54 @@ function VCorridor({ accentL, accentR }: { accentL: string; accentR: string }) {
    ========================================================================= */
 function HCorridor({ accentT, accentB }: { accentT: string; accentB: string }) {
   const DOOR = 34;
-  const WALL = 6;
-  // Top wall: concrete/stone with top highlight
-  const wallTopBg    = "linear-gradient(180deg, #b0aca4 0%, #888480 45%, #605c58 100%)";
-  const wallBottomBg = "linear-gradient(0deg,   #b0aca4 0%, #888480 45%, #605c58 100%)";
+  const WALL = 8;
+  // Top wall: light-catching top edge → wall body → floor shadow
+  const wallTopBg    = "linear-gradient(180deg, #d8d2c6 0%, #a39d90 30%, #6f6860 70%, #3a3530 100%)";
+  const wallBottomBg = "linear-gradient(0deg,   #d8d2c6 0%, #a39d90 30%, #6f6860 70%, #3a3530 100%)";
   return (
     <div
       className="relative"
       style={{
-        background: "#9a9690",
+        background: "#8a8680",
         backgroundImage: `
-          linear-gradient(90deg, rgba(0,0,0,0.12) 1px, transparent 1px),
-          linear-gradient(0deg,  rgba(255,255,255,0.10) 1px, transparent 1px)
+          linear-gradient(90deg, rgba(0,0,0,0.18) 1px, transparent 1px),
+          linear-gradient(0deg,  rgba(255,255,255,0.10) 1px, transparent 1px),
+          radial-gradient(ellipse 40% 60% at 50% 50%, rgba(255,230,160,0.10), transparent 70%)
         `,
-        backgroundSize: "13px 13px",
+        backgroundSize: "13px 13px, 13px 13px, 100% 100%",
       }}
     >
-      {/* TOP WALL — left of door */}
-      <div style={{ position:"absolute", top:0, left:0, height:WALL, width:`calc(50% - ${DOOR/2}px)`, background:wallTopBg }} />
-      {/* TOP door opening */}
+      {/* TOP WALL — left of door (with bottom-edge shadow where wall meets floor) */}
+      <div style={{ position:"absolute", top:0, left:0, height:WALL, width:`calc(50% - ${DOOR/2}px)`,
+        background:wallTopBg,
+        boxShadow:"inset 0 -2px 0 rgba(0,0,0,0.55), inset 0 2px 0 rgba(255,255,255,0.35)" }} />
+      {/* TOP door opening with frame volume */}
       <div style={{
         position:"absolute", top:0, left:`calc(50% - ${DOOR/2}px)`, height:WALL, width:DOOR,
-        background:`linear-gradient(180deg, ${accentT}70, ${accentT}20 60%, transparent)`,
-        borderLeft:`2px solid ${accentT}`, borderRight:`2px solid ${accentT}`,
-        boxShadow:`inset 0 2px 0 ${accentT}55`,
+        background:`linear-gradient(180deg, ${accentT}88, ${accentT}30 60%, transparent)`,
+        borderLeft:`3px solid ${accentT}`, borderRight:`3px solid ${accentT}`,
+        boxShadow:`inset 0 3px 0 ${accentT}77, 0 0 12px ${accentT}55`,
       }} />
       {/* TOP WALL — right of door */}
-      <div style={{ position:"absolute", top:0, right:0, height:WALL, width:`calc(50% - ${DOOR/2}px)`, background:wallTopBg }} />
+      <div style={{ position:"absolute", top:0, right:0, height:WALL, width:`calc(50% - ${DOOR/2}px)`,
+        background:wallTopBg,
+        boxShadow:"inset 0 -2px 0 rgba(0,0,0,0.55), inset 0 2px 0 rgba(255,255,255,0.35)" }} />
 
       {/* BOTTOM WALL — left of door */}
-      <div style={{ position:"absolute", bottom:0, left:0, height:WALL, width:`calc(50% - ${DOOR/2}px)`, background:wallBottomBg }} />
+      <div style={{ position:"absolute", bottom:0, left:0, height:WALL, width:`calc(50% - ${DOOR/2}px)`,
+        background:wallBottomBg,
+        boxShadow:"inset 0 2px 0 rgba(0,0,0,0.55), inset 0 -2px 0 rgba(255,255,255,0.35)" }} />
       {/* BOTTOM door opening */}
       <div style={{
         position:"absolute", bottom:0, left:`calc(50% - ${DOOR/2}px)`, height:WALL, width:DOOR,
-        background:`linear-gradient(0deg, ${accentB}70, ${accentB}20 60%, transparent)`,
-        borderLeft:`2px solid ${accentB}`, borderRight:`2px solid ${accentB}`,
-        boxShadow:`inset 0 -2px 0 ${accentB}55`,
+        background:`linear-gradient(0deg, ${accentB}88, ${accentB}30 60%, transparent)`,
+        borderLeft:`3px solid ${accentB}`, borderRight:`3px solid ${accentB}`,
+        boxShadow:`inset 0 -3px 0 ${accentB}77, 0 0 12px ${accentB}55`,
       }} />
       {/* BOTTOM WALL — right of door */}
-      <div style={{ position:"absolute", bottom:0, right:0, height:WALL, width:`calc(50% - ${DOOR/2}px)`, background:wallBottomBg }} />
-
-      {/* Hallway center light */}
-      <div style={{
-        position:"absolute", inset:0,
-        background:"radial-gradient(ellipse 40% 70% at 50% 50%, rgba(255,255,255,0.18), transparent)",
-        pointerEvents:"none",
-      }} />
+      <div style={{ position:"absolute", bottom:0, right:0, height:WALL, width:`calc(50% - ${DOOR/2}px)`,
+        background:wallBottomBg,
+        boxShadow:"inset 0 2px 0 rgba(0,0,0,0.55), inset 0 -2px 0 rgba(255,255,255,0.35)" }} />
     </div>
   );
 }
@@ -1295,15 +1333,16 @@ const Services = () => {
           <div
             className="office-scene"
             style={{
-              perspective: "1000px",
-              perspectiveOrigin: "50% -5%",
+              perspective: "1100px",
+              perspectiveOrigin: "50% -10%",
             }}
           >
             <div
               className="office-tilt"
               style={{
-                transform: "rotateX(16deg)",
+                transform: "rotateX(22deg)",
                 transformOrigin: "center top",
+                transformStyle: "preserve-3d",
                 willChange: "transform",
               }}
             >
@@ -1311,14 +1350,16 @@ const Services = () => {
               <div
                 className="office-shell relative"
                 style={{
-                  background: "linear-gradient(180deg, #c8c4bc 0%, #9a9690 35%, #706c68 100%)",
-                  padding: "10px",
-                  borderRadius: "2px",
+                  background: "linear-gradient(180deg, #e0dcd2 0%, #b8b4aa 30%, #807c74 100%)",
+                  padding: "12px",
+                  borderRadius: "3px",
                   boxShadow:
-                    "inset 0 2px 0 rgba(255,255,255,0.40), " +   // top highlight (wall top)
-                    "inset 0 -2px 0 rgba(0,0,0,0.4), " +          // bottom shadow
+                    "inset 0 3px 0 rgba(255,255,255,0.55), " +   // top highlight (wall top face)
+                    "inset 0 -3px 0 rgba(0,0,0,0.35), " +         // bottom shadow
+                    "inset 3px 0 0 rgba(255,255,255,0.22), " +    // left wall catches light
+                    "inset -3px 0 0 rgba(0,0,0,0.30), " +         // right wall shadow
                     "0 0 0 1px #504c48, " +
-                    "0 70px 140px -20px rgba(0,0,0,0.75)",
+                    "0 80px 160px -20px rgba(0,0,0,0.75)",
                 }}
               >
                 {/* Corner bolts (decorative) */}
