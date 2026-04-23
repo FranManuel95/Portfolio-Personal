@@ -212,6 +212,115 @@ const agentPalette: Palette = {
   X: "#0a0a12", // heels
 };
 
+// ── DEV walking frames (rows 16-21 change; all others copied via spread) ──
+const devWalkARows: string[] = [
+  ...devRows.slice(0, 16),
+  "...JJJ...JJJ....", // 16 right leg shifted +1 px right (3-dot gap)
+  "...JJJ...JJJ....", // 17
+  "...jjj...jjj....", // 18 shadow follows
+  "..NNNN...NNNN...", // 19 right shoe shifted right
+  "..NNNN...NNNN...", // 20
+  "..wwww...wwww...", // 21
+];
+const devWalkBRows: string[] = [
+  ...devRows.slice(0, 16),
+  "..JJJ...JJJ.....", // 16 left leg shifted -1 px left (3-dot gap)
+  "..JJJ...JJJ.....", // 17
+  "..jjj...jjj.....", // 18
+  ".NNNN...NNNN....", // 19 left shoe shifted left
+  ".NNNN...NNNN....", // 20
+  ".wwww...wwww....", // 21
+];
+const devSitRows: string[] = [
+  ...devRows.slice(0, 15),
+  "..JJJJJJJJJJ....", // 15 thighs spread wider (10 px)
+  ".JJJJ....JJJJ...", // 16 knees apart (4-dot gap)
+  "..NNN....NNN....", // 17 shoe tops visible
+  "..www....www....", // 18 sole edges
+  "................", // 19 feet hidden under desk
+  "................", // 20
+  "................", // 21
+];
+
+// ── AI walking frames (rows 17-21 change for female legs/heels) ──
+const aiWalkARows: string[] = [
+  ...aiRows.slice(0, 17),
+  "....SSSSSS......", // 17 thigh row unchanged
+  "....SS...SS.....", // 18 right leg +1 (3-dot gap)
+  "....SS...SS.....", // 19
+  "...XXX...XXX....", // 20 right heel +1
+  "...XX.....XX....", // 21 right heel tip +1
+];
+const aiWalkBRows: string[] = [
+  ...aiRows.slice(0, 17),
+  "....SSSSSS......", // 17
+  "...SS...SS......", // 18 left leg -1 (3-dot gap)
+  "...SS...SS......", // 19
+  "..XXX...XXX.....", // 20 left heel -1
+  "..XX.....XX.....", // 21 left heel tip -1
+];
+const aiSitRows: string[] = [
+  ...aiRows.slice(0, 17),
+  "....SSSSSSSS....", // 17 thighs spread wider
+  "...SSS....SSS...", // 18 legs apart (4-dot gap)
+  "...XXX....XXX...", // 19 heel tops visible
+  "...XX......XX...", // 20 heel tips
+  "................", // 21 feet hidden under desk
+];
+
+// ── AUTO walking frames (rows 16-21 change; same structure as dev) ──
+const autoWalkARows: string[] = [
+  ...autoRows.slice(0, 16),
+  "...GGG...GGG....", // 16 right leg +1 (3-dot gap)
+  "...GGG...GGG....", // 17
+  "...ggg...ggg....", // 18 shadow follows
+  "..CCCC...CCCC...", // 19 right shoe +1
+  "..CCCC...CCCC...", // 20
+  "..wwww...wwww...", // 21
+];
+const autoWalkBRows: string[] = [
+  ...autoRows.slice(0, 16),
+  "..GGG...GGG.....", // 16 left leg -1 (3-dot gap)
+  "..GGG...GGG.....", // 17
+  "..ggg...ggg.....", // 18
+  ".CCCC...CCCC....", // 19 left shoe -1
+  ".CCCC...CCCC....", // 20
+  ".wwww...wwww....", // 21
+];
+const autoSitRows: string[] = [
+  ...autoRows.slice(0, 15),
+  "..GGGGGGGGGG....", // 15 thighs spread wider (10 px)
+  ".GGGG....GGGG...", // 16 knees apart (4-dot gap)
+  "..CCC....CCC....", // 17 shoe tops visible
+  "..www....www....", // 18 sole edges
+  "................", // 19
+  "................", // 20
+  "................", // 21
+];
+
+// ── AGENT walking frames (rows 18-21 change; skirt rows 15-17 intact) ──
+const agentWalkARows: string[] = [
+  ...agentRows.slice(0, 18),
+  "....SS...SS.....", // 18 right leg +1 (3-dot gap)
+  "...XXX...XXX....", // 19 right heel +1
+  "...XX.....XX....", // 20 right heel tip +1
+  "................", // 21
+];
+const agentWalkBRows: string[] = [
+  ...agentRows.slice(0, 18),
+  "...SS...SS......", // 18 left leg -1 (3-dot gap)
+  "..XXX...XXX.....", // 19 left heel -1
+  "..XX.....XX.....", // 20 left heel tip -1
+  "................", // 21
+];
+const agentSitRows: string[] = [
+  ...agentRows.slice(0, 18),
+  "....SSSSSSSS....", // 18 thighs spread wider
+  "...SSS....SSS...", // 19 legs apart (4-dot gap)
+  "...XXX....XXX...", // 20 heel tops visible
+  "...XX......XX...", // 21 heel tips
+];
+
 /* =========================================================================
    Character behavior state machine — waypoints the agent visits in a loop.
    Each waypoint defines: where to go, how long travel takes, and what pose
@@ -240,21 +349,21 @@ type Waypoint = {
    high (near 38%) = back of room near wall = smaller scale + higher zIndex layer. */
 const DEFAULT_WAYPOINTS: Waypoint[] = [
   // 0 — stroll across mid-depth
-  { leftPct: 70, bottomPct: 10, pose: "walking",  dwellMs: 400,  travelMs: 3800, flip: false },
+  { leftPct: 70, bottomPct: 5,  pose: "walking",  dwellMs: 400,  travelMs: 3800, flip: false },
   // 1 — head toward back-left (desk area, going away from viewer)
-  { leftPct: 28, bottomPct: 28, pose: "walking",  dwellMs: 300,  travelMs: 2800, flip: true  },
+  { leftPct: 28, bottomPct: 22, pose: "walking",  dwellMs: 300,  travelMs: 2800, flip: true  },
   // 2 — sit at desk (topPct anchors above desk, zIndex behind it)
   { leftPct: 26, topPct: 44,   pose: "sitting",   dwellMs: 7500, travelMs: 700,  flip: false, zIndex: 0 },
   // 3 — stand up, still near desk (back area)
-  { leftPct: 30, bottomPct: 26, pose: "standing", dwellMs: 300,  travelMs: 450,  flip: false },
+  { leftPct: 30, bottomPct: 20, pose: "standing", dwellMs: 300,  travelMs: 450,  flip: false },
   // 4 — walk diagonally forward-right toward door opening
-  { leftPct: 82, bottomPct: 6,  pose: "at-door",  dwellMs: 2600, travelMs: 2800, flip: false },
+  { leftPct: 82, bottomPct: 2,  pose: "at-door",  dwellMs: 2600, travelMs: 2800, flip: false },
   // 5 — walk back toward front-centre (coming toward viewer)
-  { leftPct: 44, bottomPct: 4,  pose: "walking",  dwellMs: 500,  travelMs: 2800, flip: true  },
+  { leftPct: 44, bottomPct: 1,  pose: "walking",  dwellMs: 500,  travelMs: 2800, flip: true  },
   // 6 — wander to far corner (back-left, near plant)
-  { leftPct: 8,  bottomPct: 30, pose: "idle",     dwellMs: 1800, travelMs: 3200, flip: true  },
+  { leftPct: 8,  bottomPct: 24, pose: "idle",     dwellMs: 1800, travelMs: 3200, flip: true  },
   // 7 — come back forward
-  { leftPct: 36, bottomPct: 8,  pose: "walking",  dwellMs: 400,  travelMs: 2600, flip: false },
+  { leftPct: 36, bottomPct: 4,  pose: "walking",  dwellMs: 400,  travelMs: 2600, flip: false },
 ];
 
 /* =========================================================================
@@ -272,7 +381,13 @@ type Service = {
   items: string[];
   /** Terminal log lines shown in the TerminalLog panel */
   logs: string[];
-  sprite: { rows: string[]; palette: Palette };
+  sprite: {
+    rows: string[];
+    walkA: string[];
+    walkB: string[];
+    sit: string[];
+    palette: Palette;
+  };
   /** multiplier for waypoint durations (<1 faster, >1 slower) so rooms desync */
   paceFactor: number;
   /** initial waypoint index (staggers where each agent starts in the loop) */
@@ -301,7 +416,7 @@ const services: Service[] = [
       "FILE_EDIT: /app/page.tsx · +42 lines",
       "Build successful · Deploy ready ✓",
     ],
-    sprite: { rows: devRows, palette: devPalette },
+    sprite: { rows: devRows, walkA: devWalkARows, walkB: devWalkBRows, sit: devSitRows, palette: devPalette },
     paceFactor: 1.0,
     startIdx: 0,
   },
@@ -326,7 +441,7 @@ const services: Service[] = [
       "Multi-model router: OpenAI→Claude→fallback",
       "Response quality score: 94% ✓",
     ],
-    sprite: { rows: aiRows, palette: aiPalette },
+    sprite: { rows: aiRows, walkA: aiWalkARows, walkB: aiWalkBRows, sit: aiSitRows, palette: aiPalette },
     paceFactor: 1.15,
     startIdx: 2,
   },
@@ -351,7 +466,7 @@ const services: Service[] = [
       "FILE_EDIT: pipeline.json · Processing...",
       "Emails dispatched · 100% success ✓",
     ],
-    sprite: { rows: autoRows, palette: autoPalette },
+    sprite: { rows: autoRows, walkA: autoWalkARows, walkB: autoWalkBRows, sit: autoSitRows, palette: autoPalette },
     paceFactor: 0.85,
     startIdx: 4,
   },
@@ -376,7 +491,7 @@ const services: Service[] = [
       "Memory context loaded: 2400 tokens",
       "Agent handoff: human-in-loop ready ✓",
     ],
-    sprite: { rows: agentRows, palette: agentPalette },
+    sprite: { rows: agentRows, walkA: agentWalkARows, walkB: agentWalkBRows, sit: agentSitRows, palette: agentPalette },
     paceFactor: 1.05,
     startIdx: 6,
   },
@@ -1494,16 +1609,24 @@ function Room({
         :global(.agent-bob) {
           animation: bob 0.5s steps(2) infinite;
         }
-        :global(.agent-bob.no-bob) { animation: none; }
+        :global(.no-bob) { animation: none; }
         :global(.agent-shadow) {
           position: absolute;
-          left: 14%; right: 14%; bottom: -4%;
-          height: 8%;
-          background: radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,0.55), transparent 70%);
-          filter: blur(1px);
+          left: 20%; right: 20%; bottom: -3%;
+          height: 6%;
+          background: radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,0.70), transparent 65%);
+          filter: blur(1.5px);
           transition: opacity .3s ease;
         }
+        :global(.agent-foot-contact) {
+          position: absolute;
+          left: 25%; right: 25%; bottom: -1%;
+          height: 3%;
+          background: radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,0.45), transparent 70%);
+          filter: blur(0.5px);
+        }
         :global(.agent.is-sitting .agent-shadow) { opacity: 0; }
+        :global(.agent.is-sitting .agent-foot-contact) { opacity: 0; }
         :global(.agent-sprite) {
           position: relative;
           z-index: 1;
@@ -1513,9 +1636,9 @@ function Room({
         }
         :global(.agent:hover .agent-sprite) { filter: drop-shadow(0 3px 0 rgba(0,0,0,0.5)) brightness(1.08); }
         @keyframes bob {
-          0%   { transform: translateY(0);   }
-          50%  { transform: translateY(-2px);}
-          100% { transform: translateY(0);   }
+          0%   { transform: translateY(0px); }
+          50%  { transform: translateY(-1px); }
+          100% { transform: translateY(0px); }
         }
         @media (prefers-reduced-motion: reduce) {
           :global(.agent-bob) { animation: none !important; }
@@ -1538,6 +1661,7 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
 }>(function CharacterActor({ service, active, onToggle, onPoseChange }, ref) {
   const [wpIdx, setWpIdx] = useState(service.startIdx % DEFAULT_WAYPOINTS.length);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [walkFrame, setWalkFrame] = useState<0 | 1>(0);
 
   // Notify parent of pose changes
   useEffect(() => {
@@ -1556,9 +1680,15 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
     };
   }, [wpIdx, active, service.paceFactor]);
 
+  // Cycle walk frames when walking (not when static)
+  useEffect(() => {
+    if (DEFAULT_WAYPOINTS[wpIdx].pose !== "walking") return;
+    const interval = setInterval(() => setWalkFrame(f => f === 0 ? 1 : 0), 220);
+    return () => clearInterval(interval);
+  }, [wpIdx]);
+
   const wp = DEFAULT_WAYPOINTS[wpIdx];
   const isSitting = wp.pose === "sitting";
-  const isStatic  = isSitting || wp.pose === "idle" || wp.pose === "at-door";
   const travelMs  = Math.round(wp.travelMs * service.paceFactor);
 
   // Depth scale: bottomPct near 0 = close (front) = large; near 38 = far (back) = small.
@@ -1572,6 +1702,16 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
     ? { top: `${wp.topPct}%`,    bottom: "auto" }
     : { bottom: `${wp.bottomPct ?? 4}%`, top: "auto" };
 
+  // Select sprite rows based on pose and walk frame
+  const spriteRows = (() => {
+    if (wp.pose === "sitting" && service.sprite.sit) return service.sprite.sit;
+    if (wp.pose === "walking") {
+      if (walkFrame === 0 && service.sprite.walkA) return service.sprite.walkA;
+      if (walkFrame === 1 && service.sprite.walkB) return service.sprite.walkB;
+    }
+    return service.sprite.rows;
+  })();
+
   return (
     <button
       ref={ref}
@@ -1582,13 +1722,13 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
         left: `${wp.leftPct}%`,
         ...positionStyle,
         width: "18%",
-        height: isSitting ? "30%" : "48%",
+        height: isSitting ? "30%" : "50%",
         zIndex: depthZ,
         transition: `left ${travelMs}ms linear, top ${travelMs}ms ease-out, bottom ${travelMs}ms ease-out, height ${Math.min(travelMs, 600)}ms ease-out, transform ${Math.min(travelMs, 1200)}ms ease-out`,
       }}
     >
       <span
-        className={`agent-inner ${isStatic ? "no-bob" : "agent-bob"}`}
+        className={`agent-inner ${(wp.pose === "idle" || wp.pose === "standing") ? "agent-bob" : "no-bob"}`}
         style={{
           transform: `scaleX(${wp.flip ? -depthScale : depthScale}) scaleY(${depthScale})`,
           transformOrigin: "50% 100%",
@@ -1596,8 +1736,9 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
         }}
       >
         <span className="agent-shadow" aria-hidden />
+        <span className="agent-foot-contact" aria-hidden />
         <PixelSprite
-          rows={service.sprite.rows}
+          rows={spriteRows}
           palette={service.sprite.palette}
           className="agent-sprite"
         />
