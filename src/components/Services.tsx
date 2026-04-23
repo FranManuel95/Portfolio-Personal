@@ -660,11 +660,13 @@ function Room({
   active,
   onToggle,
   idx,
+  doorSides = [],
 }: {
   service: Service;
   active: boolean;
   onToggle: () => void;
   idx: number;
+  doorSides?: Array<"right" | "bottom" | "left" | "top">;
 }) {
   const charRef = useRef<HTMLButtonElement | null>(null);
 
@@ -690,13 +692,34 @@ function Room({
           ${service.wallB} ${SPLIT}%,
           ${service.floorA} ${SPLIT}%,
           ${service.floorB} 100%)`,
-        aspectRatio: "4 / 3",
+        height: "100%",
         boxShadow: active
           ? `inset 0 0 0 2px ${service.accent}88`
           : `inset 0 0 0 1px rgba(255,255,255,0.04)`,
         transition: "box-shadow .3s var(--ease)",
       }}
     >
+      {/* Door openings on corridor-facing walls */}
+      {doorSides.map((side) => {
+        const isH = side === "top" || side === "bottom";
+        const base: React.CSSProperties = {
+          position: "absolute",
+          zIndex: 6,
+          background: `linear-gradient(${
+            side === "left"   ? "270deg" :
+            side === "right"  ? "90deg"  :
+            side === "top"    ? "0deg"   : "180deg"
+          }, ${service.accent}55, transparent)`,
+          border: `1px solid ${service.accent}66`,
+        };
+        const pos: React.CSSProperties = isH
+          ? { left: "50%", transform: "translateX(-50%)", width: "34px", height: "5px",
+              [side]: 0 }
+          : { top: "62%",  transform: "translateY(-50%)", height: "28px", width: "5px",
+              [side]: 0 };
+        return <div key={side} aria-hidden style={{ ...base, ...pos }} />;
+      })}
+
       {/* Baseboard — thin strip at wall/floor junction */}
       <div
         aria-hidden
@@ -949,6 +972,148 @@ function Room({
 }
 
 /* =========================================================================
+   VCorridor — vertical strip (column) separating left room from right room
+   ========================================================================= */
+function VCorridor({ accentL, accentR }: { accentL: string; accentR: string }) {
+  const DOOR = 32; // door opening height in px
+  return (
+    <div
+      className="relative"
+      style={{
+        background: "#0e0f16",
+        backgroundImage: `
+          linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+          linear-gradient(0deg,  rgba(255,255,255,0.025) 1px, transparent 1px)
+        `,
+        backgroundSize: "13px 13px",
+      }}
+    >
+      {/* Left wall face — above door */}
+      <div style={{ position:"absolute", left:0, top:0, width:5, height:`calc(50% - ${DOOR/2}px)`, background:"#07080d" }} />
+      {/* Left door opening */}
+      <div style={{
+        position:"absolute", left:0, top:`calc(50% - ${DOOR/2}px)`, width:5, height:DOOR,
+        background:`linear-gradient(90deg,${accentL}60,transparent)`,
+        borderTop:`1px solid ${accentL}77`, borderBottom:`1px solid ${accentL}77`,
+      }} />
+      {/* Left wall face — below door */}
+      <div style={{ position:"absolute", left:0, bottom:0, width:5, height:`calc(50% - ${DOOR/2}px)`, background:"#07080d" }} />
+
+      {/* Right wall face — above door */}
+      <div style={{ position:"absolute", right:0, top:0, width:5, height:`calc(50% - ${DOOR/2}px)`, background:"#07080d" }} />
+      {/* Right door opening */}
+      <div style={{
+        position:"absolute", right:0, top:`calc(50% - ${DOOR/2}px)`, width:5, height:DOOR,
+        background:`linear-gradient(270deg,${accentR}60,transparent)`,
+        borderTop:`1px solid ${accentR}77`, borderBottom:`1px solid ${accentR}77`,
+      }} />
+      {/* Right wall face — below door */}
+      <div style={{ position:"absolute", right:0, bottom:0, width:5, height:`calc(50% - ${DOOR/2}px)`, background:"#07080d" }} />
+
+      {/* Hallway floor highlight */}
+      <div style={{
+        position:"absolute", inset:0,
+        background:"radial-gradient(ellipse 60% 30% at 50% 50%, rgba(255,255,255,0.02), transparent)",
+        pointerEvents:"none",
+      }} />
+    </div>
+  );
+}
+
+/* =========================================================================
+   HCorridor — horizontal strip (row) separating top room from bottom room
+   ========================================================================= */
+function HCorridor({ accentT, accentB }: { accentT: string; accentB: string }) {
+  const DOOR = 34; // door opening width in px
+  return (
+    <div
+      className="relative"
+      style={{
+        background: "#0e0f16",
+        backgroundImage: `
+          linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+          linear-gradient(0deg,  rgba(255,255,255,0.025) 1px, transparent 1px)
+        `,
+        backgroundSize: "13px 13px",
+      }}
+    >
+      {/* Top wall face — left of door */}
+      <div style={{ position:"absolute", top:0, left:0, height:5, width:`calc(50% - ${DOOR/2}px)`, background:"#07080d" }} />
+      {/* Top door opening */}
+      <div style={{
+        position:"absolute", top:0, left:`calc(50% - ${DOOR/2}px)`, height:5, width:DOOR,
+        background:`linear-gradient(180deg,${accentT}60,transparent)`,
+        borderLeft:`1px solid ${accentT}77`, borderRight:`1px solid ${accentT}77`,
+      }} />
+      {/* Top wall face — right of door */}
+      <div style={{ position:"absolute", top:0, right:0, height:5, width:`calc(50% - ${DOOR/2}px)`, background:"#07080d" }} />
+
+      {/* Bottom wall face — left of door */}
+      <div style={{ position:"absolute", bottom:0, left:0, height:5, width:`calc(50% - ${DOOR/2}px)`, background:"#07080d" }} />
+      {/* Bottom door opening */}
+      <div style={{
+        position:"absolute", bottom:0, left:`calc(50% - ${DOOR/2}px)`, height:5, width:DOOR,
+        background:`linear-gradient(0deg,${accentB}60,transparent)`,
+        borderLeft:`1px solid ${accentB}77`, borderRight:`1px solid ${accentB}77`,
+      }} />
+      {/* Bottom wall face — right of door */}
+      <div style={{ position:"absolute", bottom:0, right:0, height:5, width:`calc(50% - ${DOOR/2}px)`, background:"#07080d" }} />
+
+      {/* Hallway floor highlight */}
+      <div style={{
+        position:"absolute", inset:0,
+        background:"radial-gradient(ellipse 30% 60% at 50% 50%, rgba(255,255,255,0.02), transparent)",
+        pointerEvents:"none",
+      }} />
+    </div>
+  );
+}
+
+/* =========================================================================
+   CoffeeArea — central break room connecting all corridors
+   ========================================================================= */
+function CoffeeArea() {
+  const amber = "#f59e0b";
+  return (
+    <div
+      className="relative overflow-hidden"
+      style={{
+        background: "#18140a",
+        backgroundImage:`
+          linear-gradient(90deg, rgba(200,150,40,0.045) 1px, transparent 1px),
+          linear-gradient(0deg, rgba(200,150,40,0.045) 1px, transparent 1px)
+        `,
+        backgroundSize:"10px 10px",
+      }}
+    >
+      {/* Coffee machine top-left */}
+      <div className="absolute" style={{ top:"5%", left:"4%", width:"30%", height:"45%" }}>
+        <PixelCoffeeMaker accent={amber} />
+      </div>
+      {/* Plant top-right */}
+      <div className="absolute" style={{ top:"3%", right:"4%", width:"24%", height:"42%" }}>
+        <PixelPlant />
+      </div>
+      {/* Round table bottom-center */}
+      <div className="absolute" style={{ bottom:"8%", left:"50%", transform:"translateX(-50%)", width:"54%", height:"36%" }}>
+        <PixelRoundTable accent={amber} />
+      </div>
+      {/* Label */}
+      <div
+        className="absolute bottom-0.5 inset-x-0 text-center pointer-events-none"
+        style={{ fontSize:6, color:`${amber}70`, fontFamily:"ui-monospace,monospace", letterSpacing:"0.12em" }}
+      >
+        BREAK
+      </div>
+      {/* Corner wall faces (connects to corridor walls) */}
+      {(["top-0 left-0","top-0 right-0","bottom-0 left-0","bottom-0 right-0"] as const).map(c => (
+        <div key={c} aria-hidden className={`absolute ${c} w-[5px] h-[5px]`} style={{ background:"#07080d" }} />
+      ))}
+    </div>
+  );
+}
+
+/* =========================================================================
    Main Services component
    ========================================================================= */
 const Services = () => {
@@ -1037,26 +1202,50 @@ const Services = () => {
                   />
                 ))}
 
-                {/* 2 × 2 room grid — gap = wall thickness */}
+                {/*
+                3 × 3 grid:
+                [WEB]      [V-corridor] [AI]
+                [H-corridor][COFFEE]   [H-corridor]
+                [AUTO]     [V-corridor] [AGENTS]
+              */}
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: "7px",
+                    gridTemplateColumns: "1fr 52px 1fr",
+                    gridTemplateRows: "minmax(185px,22vw) 44px minmax(185px,22vw)",
                     background: "#090a0f",
                   }}
                 >
-                  {services.map((s, i) => (
-                    <Room
-                      key={s.id}
-                      service={s}
-                      idx={i}
-                      active={activeId === s.id}
-                      onToggle={() =>
-                        setActiveId((prev) => (prev === s.id ? null : s.id))
-                      }
-                    />
-                  ))}
+                  {/* Row 1 */}
+                  <Room service={services[0]} idx={0}
+                    active={activeId === services[0].id}
+                    onToggle={() => setActiveId(p => p === services[0].id ? null : services[0].id)}
+                    doorSides={["right","bottom"]} />
+
+                  <VCorridor accentL={services[0].accent} accentR={services[1].accent} />
+
+                  <Room service={services[1]} idx={1}
+                    active={activeId === services[1].id}
+                    onToggle={() => setActiveId(p => p === services[1].id ? null : services[1].id)}
+                    doorSides={["left","bottom"]} />
+
+                  {/* Row 2 */}
+                  <HCorridor accentT={services[0].accent} accentB={services[2].accent} />
+                  <CoffeeArea />
+                  <HCorridor accentT={services[1].accent} accentB={services[3].accent} />
+
+                  {/* Row 3 */}
+                  <Room service={services[2]} idx={2}
+                    active={activeId === services[2].id}
+                    onToggle={() => setActiveId(p => p === services[2].id ? null : services[2].id)}
+                    doorSides={["right","top"]} />
+
+                  <VCorridor accentL={services[2].accent} accentR={services[3].accent} />
+
+                  <Room service={services[3]} idx={3}
+                    active={activeId === services[3].id}
+                    onToggle={() => setActiveId(p => p === services[3].id ? null : services[3].id)}
+                    doorSides={["left","top"]} />
                 </div>
 
                 {/* Floor-plan footer label */}
