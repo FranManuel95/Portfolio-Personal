@@ -215,10 +215,10 @@ const services: Service[] = [
     title: "Desarrollo Web",
     role: "Full-stack Engineer",
     accent: "#60a5fa",
-    wallA: "#18355f",
-    wallB: "#0e1f3a",
-    floorA: "#1a2a44",
-    floorB: "#12223a",
+    wallA: "#1e6fd4",
+    wallB: "#1558b0",
+    floorA: "#c8b89a",
+    floorB: "#b8a888",
     items: [
       "Aplicaciones full-stack con Next.js y React",
       "APIs REST y arquitecturas serverless",
@@ -233,10 +233,10 @@ const services: Service[] = [
     title: "IA Generativa",
     role: "AI Architect",
     accent: "#a78bfa",
-    wallA: "#3a2464",
-    wallB: "#241542",
-    floorA: "#2e1e50",
-    floorB: "#201238",
+    wallA: "#7c3aed",
+    wallB: "#5b21b6",
+    floorA: "#c8b89a",
+    floorB: "#b8a888",
     items: [
       "Sistemas RAG con bases de conocimiento propias",
       "Agentes conversacionales con memoria y herramientas",
@@ -251,10 +251,10 @@ const services: Service[] = [
     title: "Automatización",
     role: "Workflow Hacker",
     accent: "#fb923c",
-    wallA: "#5a3212",
-    wallB: "#3a1e08",
-    floorA: "#4a2a10",
-    floorB: "#2f1a06",
+    wallA: "#d95c10",
+    wallB: "#b84a0a",
+    floorA: "#c8b89a",
+    floorB: "#b8a888",
     items: [
       "Flujos end-to-end con n8n",
       "Integración de webhooks y APIs externas",
@@ -269,10 +269,10 @@ const services: Service[] = [
     title: "Agentes Inteligentes",
     role: "Agent Whisperer",
     accent: "#34d399",
-    wallA: "#0f4a3a",
-    wallB: "#08301f",
-    floorA: "#0e3a2a",
-    floorB: "#072416",
+    wallA: "#0a9068",
+    wallB: "#077554",
+    floorA: "#c8b89a",
+    floorB: "#b8a888",
     items: [
       "Agentes de atención al cliente 24/7 (voz y chat)",
       "Agentes internos para tareas operativas y de empresa",
@@ -342,17 +342,17 @@ function DeskAndMonitor({ accent }: { accent: string }) {
       <rect x="45" y="14" width="3" height="3"  fill="#0d0e13" shapeRendering="crispEdges" />
       <rect x="42" y="17" width="9" height="1"  fill="#0d0e13" shapeRendering="crispEdges" />
       {/* Keyboard */}
-      <rect x="19" y="19" width="20" height="3" fill="#1d1f2a" shapeRendering="crispEdges" />
-      <rect x="20" y="20" width="18" height="1" fill={accent}  opacity="0.2"  shapeRendering="crispEdges" />
+      <rect x="19" y="19" width="20" height="3" fill="#2a2840" shapeRendering="crispEdges" />
+      <rect x="20" y="20" width="18" height="1" fill={accent}  opacity="0.35" shapeRendering="crispEdges" />
       {/* Mouse */}
-      <rect x="40" y="19" width="4"  height="3" fill="#252840" shapeRendering="crispEdges" />
-      <rect x="41" y="19" width="1"  height="1" fill={accent}  opacity="0.5"  shapeRendering="crispEdges" />
+      <rect x="40" y="19" width="4"  height="3" fill="#2a2840" shapeRendering="crispEdges" />
+      <rect x="41" y="19" width="1"  height="1" fill={accent}  opacity="0.7"  shapeRendering="crispEdges" />
       {/* Desk surface */}
-      <rect x="0"  y="18" width="58" height="4" fill="#2a1a0e" shapeRendering="crispEdges" />
-      <rect x="0"  y="22" width="58" height="1" fill="#1a0f08" shapeRendering="crispEdges" />
+      <rect x="0"  y="18" width="58" height="4" fill="#8b6040" shapeRendering="crispEdges" />
+      <rect x="0"  y="22" width="58" height="1" fill="#6a4828" shapeRendering="crispEdges" />
       {/* Legs */}
-      <rect x="2"  y="23" width="3"  height="5" fill="#1a0f08" shapeRendering="crispEdges" />
-      <rect x="53" y="23" width="3"  height="5" fill="#1a0f08" shapeRendering="crispEdges" />
+      <rect x="2"  y="23" width="3"  height="5" fill="#6a4828" shapeRendering="crispEdges" />
+      <rect x="53" y="23" width="3"  height="5" fill="#6a4828" shapeRendering="crispEdges" />
     </svg>
   );
 }
@@ -761,7 +761,7 @@ function Room({
         }}
       />
 
-      {/* Floor tile grid — crisper pixel-art tiles */}
+      {/* Floor tile grid — warm wood planks */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0"
@@ -769,20 +769,20 @@ function Room({
           top: `${SPLIT}%`,
           bottom: 0,
           backgroundImage: `
-            linear-gradient(90deg, rgba(0,0,0,0.32) 1px, transparent 1px),
-            linear-gradient(0deg,  rgba(255,255,255,0.06)  1px, transparent 1px)
+            linear-gradient(90deg, rgba(0,0,0,0.18) 1px, transparent 1px),
+            linear-gradient(0deg,  rgba(255,255,255,0.12) 1px, transparent 1px)
           `,
-          backgroundSize: "22px 11px",
+          backgroundSize: "28px 10px",
         }}
       />
-      {/* Subtle floor vignette */}
+      {/* Subtle floor vignette — warm light from wall above */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0"
         style={{
           top: `${SPLIT}%`,
           bottom: 0,
-          background: `radial-gradient(ellipse 80% 60% at 50% 80%, rgba(255,255,255,0.04), transparent 70%)`,
+          background: `linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0.10) 100%)`,
         }}
       />
 
@@ -1030,16 +1030,16 @@ function Room({
 function VCorridor({ accentL, accentR }: { accentL: string; accentR: string }) {
   const DOOR = 32;
   const WALL = 6;
-  // 3D block wall: gradient top→bottom (light top = top face; dark bottom = shadow)
-  const wallBg = "linear-gradient(180deg, #2a2c3a 0%, #11121a 25%, #06070c 100%)";
+  // 3D block wall: concrete/stone with top highlight
+  const wallBg = "linear-gradient(180deg, #b0aca4 0%, #888480 25%, #605c58 100%)";
   return (
     <div
       className="relative"
       style={{
-        background: "#0c0d14",
+        background: "#9a9690",
         backgroundImage: `
-          linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
-          linear-gradient(0deg,  rgba(255,255,255,0.035) 1px, transparent 1px)
+          linear-gradient(90deg, rgba(0,0,0,0.12) 1px, transparent 1px),
+          linear-gradient(0deg,  rgba(255,255,255,0.10) 1px, transparent 1px)
         `,
         backgroundSize: "13px 13px",
       }}
@@ -1071,7 +1071,7 @@ function VCorridor({ accentL, accentR }: { accentL: string; accentR: string }) {
       {/* Hallway center light */}
       <div style={{
         position:"absolute", inset:0,
-        background:"radial-gradient(ellipse 70% 40% at 50% 50%, rgba(255,255,255,0.05), transparent)",
+        background:"radial-gradient(ellipse 70% 40% at 50% 50%, rgba(255,255,255,0.18), transparent)",
         pointerEvents:"none",
       }} />
     </div>
@@ -1084,17 +1084,17 @@ function VCorridor({ accentL, accentR }: { accentL: string; accentR: string }) {
 function HCorridor({ accentT, accentB }: { accentT: string; accentB: string }) {
   const DOOR = 34;
   const WALL = 6;
-  // Top wall: dark top (shadow) → lighter bottom (wall body)
-  const wallTopBg    = "linear-gradient(180deg, #2a2c3a 0%, #11121a 45%, #06070c 100%)";
-  const wallBottomBg = "linear-gradient(0deg,   #2a2c3a 0%, #11121a 45%, #06070c 100%)";
+  // Top wall: concrete/stone with top highlight
+  const wallTopBg    = "linear-gradient(180deg, #b0aca4 0%, #888480 45%, #605c58 100%)";
+  const wallBottomBg = "linear-gradient(0deg,   #b0aca4 0%, #888480 45%, #605c58 100%)";
   return (
     <div
       className="relative"
       style={{
-        background: "#0c0d14",
+        background: "#9a9690",
         backgroundImage: `
-          linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
-          linear-gradient(0deg,  rgba(255,255,255,0.035) 1px, transparent 1px)
+          linear-gradient(90deg, rgba(0,0,0,0.12) 1px, transparent 1px),
+          linear-gradient(0deg,  rgba(255,255,255,0.10) 1px, transparent 1px)
         `,
         backgroundSize: "13px 13px",
       }}
@@ -1126,7 +1126,7 @@ function HCorridor({ accentT, accentB }: { accentT: string; accentB: string }) {
       {/* Hallway center light */}
       <div style={{
         position:"absolute", inset:0,
-        background:"radial-gradient(ellipse 40% 70% at 50% 50%, rgba(255,255,255,0.05), transparent)",
+        background:"radial-gradient(ellipse 40% 70% at 50% 50%, rgba(255,255,255,0.18), transparent)",
         pointerEvents:"none",
       }} />
     </div>
@@ -1142,10 +1142,10 @@ function CoffeeArea() {
     <div
       className="relative overflow-hidden"
       style={{
-        background: "#18140a",
+        background: "#b8a480",
         backgroundImage:`
-          linear-gradient(90deg, rgba(200,150,40,0.06) 1px, transparent 1px),
-          linear-gradient(0deg, rgba(200,150,40,0.06) 1px, transparent 1px)
+          linear-gradient(90deg, rgba(0,0,0,0.14) 1px, transparent 1px),
+          linear-gradient(0deg, rgba(255,255,255,0.10) 1px, transparent 1px)
         `,
         backgroundSize:"10px 10px",
       }}
@@ -1216,7 +1216,7 @@ function CoffeeArea() {
       {/* Corner wall-join blocks (with top-highlight for 3D) */}
       {(["top-0 left-0","top-0 right-0","bottom-0 left-0","bottom-0 right-0"] as const).map(c => (
         <div key={c} aria-hidden className={`absolute ${c} w-[6px] h-[6px]`}
-          style={{ background:"#06070c", boxShadow:"inset 0 1px 0 rgba(255,255,255,0.15)" }} />
+          style={{ background:"#605c58", boxShadow:"inset 0 1px 0 rgba(255,255,255,0.25)" }} />
       ))}
     </div>
   );
@@ -1291,14 +1291,14 @@ const Services = () => {
               <div
                 className="office-shell relative"
                 style={{
-                  background: "linear-gradient(180deg, #2a2c3a 0%, #11121a 35%, #06070c 100%)",
+                  background: "linear-gradient(180deg, #c8c4bc 0%, #9a9690 35%, #706c68 100%)",
                   padding: "10px",
                   borderRadius: "2px",
                   boxShadow:
-                    "inset 0 2px 0 rgba(255,255,255,0.12), " +   // top highlight (wall top)
-                    "inset 0 -2px 0 rgba(0,0,0,0.8), " +          // bottom shadow
-                    "0 0 0 1px #06070c, " +
-                    "0 70px 140px -20px rgba(0,0,0,0.95)",
+                    "inset 0 2px 0 rgba(255,255,255,0.40), " +   // top highlight (wall top)
+                    "inset 0 -2px 0 rgba(0,0,0,0.4), " +          // bottom shadow
+                    "0 0 0 1px #504c48, " +
+                    "0 70px 140px -20px rgba(0,0,0,0.75)",
                 }}
               >
                 {/* Corner bolts (decorative) */}
@@ -1307,7 +1307,7 @@ const Services = () => {
                     key={pos}
                     aria-hidden
                     className={`absolute ${pos} w-1.5 h-1.5 rounded-full`}
-                    style={{ background: "#454858", boxShadow: "inset 0 0 0 1px #06070c" }}
+                    style={{ background: "#d4d0c8", boxShadow: "inset 0 0 0 1px #807c78" }}
                   />
                 ))}
 
@@ -1322,7 +1322,7 @@ const Services = () => {
                     display: "grid",
                     gridTemplateColumns: "1fr 52px 1fr",
                     gridTemplateRows: "minmax(185px,22vw) 44px minmax(185px,22vw)",
-                    background: "#090a0f",
+                    background: "#706c68",
                   }}
                 >
                   {/* Row 1 */}
@@ -1360,11 +1360,11 @@ const Services = () => {
                 {/* Floor-plan footer label */}
                 <div
                   className="flex items-center justify-center gap-3 mt-[7px]"
-                  style={{ borderTop: "1px solid #1a1b24" }}
+                  style={{ borderTop: "1px solid #9a9690" }}
                 >
                   <span
                     className="block text-[9px] tracking-[0.2em] uppercase py-1.5"
-                    style={{ color: "#3a3d52", fontFamily: "ui-monospace, monospace" }}
+                    style={{ color: "#706c68", fontFamily: "ui-monospace, monospace" }}
                   >
                     Planta&nbsp;1&nbsp;·&nbsp;Oficina&nbsp;Agéntica&nbsp;·&nbsp;4&nbsp;despachos
                   </span>
