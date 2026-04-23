@@ -1091,7 +1091,21 @@ function TerminalLog({
               letterSpacing: "0.05em",
             }}
           >
-            [TASK COMPLETE]
+            [TASK COMPLETE ✓]
+          </div>
+        )}
+
+        {/* Capabilities list — shown after typewriter finishes */}
+        {done && (
+          <div style={{ marginTop: "10px", borderTop: `1px solid ${service.accent}33`, paddingTop: "8px" }}>
+            <div style={{ color: service.accent, fontSize: "clamp(6px, 1vw, 8px)", letterSpacing: "0.08em", marginBottom: "5px" }}>
+              {"// CAPABILITIES"}
+            </div>
+            {service.items.map((item, i) => (
+              <div key={i} style={{ color: "#7ec8a0", fontSize: "clamp(6px, 1vw, 8px)", lineHeight: 1.7 }}>
+                <span style={{ color: service.accent, marginRight: "5px" }}>→</span>{item}
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -1266,6 +1280,12 @@ function Room({
       <div aria-hidden className="pointer-events-none absolute inset-x-0"
         style={{ top:`${SPLIT}%`, bottom:0,
           background:`linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.18) 100%)` }} />
+
+      {/* Per-room accent ambient tint — subtle coloured wash from room's identity colour */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0"
+        style={{ top:`${SPLIT}%`, bottom:0,
+          background: `${service.accent}10`,
+          zIndex: 0 }} />
 
       {/* Sunlight beam from window — triangular warm cone on floor */}
       <div aria-hidden className="pointer-events-none absolute"
@@ -1561,8 +1581,8 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
       style={{
         left: `${wp.leftPct}%`,
         ...positionStyle,
-        width: "14%",
-        height: isSitting ? "26%" : "42%",
+        width: "18%",
+        height: isSitting ? "30%" : "48%",
         zIndex: depthZ,
         transition: `left ${travelMs}ms linear, top ${travelMs}ms ease-out, bottom ${travelMs}ms ease-out, height ${Math.min(travelMs, 600)}ms ease-out, transform ${Math.min(travelMs, 1200)}ms ease-out`,
       }}
@@ -1852,23 +1872,24 @@ const Services = () => {
 
       <div className="container relative">
         <Reveal replay>
-          <h2 className="headline text-3xl text-center py-4 mt-6 mb-6">
-            ¿En qué puedo ayudarte?
+          <h2 className="headline text-3xl text-center py-4 mt-6 mb-3">
+            Oficina Agéntica
           </h2>
         </Reveal>
 
         <Reveal replay delayMs={60}>
-          <p className="text-[var(--text-dim)] text-center mb-3 max-w-2xl mx-auto">
-            Bienvenido a mi{" "}
-            <span className="text-[var(--text)] font-semibold">oficina agéntica</span>.
-            Cada agente trabaja en su despacho — haz clic para escuchar lo que hace.
+          <p className="text-[var(--text-dim)] text-center mb-2 max-w-2xl mx-auto">
+            Cada sala es un{" "}
+            <span className="text-[var(--text)] font-semibold">Bounded Context</span>{" "}
+            autónomo con su propio agente especializado.
+            Haz clic en cualquier agente para abrir su terminal.
           </p>
         </Reveal>
 
         <Reveal replay delayMs={120}>
-          <p className="text-[11px] uppercase tracking-widest text-[var(--text-dim)] text-center mb-10">
+          <p className="text-[11px] uppercase tracking-widest text-[var(--text-dim)] text-center mb-8">
             <span className="inline-block w-2 h-2 align-middle mr-2 rounded-sm bg-emerald-400 animate-pulse" />
-            4 agentes online · click para interactuar
+            4 bounded contexts · 4 agentes online
           </p>
         </Reveal>
 
@@ -1919,6 +1940,30 @@ const Services = () => {
                     style={{ background: "#d4d0c8", boxShadow: "inset 0 0 0 1px #807c78" }}
                   />
                 ))}
+
+                {/* Building nameplate — interior sign mounted on front wall */}
+                <div
+                  aria-hidden
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "10px",
+                    marginBottom: "8px",
+                    padding: "4px 10px",
+                    background: "linear-gradient(180deg, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.20) 100%)",
+                    border: "1px solid rgba(0,0,0,0.28)",
+                    borderRadius: "2px",
+                  }}
+                >
+                  <span style={{ color: "#f0ead8", fontFamily: "ui-monospace, monospace", fontSize: "clamp(7px, 1.1vw, 10px)", letterSpacing: "0.20em", textTransform: "uppercase" }}>
+                    OFICINA AGÉNTICA
+                  </span>
+                  <span style={{ color: "rgba(255,255,255,0.25)", fontSize: "9px" }}>◈</span>
+                  <span style={{ color: "#9a9490", fontFamily: "ui-monospace, monospace", fontSize: "clamp(6px, 0.95vw, 9px)", letterSpacing: "0.14em" }}>
+                    PLANTA 1 · 4 BOUNDED CONTEXTS
+                  </span>
+                </div>
 
                 {/*
                 3 × 3 grid:
