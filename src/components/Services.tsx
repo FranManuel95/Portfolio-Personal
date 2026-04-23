@@ -970,8 +970,9 @@ const Services = () => {
   }, [activeId]);
 
   return (
-    <section className="relative">
+    <section className="relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg)] via-[var(--bg-elev-1)] to-[var(--bg)]" />
+
       <div className="container relative">
         <Reveal replay>
           <h2 className="headline text-3xl text-center py-4 mt-6 mb-6">
@@ -981,33 +982,124 @@ const Services = () => {
 
         <Reveal replay delayMs={60}>
           <p className="text-[var(--text-dim)] text-center mb-3 max-w-2xl mx-auto">
-            Bienvenido a mi <span className="text-[var(--text)] font-semibold">oficina agéntica</span>.
+            Bienvenido a mi{" "}
+            <span className="text-[var(--text)] font-semibold">oficina agéntica</span>.
             Cada agente trabaja en su despacho — haz clic para escuchar lo que hace.
           </p>
         </Reveal>
 
         <Reveal replay delayMs={120}>
-          <p className="text-[11px] uppercase tracking-widest text-[var(--text-dim)] text-center mb-8">
+          <p className="text-[11px] uppercase tracking-widest text-[var(--text-dim)] text-center mb-10">
             <span className="inline-block w-2 h-2 align-middle mr-2 rounded-sm bg-emerald-400 animate-pulse" />
             4 agentes online · click para interactuar
           </p>
         </Reveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-          {services.map((s, i) => (
-            <Reveal replay key={s.id} delayMs={80 + i * 60}>
-              <Room
-                service={s}
-                idx={i}
-                active={activeId === s.id}
-                onToggle={() =>
-                  setActiveId((prev) => (prev === s.id ? null : s.id))
-                }
-              />
-            </Reveal>
-          ))}
-        </div>
+        {/* ── Connected office floor plan ── */}
+        <Reveal replay delayMs={160}>
+          {/* Perspective wrapper — gives the 70° top-down angle */}
+          <div
+            className="office-scene"
+            style={{
+              perspective: "1000px",
+              perspectiveOrigin: "50% -5%",
+            }}
+          >
+            <div
+              className="office-tilt"
+              style={{
+                transform: "rotateX(28deg)",
+                transformOrigin: "center top",
+                willChange: "transform",
+              }}
+            >
+              {/* Outer building shell */}
+              <div
+                className="office-shell"
+                style={{
+                  background: "#090a0f",
+                  padding: "7px",
+                  border: "1px solid #1d1f2a",
+                  borderRadius: "3px",
+                  boxShadow:
+                    "0 0 0 1px #252838, " +
+                    "inset 0 0 20px rgba(0,0,0,0.6), " +
+                    "0 70px 140px -20px rgba(0,0,0,0.95)",
+                }}
+              >
+                {/* Corner bolts (decorative) */}
+                {["top-1 left-1","top-1 right-1","bottom-1 left-1","bottom-1 right-1"].map(pos => (
+                  <span
+                    key={pos}
+                    aria-hidden
+                    className={`absolute ${pos} w-1.5 h-1.5 rounded-full`}
+                    style={{ background: "#252838", boxShadow: "inset 0 0 0 1px #0a0b10" }}
+                  />
+                ))}
+
+                {/* 2 × 2 room grid — gap = wall thickness */}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "7px",
+                    background: "#090a0f",
+                  }}
+                >
+                  {services.map((s, i) => (
+                    <Room
+                      key={s.id}
+                      service={s}
+                      idx={i}
+                      active={activeId === s.id}
+                      onToggle={() =>
+                        setActiveId((prev) => (prev === s.id ? null : s.id))
+                      }
+                    />
+                  ))}
+                </div>
+
+                {/* Floor-plan footer label */}
+                <div
+                  className="flex items-center justify-center gap-3 mt-[7px]"
+                  style={{ borderTop: "1px solid #1a1b24" }}
+                >
+                  <span
+                    className="block text-[9px] tracking-[0.2em] uppercase py-1.5"
+                    style={{ color: "#3a3d52", fontFamily: "ui-monospace, monospace" }}
+                  >
+                    Planta&nbsp;1&nbsp;·&nbsp;Oficina&nbsp;Agéntica&nbsp;·&nbsp;4&nbsp;despachos
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Shadow cast on the page below the tilted building */}
+          <div
+            aria-hidden
+            style={{
+              height: "40px",
+              marginTop: "-10px",
+              background:
+                "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,0,0,0.55) 0%, transparent 100%)",
+              pointerEvents: "none",
+            }}
+          />
+        </Reveal>
       </div>
+
+      <style jsx>{`
+        /* On small screens skip the tilt so rooms stay readable */
+        @media (max-width: 639px) {
+          .office-tilt {
+            transform: none !important;
+          }
+          .office-scene {
+            perspective: none !important;
+          }
+        }
+      `}</style>
     </section>
   );
 };
