@@ -596,6 +596,59 @@ function PixelSprite({
 }
 
 /**
+ * AnimatedPixelSprite — pre-renders all animation frames once via useMemo.
+ * Frame switching only updates a single `display` attribute — no rect recreation,
+ * no flicker. Two SVGs (walk / sit) are always in the DOM; one is hidden via CSS.
+ */
+function AnimatedPixelSprite({
+  sprite,
+  palette,
+  walkFrame,
+  pose,
+  className,
+}: {
+  sprite: Service["sprite"];
+  palette: Palette;
+  walkFrame: 0 | 1 | 2 | 3;
+  pose: CharPose;
+  className?: string;
+}) {
+  // All four frame sets are module-level constants — these useMemos run once at mount.
+  const idleRects  = useMemo(() => spriteRects(sprite.rows,  palette), [sprite.rows,  palette]);
+  const walkARects = useMemo(() => spriteRects(sprite.walkA, palette), [sprite.walkA, palette]);
+  const walkBRects = useMemo(() => spriteRects(sprite.walkB, palette), [sprite.walkB, palette]);
+  const sitRects   = useMemo(() => spriteRects(sprite.sit,   palette), [sprite.sit,   palette]);
+
+  const isSitting = pose === "sitting";
+  const w = sprite.rows[0]?.length ?? 16;
+
+  return (
+    <div className={className} style={{ position: "relative", width: "100%", height: "100%" }}>
+      {/* Walk / idle SVG — always mounted, hidden when sitting */}
+      <svg
+        viewBox={`0 0 ${w} ${sprite.rows.length}`}
+        width="100%" height="100%"
+        style={{ imageRendering: "pixelated", display: isSitting ? "none" : "block", position: "absolute", inset: 0 }}
+        aria-hidden
+      >
+        <g display={walkFrame === 1 ? "none" : walkFrame === 3 ? "none" : "block"}>{idleRects}</g>
+        <g display={walkFrame === 1 ? "block" : "none"}>{walkARects}</g>
+        <g display={walkFrame === 3 ? "block" : "none"}>{walkBRects}</g>
+      </svg>
+      {/* Sit SVG — always mounted, visible only when sitting */}
+      <svg
+        viewBox={`0 0 ${w} ${sprite.sit.length}`}
+        width="100%" height="100%"
+        style={{ imageRendering: "pixelated", display: isSitting ? "block" : "none", position: "absolute", inset: 0 }}
+        aria-hidden
+      >
+        {sitRects}
+      </svg>
+    </div>
+  );
+}
+
+/**
  * ImageSprite — renders an animated PNG sprite sheet, scaling to fill its container.
  * The sprite strip is positioned as an <img> that is frameCount times wider than the
  * container; translateX(-frame/frameCount * 100%) clips to the correct frame.
@@ -1859,21 +1912,6 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
     ? { top: `${wp.topPct}%`,    bottom: "auto" }
     : { bottom: `${wp.bottomPct ?? 4}%`, top: "auto" };
 
-  // Select sprite rows based on pose and walk phase.
-  // 4-phase walk: 0/2 = passing (idle pose, legs together), 1 = right stride, 3 = left stride.
-  const spriteRows = (() => {
-    if (wp.pose === "sitting" && service.sprite.sit) return service.sprite.sit;
-    if (wp.pose === "walking") {
-      if (walkFrame === 1 && service.sprite.walkA) return service.sprite.walkA;
-      if (walkFrame === 3 && service.sprite.walkB) return service.sprite.walkB;
-      // phases 0 and 2 fall through to the neutral/passing pose (idle rows)
-    }
-    return service.sprite.rows;
-  })();
-
-  // If PNG sprite sheet is available, prefer it over SVG
-  const hasImageSprite = !!service.imageSprite;
-
   return (
     <button
       ref={ref}
@@ -1883,8 +1921,8 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
       style={{
         left: `${wp.leftPct}%`,
         ...positionStyle,
-        width: "18%",
-        height: isSitting ? "30%" : "50%",
+        width: "28%",
+        height: isSitting ? "38%" : "60%",
         zIndex: depthZ,
         transition: `left ${travelMs}ms linear, top ${travelMs}ms ease-out, bottom ${travelMs}ms ease-out, height ${Math.min(travelMs, 600)}ms ease-out, transform ${Math.min(travelMs, 1200)}ms ease-out`,
       }}
@@ -1899,8 +1937,6 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
       >
         <span className="agent-shadow" aria-hidden />
         <span className="agent-foot-contact" aria-hidden />
-        {/* agent-body is where walking bob + idle bob live, so they don't overwrite
-            the parent's scale transform. */}
         <span
           className={
             "agent-body " +
@@ -1908,27 +1944,13 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
              (wp.pose === "idle" || wp.pose === "standing") ? "idle" : "still")
           }
         >
-          {hasImageSprite && service.imageSprite ? (
-            <ImageSprite
-              src={wp.pose === "sitting" && service.imageSprite.sitSrc
-                ? service.imageSprite.sitSrc
-                : service.imageSprite.walkSrc}
-              frameW={service.imageSprite.frameW}
-              frameH={service.imageSprite.frameH}
-              frameCount={wp.pose === "sitting"
-                ? (service.imageSprite.sitFrames ?? 1)
-                : service.imageSprite.walkFrames}
-              fps={wp.pose === "walking" ? (service.imageSprite.fps ?? 8) : 2}
-              row={0}
-              className="agent-sprite"
-            />
-          ) : (
-            <PixelSprite
-              rows={spriteRows}
-              palette={service.sprite.palette}
-              className="agent-sprite"
-            />
-          )}
+          <AnimatedPixelSprite
+            sprite={service.sprite}
+            palette={service.sprite.palette}
+            walkFrame={walkFrame}
+            pose={wp.pose}
+            className="agent-sprite"
+          />
         </span>
       </span>
     </button>
