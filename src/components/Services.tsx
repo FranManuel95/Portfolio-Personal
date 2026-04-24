@@ -388,6 +388,18 @@ type Service = {
     sit: string[];
     palette: Palette;
   };
+  /** Optional: when PNG sprite sheets are available, use these instead of SVG */
+  imageSprite?: {
+    walkSrc: string;      // path e.g. "/sprites/dev-walk.png"
+    idleSrc?: string;     // path for idle animation
+    sitSrc?: string;      // path for sitting
+    frameW: number;       // single frame width in px
+    frameH: number;       // single frame height in px
+    walkFrames: number;   // frames in walk cycle
+    idleFrames?: number;
+    sitFrames?: number;
+    fps?: number;
+  };
   /** multiplier for waypoint durations (<1 faster, >1 slower) so rooms desync */
   paceFactor: number;
   /** initial waypoint index (staggers where each agent starts in the loop) */
@@ -525,6 +537,58 @@ function PixelSprite({
     >
       {rects}
     </svg>
+  );
+}
+
+/**
+ * ImageSprite — renders an animated PNG sprite sheet.
+ * frameW/frameH: dimensions of a single frame in px.
+ * frameCount: total frames in the walk cycle.
+ * fps: animation speed.
+ * row: which row in the sprite sheet (0=down, 1=left, 2=right, 3=up).
+ */
+function ImageSprite({
+  src,
+  frameW,
+  frameH,
+  frameCount,
+  fps = 8,
+  row = 0,
+  style,
+  className,
+}: {
+  src: string;
+  frameW: number;
+  frameH: number;
+  frameCount: number;
+  fps?: number;
+  row?: number;
+  style?: React.CSSProperties;
+  className?: string;
+}) {
+  const [frame, setFrame] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFrame(f => (f + 1) % frameCount);
+    }, 1000 / fps);
+    return () => clearInterval(interval);
+  }, [frameCount, fps]);
+
+  return (
+    <div
+      className={className}
+      style={{
+        width: "100%",
+        height: "100%",
+        backgroundImage: `url(${src})`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: `${frameW * frameCount}px auto`,
+        backgroundPosition: `-${frame * frameW}px -${row * frameH}px`,
+        imageRendering: "pixelated",
+        ...style,
+      }}
+    />
   );
 }
 
@@ -1712,6 +1776,9 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
     return service.sprite.rows;
   })();
 
+  // If PNG sprite sheet is available, prefer it over SVG
+  const hasImageSprite = !!service.imageSprite;
+
   return (
     <button
       ref={ref}
@@ -1737,11 +1804,27 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
       >
         <span className="agent-shadow" aria-hidden />
         <span className="agent-foot-contact" aria-hidden />
-        <PixelSprite
-          rows={spriteRows}
-          palette={service.sprite.palette}
-          className="agent-sprite"
-        />
+        {hasImageSprite && service.imageSprite ? (
+          <ImageSprite
+            src={wp.pose === "sitting" && service.imageSprite.sitSrc
+              ? service.imageSprite.sitSrc
+              : service.imageSprite.walkSrc}
+            frameW={service.imageSprite.frameW}
+            frameH={service.imageSprite.frameH}
+            frameCount={wp.pose === "sitting"
+              ? (service.imageSprite.sitFrames ?? 1)
+              : service.imageSprite.walkFrames}
+            fps={wp.pose === "walking" ? (service.imageSprite.fps ?? 8) : 2}
+            row={wp.pose === "sitting" ? 0 : (wp.flip ? 1 : 2)}
+            className="agent-sprite"
+          />
+        ) : (
+          <PixelSprite
+            rows={spriteRows}
+            palette={service.sprite.palette}
+            className="agent-sprite"
+          />
+        )}
       </span>
     </button>
   );
