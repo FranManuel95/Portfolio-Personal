@@ -624,10 +624,13 @@ function AnimatedPixelSprite({
 
   return (
     <div className={className} style={{ position: "relative", width: "100%", height: "100%" }}>
-      {/* Walk / idle SVG — always mounted, hidden when sitting */}
+      {/* Walk / idle SVG — always mounted, hidden when sitting.
+          preserveAspectRatio="xMidYMax meet" anchors sprite to container bottom
+          so the feet always touch the floor regardless of container height. */}
       <svg
         viewBox={`0 0 ${w} ${sprite.rows.length}`}
         width="100%" height="100%"
+        preserveAspectRatio="xMidYMax meet"
         style={{ imageRendering: "pixelated", display: isSitting ? "none" : "block", position: "absolute", inset: 0 }}
         aria-hidden
       >
@@ -639,6 +642,7 @@ function AnimatedPixelSprite({
       <svg
         viewBox={`0 0 ${w} ${sprite.sit.length}`}
         width="100%" height="100%"
+        preserveAspectRatio="xMidYMax meet"
         style={{ imageRendering: "pixelated", display: isSitting ? "block" : "none", position: "absolute", inset: 0 }}
         aria-hidden
       >
@@ -1921,8 +1925,8 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
       style={{
         left: `${wp.leftPct}%`,
         ...positionStyle,
-        width: "28%",
-        height: isSitting ? "38%" : "60%",
+        width: "22%",
+        height: isSitting ? "32%" : "52%",
         zIndex: depthZ,
         transition: `left ${travelMs}ms linear, top ${travelMs}ms ease-out, bottom ${travelMs}ms ease-out, height ${Math.min(travelMs, 600)}ms ease-out, transform ${Math.min(travelMs, 1200)}ms ease-out`,
       }}
