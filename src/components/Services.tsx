@@ -1730,10 +1730,23 @@ function Room({
           width: 100%; height: 100%;
           display: block;
         }
-        :global(.agent-bob) {
-          animation: bob 0.5s steps(2) infinite;
+        :global(.agent-body) {
+          position: relative;
+          width: 100%; height: 100%;
+          display: block;
+          /* Will-change so the bob animation doesn't stutter during horizontal travel */
+          will-change: transform;
         }
-        :global(.no-bob) { animation: none; }
+        /* Walk cycle: syncs with JS 4-phase walk (140 ms × 4 = 560 ms total).
+           Small vertical bob (contact phase sinks 0.5 px) + tiny horizontal sway. */
+        :global(.agent-body.walk) {
+          animation: walkCycle 560ms steps(1) infinite;
+        }
+        /* Idle bob: gentle up-down every 700 ms, no horizontal sway */
+        :global(.agent-body.idle) {
+          animation: idleBreath 1400ms ease-in-out infinite;
+        }
+        :global(.agent-body.still) { animation: none; }
         :global(.agent-shadow) {
           position: absolute;
           left: 20%; right: 20%; bottom: -3%;
@@ -1759,13 +1772,25 @@ function Room({
           filter: drop-shadow(0 2px 0 rgba(0,0,0,0.35));
         }
         :global(.agent:hover .agent-sprite) { filter: drop-shadow(0 3px 0 rgba(0,0,0,0.5)) brightness(1.08); }
-        @keyframes bob {
-          0%   { transform: translateY(0px); }
-          50%  { transform: translateY(-1px); }
-          100% { transform: translateY(0px); }
+        /* 4-phase walk cycle. Phases are 140 ms each, matching JS frame advance:
+           0 = passing (both feet roughly under body)   → body up
+           1 = contact right (right leg forward)        → body down + sway right
+           2 = passing                                  → body up
+           3 = contact left  (left leg forward)         → body down + sway left   */
+        @keyframes walkCycle {
+          0%   { transform: translate(0, -1px); }
+          25%  { transform: translate(0.5px, 0); }
+          50%  { transform: translate(0, -1px); }
+          75%  { transform: translate(-0.5px, 0); }
+          100% { transform: translate(0, -1px); }
+        }
+        @keyframes idleBreath {
+          0%, 100% { transform: translateY(0); }
+          50%      { transform: translateY(-0.8px); }
         }
         @media (prefers-reduced-motion: reduce) {
-          :global(.agent-bob) { animation: none !important; }
+          :global(.agent-body.walk),
+          :global(.agent-body.idle) { animation: none !important; }
         }
       `}</style>
     </div>
@@ -1785,7 +1810,9 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
 }>(function CharacterActor({ service, active, onToggle, onPoseChange }, ref) {
   const [wpIdx, setWpIdx] = useState(service.startIdx % DEFAULT_WAYPOINTS.length);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [walkFrame, setWalkFrame] = useState<0 | 1>(0);
+  // 4-phase walk cycle: neutral → stride-A → neutral → stride-B → neutral → ...
+  // Gives a proper "pass–contact–pass–contact" gait like in classic pixel games.
+  const [walkFrame, setWalkFrame] = useState<0 | 1 | 2 | 3>(0);
 
   // Notify parent of pose changes
   useEffect(() => {
@@ -1804,10 +1831,13 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
     };
   }, [wpIdx, active, service.paceFactor]);
 
-  // Cycle walk frames when walking (not when static)
+  // Advance walk frame every 140 ms while in "walking" pose.
+  // 4 phases × 140 ms = 560 ms per full stride — close to a natural walking pace.
   useEffect(() => {
     if (DEFAULT_WAYPOINTS[wpIdx].pose !== "walking") return;
-    const interval = setInterval(() => setWalkFrame(f => f === 0 ? 1 : 0), 220);
+    const interval = setInterval(() => {
+      setWalkFrame(f => ((f + 1) % 4) as 0 | 1 | 2 | 3);
+    }, 140);
     return () => clearInterval(interval);
   }, [wpIdx]);
 
@@ -1826,12 +1856,14 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
     ? { top: `${wp.topPct}%`,    bottom: "auto" }
     : { bottom: `${wp.bottomPct ?? 4}%`, top: "auto" };
 
-  // Select sprite rows based on pose and walk frame
+  // Select sprite rows based on pose and walk phase.
+  // 4-phase walk: 0/2 = passing (idle pose, legs together), 1 = right stride, 3 = left stride.
   const spriteRows = (() => {
     if (wp.pose === "sitting" && service.sprite.sit) return service.sprite.sit;
     if (wp.pose === "walking") {
-      if (walkFrame === 0 && service.sprite.walkA) return service.sprite.walkA;
-      if (walkFrame === 1 && service.sprite.walkB) return service.sprite.walkB;
+      if (walkFrame === 1 && service.sprite.walkA) return service.sprite.walkA;
+      if (walkFrame === 3 && service.sprite.walkB) return service.sprite.walkB;
+      // phases 0 and 2 fall through to the neutral/passing pose (idle rows)
     }
     return service.sprite.rows;
   })();
@@ -1855,7 +1887,7 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
       }}
     >
       <span
-        className={`agent-inner ${(wp.pose === "idle" || wp.pose === "standing") ? "agent-bob" : "no-bob"}`}
+        className="agent-inner"
         style={{
           transform: `scaleX(${wp.flip ? -depthScale : depthScale}) scaleY(${depthScale})`,
           transformOrigin: "50% 100%",
@@ -1864,27 +1896,37 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
       >
         <span className="agent-shadow" aria-hidden />
         <span className="agent-foot-contact" aria-hidden />
-        {hasImageSprite && service.imageSprite ? (
-          <ImageSprite
-            src={wp.pose === "sitting" && service.imageSprite.sitSrc
-              ? service.imageSprite.sitSrc
-              : service.imageSprite.walkSrc}
-            frameW={service.imageSprite.frameW}
-            frameH={service.imageSprite.frameH}
-            frameCount={wp.pose === "sitting"
-              ? (service.imageSprite.sitFrames ?? 1)
-              : service.imageSprite.walkFrames}
-            fps={wp.pose === "walking" ? (service.imageSprite.fps ?? 8) : 2}
-            row={0}
-            className="agent-sprite"
-          />
-        ) : (
-          <PixelSprite
-            rows={spriteRows}
-            palette={service.sprite.palette}
-            className="agent-sprite"
-          />
-        )}
+        {/* agent-body is where walking bob + idle bob live, so they don't overwrite
+            the parent's scale transform. */}
+        <span
+          className={
+            "agent-body " +
+            (wp.pose === "walking" ? "walk" :
+             (wp.pose === "idle" || wp.pose === "standing") ? "idle" : "still")
+          }
+        >
+          {hasImageSprite && service.imageSprite ? (
+            <ImageSprite
+              src={wp.pose === "sitting" && service.imageSprite.sitSrc
+                ? service.imageSprite.sitSrc
+                : service.imageSprite.walkSrc}
+              frameW={service.imageSprite.frameW}
+              frameH={service.imageSprite.frameH}
+              frameCount={wp.pose === "sitting"
+                ? (service.imageSprite.sitFrames ?? 1)
+                : service.imageSprite.walkFrames}
+              fps={wp.pose === "walking" ? (service.imageSprite.fps ?? 8) : 2}
+              row={0}
+              className="agent-sprite"
+            />
+          ) : (
+            <PixelSprite
+              rows={spriteRows}
+              palette={service.sprite.palette}
+              className="agent-sprite"
+            />
+          )}
+        </span>
       </span>
     </button>
   );
