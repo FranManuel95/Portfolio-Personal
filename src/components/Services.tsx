@@ -53,29 +53,37 @@ function spriteRects(rows: string[], palette: Palette) {
 
 // --- DEV — male full-stack engineer ------------------------------------
 //   Brown hair, glasses, blue tee, jeans, navy sneakers.
+//   24×36 high-res sprite (4-frame walk cycle).
 const devRows = [
-  "....hhhhhh......", // 0  hair top
-  "...hhhhhhhh.....", // 1  hair sides
-  "...hhSSSShh.....", // 2  hair framing forehead
-  "...hSSSSSSh.....", // 3  forehead
-  "...SKWWWWKS.....", // 4  glasses frame
-  "...SKWkWkKS.....", // 5  eyes through glasses (k = pupil)
-  "...sSSSSSSs.....", // 6  cheeks
-  "....sSMMSs......", // 7  mouth
-  ".....SSSS.......", // 8  neck
-  "....BBBBBB......", // 9  collar
-  "...BBBBBBBB.....", // 10 shoulders
-  "..SBBBBBBBBS....", // 11 arms + hands
-  "..SBBBBBBBBS....", // 12
-  "...BBBBBBBB.....", // 13 torso
-  "...JJJJJJJJ.....", // 14 belt/waist
-  "...JJJJJJJJ.....", // 15 pants top
-  "...JJJ..JJJ.....", // 16 legs split
-  "...JJJ..JJJ.....", // 17
-  "...jjj..jjj.....", // 18 pants shadow
-  "..NNNN..NNNN....", // 19 shoes
-  "..NNNN..NNNN....", // 20
-  "..wwww..wwww....", // 21 rubber soles
+  "........hhhhhhhh........", // 0  hair top
+  ".......hhhhhhhhhh.......", // 1  hair sides
+  ".......hhSSSSSShh.......", // 2  forehead under hair
+  "......hhSSSSSSSShh......", // 3  face top
+  "......hSSKWWWWKSSh......", // 4  eyes with glasses (K=frame, W=lens)
+  "......hSSKkWWkKSSh......", // 5  pupils (k=pupil)
+  "......hSSSSSSSSSh.......", // 6  cheeks
+  ".......sSMMMMSSs........", // 7  mouth area
+  "........SSSSSSSS........", // 8  neck
+  ".......BBBBBBBBBB.......", // 9  collar
+  "......BBBBBBBBBBBB......", // 10 upper shoulders
+  ".....SBBBBBBBBBBBBS.....", // 11 arms + hands
+  ".....SBBBBBBBBBBBBS.....", // 12 arms
+  "......BBBBBBBBBBBB......", // 13 torso
+  "......BBBBBBBBBBBB......", // 14 torso
+  "......BBBBBBBBBBBB......", // 15 torso lower
+  "......JJJJJJJJJJJJ......", // 16 belt/waist (hips together)
+  "......JJJJJJJJJJJJ......", // 17 upper legs together
+  ".....JJJJJ..JJJJJ.......", // 18 legs split (5px each, 2px gap)
+  ".....JJJJJ..JJJJJ.......", // 19
+  ".....JJJJJ..JJJJJ.......", // 20
+  ".....JJJJJ..JJJJJ.......", // 21
+  ".....jjjjj..jjjjj.......", // 22 leg shadow
+  ".....jjjjj..jjjjj.......", // 23
+  ".....NNNNN..NNNNN.......", // 24 shoes dark
+  ".....NNNNN..NNNNN.......", // 25
+  ".....NNNNN..NNNNN.......", // 26
+  ".....wwwww..wwwww.......", // 27 sneaker soles
+  ".....wwwww..wwwww.......", // 28
 ];
 const devPalette: Palette = {
   S: "#eecaa4", // skin light
@@ -212,39 +220,71 @@ const agentPalette: Palette = {
   X: "#0a0a12", // heels
 };
 
-// ── DEV walking frames (rows 16-21 change; all others copied via spread) ──
+// ── DEV walking frames — 29 rows (no padding), arm swing on rows 11-12 ──
 const devWalkARows: string[] = [
-  ...devRows.slice(0, 16),
-  "...JJJ...JJJ....", // 16 right leg shifted +1 px right (3-dot gap)
-  "...JJJ...JJJ....", // 17
-  "...jjj...jjj....", // 18 shadow follows
-  "..NNNN...NNNN...", // 19 right shoe shifted right
-  "..NNNN...NNNN...", // 20
-  "..wwww...wwww...", // 21
+  ...devRows.slice(0, 11),              // 0–10 head + upper torso
+  "....SSBBBBBBBBBBBBS.....",           // 11 left arm swings fwd (+1 px left)
+  "....SSBBBBBBBBBBBBS.....",           // 12
+  ...devRows.slice(13, 18),             // 13–17 lower torso + waist
+  "....JJJJJ....JJJJJ......",          // 18 stride A — legs wider
+  "....JJJJJ....JJJJJ......",          // 19
+  "....JJJJJ....JJJJJ......",          // 20
+  "....JJJJJ....JJJJJ......",          // 21
+  "....jjjjj....jjjjj......",          // 22 leg shadow
+  "....jjjjj....jjjjj......",          // 23
+  "....NNNNN....NNNNN......",          // 24 shoe
+  "....NNNNN....NNNNN......",          // 25
+  "....NNNNN....NNNNN......",          // 26
+  "....wwwww....wwwww......",          // 27 sole
+  "....wwwww....wwwww......",          // 28
 ];
 const devWalkBRows: string[] = [
-  ...devRows.slice(0, 16),
-  "..JJJ...JJJ.....", // 16 left leg shifted -1 px left (3-dot gap)
-  "..JJJ...JJJ.....", // 17
-  "..jjj...jjj.....", // 18
-  ".NNNN...NNNN....", // 19 left shoe shifted left
-  ".NNNN...NNNN....", // 20
-  ".wwww...wwww....", // 21
+  ...devRows.slice(0, 11),              // 0–10 head + upper torso
+  ".....SBBBBBBBBBBBSS.....",           // 11 right arm swings fwd (+1 px right)
+  ".....SBBBBBBBBBBBSS.....",           // 12
+  ...devRows.slice(13, 18),             // 13–17 lower torso + waist
+  "......JJJJJ....JJJJJ....",          // 18 stride B — legs mirrored
+  "......JJJJJ....JJJJJ....",          // 19
+  "......JJJJJ....JJJJJ....",          // 20
+  "......JJJJJ....JJJJJ....",          // 21
+  "......jjjjj....jjjjj....",          // 22
+  "......jjjjj....jjjjj....",          // 23
+  "......NNNNN....NNNNN....",          // 24
+  "......NNNNN....NNNNN....",          // 25
+  "......NNNNN....NNNNN....",          // 26
+  "......wwwww....wwwww....",          // 27
+  "......wwwww....wwwww....",          // 28
 ];
 const devSitRows: string[] = [
-  ...devRows.slice(0, 15),
-  "..JJJJJJJJJJ....", // 15 thighs spread wider (10 px)
-  ".JJJJ....JJJJ...", // 16 knees apart (4-dot gap)
-  "..NNN....NNN....", // 17 shoe tops visible
-  "..www....www....", // 18 sole edges
-  "................", // 19 feet hidden under desk
-  "................", // 20
-  "................", // 21
+  ...devRows.slice(0, 16),
+  "...JJJJJJJJJJJJJJ.......", // 16 thighs spread (14px)
+  "....JJJJJ......JJJJJ....", // 17 knees apart
+  "....NNN..........NNN....", // 18 shoe tops visible
+  "....www..........www....", // 19 sole edges
+  "........................", // 20-35 feet hidden under desk
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
 ];
 
-// ── AI walking frames (rows 17-21 change for female legs/heels) ──
+// ── AI walking frames (arm swing on rows 11-12, heel shift on rows 18-21) ──
 const aiWalkARows: string[] = [
-  ...aiRows.slice(0, 17),
+  ...aiRows.slice(0, 11),
+  ".SVVWWWWVVS.....",  // 11 left arm swings fwd (+1 px left)
+  ".SVVVVVVVVS.....",  // 12
+  ...aiRows.slice(13, 17),
   "....SSSSSS......", // 17 thigh row unchanged
   "....SS...SS.....", // 18 right leg +1 (3-dot gap)
   "....SS...SS.....", // 19
@@ -252,7 +292,10 @@ const aiWalkARows: string[] = [
   "...XX.....XX....", // 21 right heel tip +1
 ];
 const aiWalkBRows: string[] = [
-  ...aiRows.slice(0, 17),
+  ...aiRows.slice(0, 11),
+  "..SVVWWWWVVSS...",  // 11 right arm swings fwd (+1 px right)
+  "..SVVVVVVVVSS...",  // 12
+  ...aiRows.slice(13, 17),
   "....SSSSSS......", // 17
   "...SS...SS......", // 18 left leg -1 (3-dot gap)
   "...SS...SS......", // 19
@@ -268,9 +311,12 @@ const aiSitRows: string[] = [
   "................", // 21 feet hidden under desk
 ];
 
-// ── AUTO walking frames (rows 16-21 change; same structure as dev) ──
+// ── AUTO walking frames (arm swing on rows 10-11, leg shift on rows 16-21) ──
 const autoWalkARows: string[] = [
-  ...autoRows.slice(0, 16),
+  ...autoRows.slice(0, 10),
+  ".SOOOOOOOOS.....",  // 10 left arm swings fwd (+1 px left)
+  ".SOOOOOOOOS.....",  // 11
+  ...autoRows.slice(12, 16),
   "...GGG...GGG....", // 16 right leg +1 (3-dot gap)
   "...GGG...GGG....", // 17
   "...ggg...ggg....", // 18 shadow follows
@@ -279,7 +325,10 @@ const autoWalkARows: string[] = [
   "..wwww...wwww...", // 21
 ];
 const autoWalkBRows: string[] = [
-  ...autoRows.slice(0, 16),
+  ...autoRows.slice(0, 10),
+  "..SOOOOOOOOSS...",  // 10 right arm swings fwd (+1 px right)
+  "..SOOOOOOOOSS...",  // 11
+  ...autoRows.slice(12, 16),
   "..GGG...GGG.....", // 16 left leg -1 (3-dot gap)
   "..GGG...GGG.....", // 17
   "..ggg...ggg.....", // 18
@@ -298,16 +347,22 @@ const autoSitRows: string[] = [
   "................", // 21
 ];
 
-// ── AGENT walking frames (rows 18-21 change; skirt rows 15-17 intact) ──
+// ── AGENT walking frames (arm swing on rows 10-11, heel shift on rows 18-21) ──
 const agentWalkARows: string[] = [
-  ...agentRows.slice(0, 18),
+  ...agentRows.slice(0, 10),
+  ".SRRRRRRRRS.....",  // 10 left arm swings fwd (+1 px left)
+  ".SRRRRRRRRS.....",  // 11
+  ...agentRows.slice(12, 18),
   "....SS...SS.....", // 18 right leg +1 (3-dot gap)
   "...XXX...XXX....", // 19 right heel +1
   "...XX.....XX....", // 20 right heel tip +1
   "................", // 21
 ];
 const agentWalkBRows: string[] = [
-  ...agentRows.slice(0, 18),
+  ...agentRows.slice(0, 10),
+  "..SRRRRRRRRSS...",  // 10 right arm swings fwd (+1 px right)
+  "..SRRRRRRRRSS...",  // 11
+  ...agentRows.slice(12, 18),
   "...SS...SS......", // 18 left leg -1 (3-dot gap)
   "..XXX...XXX.....", // 19 left heel -1
   "..XX.....XX.....", // 20 left heel tip -1
@@ -541,16 +596,66 @@ function PixelSprite({
 }
 
 /**
- * ImageSprite — renders an animated PNG sprite sheet.
- * frameW/frameH: dimensions of a single frame in px.
- * frameCount: total frames in the walk cycle.
- * fps: animation speed.
- * row: which row in the sprite sheet (0=down, 1=left, 2=right, 3=up).
+ * AnimatedPixelSprite — pre-renders all animation frames once via useMemo.
+ * Frame switching only updates a single `display` attribute — no rect recreation,
+ * no flicker. Two SVGs (walk / sit) are always in the DOM; one is hidden via CSS.
+ */
+function AnimatedPixelSprite({
+  sprite,
+  palette,
+  walkFrame,
+  pose,
+  className,
+}: {
+  sprite: Service["sprite"];
+  palette: Palette;
+  walkFrame: 0 | 1 | 2 | 3;
+  pose: CharPose;
+  className?: string;
+}) {
+  // All four frame sets are module-level constants — these useMemos run once at mount.
+  const idleRects  = useMemo(() => spriteRects(sprite.rows,  palette), [sprite.rows,  palette]);
+  const walkARects = useMemo(() => spriteRects(sprite.walkA, palette), [sprite.walkA, palette]);
+  const walkBRects = useMemo(() => spriteRects(sprite.walkB, palette), [sprite.walkB, palette]);
+  const sitRects   = useMemo(() => spriteRects(sprite.sit,   palette), [sprite.sit,   palette]);
+
+  const isSitting = pose === "sitting";
+  const w = sprite.rows[0]?.length ?? 16;
+
+  return (
+    <div className={className} style={{ position: "relative", width: "100%", height: "100%" }}>
+      {/* Walk / idle SVG — always mounted, hidden when sitting */}
+      <svg
+        viewBox={`0 0 ${w} ${sprite.rows.length}`}
+        width="100%" height="100%"
+        style={{ imageRendering: "pixelated", display: isSitting ? "none" : "block", position: "absolute", inset: 0 }}
+        aria-hidden
+      >
+        <g display={walkFrame === 1 ? "none" : walkFrame === 3 ? "none" : "block"}>{idleRects}</g>
+        <g display={walkFrame === 1 ? "block" : "none"}>{walkARects}</g>
+        <g display={walkFrame === 3 ? "block" : "none"}>{walkBRects}</g>
+      </svg>
+      {/* Sit SVG — always mounted, visible only when sitting */}
+      <svg
+        viewBox={`0 0 ${w} ${sprite.sit.length}`}
+        width="100%" height="100%"
+        style={{ imageRendering: "pixelated", display: isSitting ? "block" : "none", position: "absolute", inset: 0 }}
+        aria-hidden
+      >
+        {sitRects}
+      </svg>
+    </div>
+  );
+}
+
+/**
+ * ImageSprite — renders an animated PNG sprite sheet, scaling to fill its container.
+ * The sprite strip is positioned as an <img> that is frameCount times wider than the
+ * container; translateX(-frame/frameCount * 100%) clips to the correct frame.
+ * row: which vertical row in the sheet (0 = top).
  */
 function ImageSprite({
   src,
-  frameW,
-  frameH,
   frameCount,
   fps = 8,
   row = 0,
@@ -558,8 +663,8 @@ function ImageSprite({
   className,
 }: {
   src: string;
-  frameW: number;
-  frameH: number;
+  frameW?: number;
+  frameH?: number;
   frameCount: number;
   fps?: number;
   row?: number;
@@ -575,20 +680,31 @@ function ImageSprite({
     return () => clearInterval(interval);
   }, [frameCount, fps]);
 
+  // The img is frameCount× wider than the container; shift left by frame×100/frameCount%
+  // to show the correct frame. translateX uses % of the img's own width so we need
+  // to compute relative to the container: each frame = containerWidth, img = frameCount×containerWidth,
+  // so shift = frame × containerWidth = frame × (1/frameCount) × imgWidth → frame/frameCount × 100% of img.
   return (
     <div
       className={className}
-      style={{
-        width: "100%",
-        height: "100%",
-        backgroundImage: `url(${src})`,
-        backgroundRepeat: "no-repeat",
-        backgroundSize: `${frameW * frameCount}px auto`,
-        backgroundPosition: `-${frame * frameW}px -${row * frameH}px`,
-        imageRendering: "pixelated",
-        ...style,
-      }}
-    />
+      style={{ overflow: "hidden", width: "100%", height: "100%", position: "relative", ...style }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt=""
+        aria-hidden
+        style={{
+          imageRendering: "pixelated",
+          position: "absolute",
+          left: `${-frame * 100}%`,
+          top: `${-row * 100}%`,
+          width: `${frameCount * 100}%`,
+          height: "auto",
+          display: "block",
+        }}
+      />
+    </div>
   );
 }
 
@@ -1670,10 +1786,23 @@ function Room({
           width: 100%; height: 100%;
           display: block;
         }
-        :global(.agent-bob) {
-          animation: bob 0.5s steps(2) infinite;
+        :global(.agent-body) {
+          position: relative;
+          width: 100%; height: 100%;
+          display: block;
+          /* Will-change so the bob animation doesn't stutter during horizontal travel */
+          will-change: transform;
         }
-        :global(.no-bob) { animation: none; }
+        /* Walk cycle: syncs with JS 4-phase walk (140 ms × 4 = 560 ms total).
+           Small vertical bob (contact phase sinks 0.5 px) + tiny horizontal sway. */
+        :global(.agent-body.walk) {
+          animation: walkCycle 560ms steps(1) infinite;
+        }
+        /* Idle bob: gentle up-down every 700 ms, no horizontal sway */
+        :global(.agent-body.idle) {
+          animation: idleBreath 1400ms ease-in-out infinite;
+        }
+        :global(.agent-body.still) { animation: none; }
         :global(.agent-shadow) {
           position: absolute;
           left: 20%; right: 20%; bottom: -3%;
@@ -1699,13 +1828,25 @@ function Room({
           filter: drop-shadow(0 2px 0 rgba(0,0,0,0.35));
         }
         :global(.agent:hover .agent-sprite) { filter: drop-shadow(0 3px 0 rgba(0,0,0,0.5)) brightness(1.08); }
-        @keyframes bob {
-          0%   { transform: translateY(0px); }
-          50%  { transform: translateY(-1px); }
-          100% { transform: translateY(0px); }
+        /* 4-phase walk cycle. Phases are 140 ms each, matching JS frame advance:
+           0 = passing (both feet roughly under body)   → body up
+           1 = contact right (right leg forward)        → body down + sway right
+           2 = passing                                  → body up
+           3 = contact left  (left leg forward)         → body down + sway left   */
+        @keyframes walkCycle {
+          0%   { transform: translate(0, -1px); }
+          25%  { transform: translate(0.5px, 0); }
+          50%  { transform: translate(0, -1px); }
+          75%  { transform: translate(-0.5px, 0); }
+          100% { transform: translate(0, -1px); }
+        }
+        @keyframes idleBreath {
+          0%, 100% { transform: translateY(0); }
+          50%      { transform: translateY(-0.8px); }
         }
         @media (prefers-reduced-motion: reduce) {
-          :global(.agent-bob) { animation: none !important; }
+          :global(.agent-body.walk),
+          :global(.agent-body.idle) { animation: none !important; }
         }
       `}</style>
     </div>
@@ -1725,7 +1866,9 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
 }>(function CharacterActor({ service, active, onToggle, onPoseChange }, ref) {
   const [wpIdx, setWpIdx] = useState(service.startIdx % DEFAULT_WAYPOINTS.length);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [walkFrame, setWalkFrame] = useState<0 | 1>(0);
+  // 4-phase walk cycle: neutral → stride-A → neutral → stride-B → neutral → ...
+  // Gives a proper "pass–contact–pass–contact" gait like in classic pixel games.
+  const [walkFrame, setWalkFrame] = useState<0 | 1 | 2 | 3>(0);
 
   // Notify parent of pose changes
   useEffect(() => {
@@ -1744,10 +1887,13 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
     };
   }, [wpIdx, active, service.paceFactor]);
 
-  // Cycle walk frames when walking (not when static)
+  // Advance walk frame every 140 ms while in "walking" pose.
+  // 4 phases × 140 ms = 560 ms per full stride — close to a natural walking pace.
   useEffect(() => {
     if (DEFAULT_WAYPOINTS[wpIdx].pose !== "walking") return;
-    const interval = setInterval(() => setWalkFrame(f => f === 0 ? 1 : 0), 220);
+    const interval = setInterval(() => {
+      setWalkFrame(f => ((f + 1) % 4) as 0 | 1 | 2 | 3);
+    }, 140);
     return () => clearInterval(interval);
   }, [wpIdx]);
 
@@ -1766,19 +1912,6 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
     ? { top: `${wp.topPct}%`,    bottom: "auto" }
     : { bottom: `${wp.bottomPct ?? 4}%`, top: "auto" };
 
-  // Select sprite rows based on pose and walk frame
-  const spriteRows = (() => {
-    if (wp.pose === "sitting" && service.sprite.sit) return service.sprite.sit;
-    if (wp.pose === "walking") {
-      if (walkFrame === 0 && service.sprite.walkA) return service.sprite.walkA;
-      if (walkFrame === 1 && service.sprite.walkB) return service.sprite.walkB;
-    }
-    return service.sprite.rows;
-  })();
-
-  // If PNG sprite sheet is available, prefer it over SVG
-  const hasImageSprite = !!service.imageSprite;
-
   return (
     <button
       ref={ref}
@@ -1788,14 +1921,14 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
       style={{
         left: `${wp.leftPct}%`,
         ...positionStyle,
-        width: "18%",
-        height: isSitting ? "30%" : "50%",
+        width: "28%",
+        height: isSitting ? "38%" : "60%",
         zIndex: depthZ,
         transition: `left ${travelMs}ms linear, top ${travelMs}ms ease-out, bottom ${travelMs}ms ease-out, height ${Math.min(travelMs, 600)}ms ease-out, transform ${Math.min(travelMs, 1200)}ms ease-out`,
       }}
     >
       <span
-        className={`agent-inner ${(wp.pose === "idle" || wp.pose === "standing") ? "agent-bob" : "no-bob"}`}
+        className="agent-inner"
         style={{
           transform: `scaleX(${wp.flip ? -depthScale : depthScale}) scaleY(${depthScale})`,
           transformOrigin: "50% 100%",
@@ -1804,27 +1937,21 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
       >
         <span className="agent-shadow" aria-hidden />
         <span className="agent-foot-contact" aria-hidden />
-        {hasImageSprite && service.imageSprite ? (
-          <ImageSprite
-            src={wp.pose === "sitting" && service.imageSprite.sitSrc
-              ? service.imageSprite.sitSrc
-              : service.imageSprite.walkSrc}
-            frameW={service.imageSprite.frameW}
-            frameH={service.imageSprite.frameH}
-            frameCount={wp.pose === "sitting"
-              ? (service.imageSprite.sitFrames ?? 1)
-              : service.imageSprite.walkFrames}
-            fps={wp.pose === "walking" ? (service.imageSprite.fps ?? 8) : 2}
-            row={wp.pose === "sitting" ? 0 : (wp.flip ? 1 : 2)}
-            className="agent-sprite"
-          />
-        ) : (
-          <PixelSprite
-            rows={spriteRows}
+        <span
+          className={
+            "agent-body " +
+            (wp.pose === "walking" ? "walk" :
+             (wp.pose === "idle" || wp.pose === "standing") ? "idle" : "still")
+          }
+        >
+          <AnimatedPixelSprite
+            sprite={service.sprite}
             palette={service.sprite.palette}
+            walkFrame={walkFrame}
+            pose={wp.pose}
             className="agent-sprite"
           />
-        )}
+        </span>
       </span>
     </button>
   );
