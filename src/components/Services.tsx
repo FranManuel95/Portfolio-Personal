@@ -53,29 +53,44 @@ function spriteRects(rows: string[], palette: Palette) {
 
 // --- DEV — male full-stack engineer ------------------------------------
 //   Brown hair, glasses, blue tee, jeans, navy sneakers.
+//   24×36 high-res sprite (4-frame walk cycle).
 const devRows = [
-  "....hhhhhh......", // 0  hair top
-  "...hhhhhhhh.....", // 1  hair sides
-  "...hhSSSShh.....", // 2  hair framing forehead
-  "...hSSSSSSh.....", // 3  forehead
-  "...SKWWWWKS.....", // 4  glasses frame
-  "...SKWkWkKS.....", // 5  eyes through glasses (k = pupil)
-  "...sSSSSSSs.....", // 6  cheeks
-  "....sSMMSs......", // 7  mouth
-  ".....SSSS.......", // 8  neck
-  "....BBBBBB......", // 9  collar
-  "...BBBBBBBB.....", // 10 shoulders
-  "..SBBBBBBBBS....", // 11 arms + hands
-  "..SBBBBBBBBS....", // 12
-  "...BBBBBBBB.....", // 13 torso
-  "...JJJJJJJJ.....", // 14 belt/waist
-  "...JJJJJJJJ.....", // 15 pants top
-  "...JJJ..JJJ.....", // 16 legs split
-  "...JJJ..JJJ.....", // 17
-  "...jjj..jjj.....", // 18 pants shadow
-  "..NNNN..NNNN....", // 19 shoes
-  "..NNNN..NNNN....", // 20
-  "..wwww..wwww....", // 21 rubber soles
+  "........hhhhhhhh........", // 0  hair top
+  ".......hhhhhhhhhh.......", // 1  hair sides
+  ".......hhSSSSSShh.......", // 2  forehead under hair
+  "......hhSSSSSSSShh......", // 3  face top
+  "......hSSKWWWWKSSh......", // 4  eyes with glasses (K=frame, W=lens)
+  "......hSSKkWWkKSSh......", // 5  pupils (k=pupil)
+  "......hSSSSSSSSSh.......", // 6  cheeks
+  ".......sSMMMMSSs........", // 7  mouth area
+  "........SSSSSSSS........", // 8  neck
+  ".......BBBBBBBBBB.......", // 9  collar
+  "......BBBBBBBBBBBB......", // 10 upper shoulders
+  ".....SBBBBBBBBBBBBS.....", // 11 arms + hands
+  ".....SBBBBBBBBBBBBS.....", // 12 arms
+  "......BBBBBBBBBBBB......", // 13 torso
+  "......BBBBBBBBBBBB......", // 14 torso
+  "......BBBBBBBBBBBB......", // 15 torso lower
+  "......JJJJJJJJJJJJ......", // 16 belt/waist (hips together)
+  "......JJJJJJJJJJJJ......", // 17 upper legs together
+  ".....JJJJJ..JJJJJ.......", // 18 legs split (5px each, 2px gap)
+  ".....JJJJJ..JJJJJ.......", // 19
+  ".....JJJJJ..JJJJJ.......", // 20
+  ".....JJJJJ..JJJJJ.......", // 21
+  ".....jjjjj..jjjjj.......", // 22 leg shadow
+  ".....jjjjj..jjjjj.......", // 23
+  ".....NNNNN..NNNNN.......", // 24 shoes dark
+  ".....NNNNN..NNNNN.......", // 25
+  ".....NNNNN..NNNNN.......", // 26
+  ".....wwwww..wwwww.......", // 27 sneaker soles
+  ".....wwwww..wwwww.......", // 28
+  "........................", // 29 transparent
+  "........................", // 30
+  "........................", // 31
+  "........................", // 32
+  "........................", // 33
+  "........................", // 34
+  "........................", // 35
 ];
 const devPalette: Palette = {
   S: "#eecaa4", // skin light
@@ -212,34 +227,71 @@ const agentPalette: Palette = {
   X: "#0a0a12", // heels
 };
 
-// ── DEV walking frames (rows 16-21 change; all others copied via spread) ──
+// ── DEV walking frames (rows 18-28 change; 24-wide matching devRows) ──
 const devWalkARows: string[] = [
-  ...devRows.slice(0, 16),
-  "...JJJ...JJJ....", // 16 right leg shifted +1 px right (3-dot gap)
-  "...JJJ...JJJ....", // 17
-  "...jjj...jjj....", // 18 shadow follows
-  "..NNNN...NNNN...", // 19 right shoe shifted right
-  "..NNNN...NNNN...", // 20
-  "..wwww...wwww...", // 21
+  ...devRows.slice(0, 18),
+  "....JJJJJ....JJJJJ......", // 18 stride A — legs spread wider
+  "....JJJJJ....JJJJJ......", // 19
+  "....JJJJJ....JJJJJ......", // 20
+  "....JJJJJ....JJJJJ......", // 21
+  "....jjjjj....jjjjj......", // 22 shadow
+  "....jjjjj....jjjjj......", // 23
+  "....NNNNN....NNNNN......", // 24 shoe
+  "....NNNNN....NNNNN......", // 25
+  "....NNNNN....NNNNN......", // 26
+  "....wwwww....wwwww......", // 27 sole
+  "....wwwww....wwwww......", // 28
+  "........................", // 29-35 transparent
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
 ];
 const devWalkBRows: string[] = [
-  ...devRows.slice(0, 16),
-  "..JJJ...JJJ.....", // 16 left leg shifted -1 px left (3-dot gap)
-  "..JJJ...JJJ.....", // 17
-  "..jjj...jjj.....", // 18
-  ".NNNN...NNNN....", // 19 left shoe shifted left
-  ".NNNN...NNNN....", // 20
-  ".wwww...wwww....", // 21
+  ...devRows.slice(0, 18),
+  "......JJJJJ....JJJJJ....", // 18 stride B — legs spread (mirrored)
+  "......JJJJJ....JJJJJ....", // 19
+  "......JJJJJ....JJJJJ....", // 20
+  "......JJJJJ....JJJJJ....", // 21
+  "......jjjjj....jjjjj....", // 22
+  "......jjjjj....jjjjj....", // 23
+  "......NNNNN....NNNNN....", // 24
+  "......NNNNN....NNNNN....", // 25
+  "......NNNNN....NNNNN....", // 26
+  "......wwwww....wwwww....", // 27
+  "......wwwww....wwwww....", // 28
+  "........................", // 29-35
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
 ];
 const devSitRows: string[] = [
-  ...devRows.slice(0, 15),
-  "..JJJJJJJJJJ....", // 15 thighs spread wider (10 px)
-  ".JJJJ....JJJJ...", // 16 knees apart (4-dot gap)
-  "..NNN....NNN....", // 17 shoe tops visible
-  "..www....www....", // 18 sole edges
-  "................", // 19 feet hidden under desk
-  "................", // 20
-  "................", // 21
+  ...devRows.slice(0, 16),
+  "...JJJJJJJJJJJJJJ......", // 16 thighs spread (14px)
+  "....JJJJJ......JJJJJ...", // 17 knees apart
+  "....NNN..........NNN....", // 18 shoe tops visible
+  "....www..........www....", // 19 sole edges
+  "........................", // 20-35 feet hidden under desk
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
+  "........................",
 ];
 
 // ── AI walking frames (rows 17-21 change for female legs/heels) ──
@@ -429,6 +481,10 @@ const services: Service[] = [
       "Build successful · Deploy ready ✓",
     ],
     sprite: { rows: devRows, walkA: devWalkARows, walkB: devWalkBRows, sit: devSitRows, palette: devPalette },
+    imageSprite: {
+      walkSrc: "/sprites/dev-walk.png",
+      frameW: 64, frameH: 48, walkFrames: 4, fps: 7,
+    },
     paceFactor: 1.0,
     startIdx: 0,
   },
@@ -454,6 +510,10 @@ const services: Service[] = [
       "Response quality score: 94% ✓",
     ],
     sprite: { rows: aiRows, walkA: aiWalkARows, walkB: aiWalkBRows, sit: aiSitRows, palette: aiPalette },
+    imageSprite: {
+      walkSrc: "/sprites/ai-walk.png",
+      frameW: 64, frameH: 48, walkFrames: 4, fps: 7,
+    },
     paceFactor: 1.15,
     startIdx: 2,
   },
@@ -479,6 +539,10 @@ const services: Service[] = [
       "Emails dispatched · 100% success ✓",
     ],
     sprite: { rows: autoRows, walkA: autoWalkARows, walkB: autoWalkBRows, sit: autoSitRows, palette: autoPalette },
+    imageSprite: {
+      walkSrc: "/sprites/auto-walk.png",
+      frameW: 64, frameH: 48, walkFrames: 4, fps: 7,
+    },
     paceFactor: 0.85,
     startIdx: 4,
   },
@@ -504,6 +568,10 @@ const services: Service[] = [
       "Agent handoff: human-in-loop ready ✓",
     ],
     sprite: { rows: agentRows, walkA: agentWalkARows, walkB: agentWalkBRows, sit: agentSitRows, palette: agentPalette },
+    imageSprite: {
+      walkSrc: "/sprites/agent-walk.png",
+      frameW: 64, frameH: 48, walkFrames: 4, fps: 7,
+    },
     paceFactor: 1.05,
     startIdx: 6,
   },
