@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useEffect } from "react";
 import Reveal from "./Reveal";
-import Character from "./services/Character";
+import RoomScene from "./services/RoomScene";
 import TerminalPanel from "./services/TerminalPanel";
 import { SERVICES, type Service, type AgentState } from "./services-data";
 
@@ -205,17 +205,16 @@ function RoomCard({
         {service.tagline}
       </p>
 
-      {/* Character — pacing on the floor */}
+      {/* Escena completa: mobiliario pixel-art + personaje paseando */}
       <div
         aria-hidden
-        className="absolute left-0 right-0 z-10 pointer-events-none"
-        style={{ bottom: "6%", height: "42%" }}
+        className="absolute inset-x-0 bottom-0 z-10 pointer-events-none"
+        style={{ top: "38%" }}
       >
-        <Character
-          spriteUrl={service.spriteUrl}
+        <RoomScene
+          serviceId={service.id}
           accent={service.accent}
           walking={true}
-          className="h-full"
         />
       </div>
 
