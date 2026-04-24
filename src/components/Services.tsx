@@ -84,13 +84,6 @@ const devRows = [
   ".....NNNNN..NNNNN.......", // 26
   ".....wwwww..wwwww.......", // 27 sneaker soles
   ".....wwwww..wwwww.......", // 28
-  "........................", // 29 transparent
-  "........................", // 30
-  "........................", // 31
-  "........................", // 32
-  "........................", // 33
-  "........................", // 34
-  "........................", // 35
 ];
 const devPalette: Palette = {
   S: "#eecaa4", // skin light
@@ -227,48 +220,40 @@ const agentPalette: Palette = {
   X: "#0a0a12", // heels
 };
 
-// ── DEV walking frames (rows 18-28 change; 24-wide matching devRows) ──
+// ── DEV walking frames — 29 rows (no padding), arm swing on rows 11-12 ──
 const devWalkARows: string[] = [
-  ...devRows.slice(0, 18),
-  "....JJJJJ....JJJJJ......", // 18 stride A — legs spread wider
-  "....JJJJJ....JJJJJ......", // 19
-  "....JJJJJ....JJJJJ......", // 20
-  "....JJJJJ....JJJJJ......", // 21
-  "....jjjjj....jjjjj......", // 22 shadow
-  "....jjjjj....jjjjj......", // 23
-  "....NNNNN....NNNNN......", // 24 shoe
-  "....NNNNN....NNNNN......", // 25
-  "....NNNNN....NNNNN......", // 26
-  "....wwwww....wwwww......", // 27 sole
-  "....wwwww....wwwww......", // 28
-  "........................", // 29-35 transparent
-  "........................",
-  "........................",
-  "........................",
-  "........................",
-  "........................",
-  "........................",
+  ...devRows.slice(0, 11),              // 0–10 head + upper torso
+  "....SSBBBBBBBBBBBBS.....",           // 11 left arm swings fwd (+1 px left)
+  "....SSBBBBBBBBBBBBS.....",           // 12
+  ...devRows.slice(13, 18),             // 13–17 lower torso + waist
+  "....JJJJJ....JJJJJ......",          // 18 stride A — legs wider
+  "....JJJJJ....JJJJJ......",          // 19
+  "....JJJJJ....JJJJJ......",          // 20
+  "....JJJJJ....JJJJJ......",          // 21
+  "....jjjjj....jjjjj......",          // 22 leg shadow
+  "....jjjjj....jjjjj......",          // 23
+  "....NNNNN....NNNNN......",          // 24 shoe
+  "....NNNNN....NNNNN......",          // 25
+  "....NNNNN....NNNNN......",          // 26
+  "....wwwww....wwwww......",          // 27 sole
+  "....wwwww....wwwww......",          // 28
 ];
 const devWalkBRows: string[] = [
-  ...devRows.slice(0, 18),
-  "......JJJJJ....JJJJJ....", // 18 stride B — legs spread (mirrored)
-  "......JJJJJ....JJJJJ....", // 19
-  "......JJJJJ....JJJJJ....", // 20
-  "......JJJJJ....JJJJJ....", // 21
-  "......jjjjj....jjjjj....", // 22
-  "......jjjjj....jjjjj....", // 23
-  "......NNNNN....NNNNN....", // 24
-  "......NNNNN....NNNNN....", // 25
-  "......NNNNN....NNNNN....", // 26
-  "......wwwww....wwwww....", // 27
-  "......wwwww....wwwww....", // 28
-  "........................", // 29-35
-  "........................",
-  "........................",
-  "........................",
-  "........................",
-  "........................",
-  "........................",
+  ...devRows.slice(0, 11),              // 0–10 head + upper torso
+  ".....SBBBBBBBBBBBSS.....",           // 11 right arm swings fwd (+1 px right)
+  ".....SBBBBBBBBBBBSS.....",           // 12
+  ...devRows.slice(13, 18),             // 13–17 lower torso + waist
+  "......JJJJJ....JJJJJ....",          // 18 stride B — legs mirrored
+  "......JJJJJ....JJJJJ....",          // 19
+  "......JJJJJ....JJJJJ....",          // 20
+  "......JJJJJ....JJJJJ....",          // 21
+  "......jjjjj....jjjjj....",          // 22
+  "......jjjjj....jjjjj....",          // 23
+  "......NNNNN....NNNNN....",          // 24
+  "......NNNNN....NNNNN....",          // 25
+  "......NNNNN....NNNNN....",          // 26
+  "......wwwww....wwwww....",          // 27
+  "......wwwww....wwwww....",          // 28
 ];
 const devSitRows: string[] = [
   ...devRows.slice(0, 16),
@@ -294,9 +279,12 @@ const devSitRows: string[] = [
   "........................",
 ];
 
-// ── AI walking frames (rows 17-21 change for female legs/heels) ──
+// ── AI walking frames (arm swing on rows 11-12, heel shift on rows 18-21) ──
 const aiWalkARows: string[] = [
-  ...aiRows.slice(0, 17),
+  ...aiRows.slice(0, 11),
+  ".SVVWWWWVVS.....",  // 11 left arm swings fwd (+1 px left)
+  ".SVVVVVVVVS.....",  // 12
+  ...aiRows.slice(13, 17),
   "....SSSSSS......", // 17 thigh row unchanged
   "....SS...SS.....", // 18 right leg +1 (3-dot gap)
   "....SS...SS.....", // 19
@@ -304,7 +292,10 @@ const aiWalkARows: string[] = [
   "...XX.....XX....", // 21 right heel tip +1
 ];
 const aiWalkBRows: string[] = [
-  ...aiRows.slice(0, 17),
+  ...aiRows.slice(0, 11),
+  "..SVVWWWWVVSS...",  // 11 right arm swings fwd (+1 px right)
+  "..SVVVVVVVVSS...",  // 12
+  ...aiRows.slice(13, 17),
   "....SSSSSS......", // 17
   "...SS...SS......", // 18 left leg -1 (3-dot gap)
   "...SS...SS......", // 19
@@ -320,9 +311,12 @@ const aiSitRows: string[] = [
   "................", // 21 feet hidden under desk
 ];
 
-// ── AUTO walking frames (rows 16-21 change; same structure as dev) ──
+// ── AUTO walking frames (arm swing on rows 10-11, leg shift on rows 16-21) ──
 const autoWalkARows: string[] = [
-  ...autoRows.slice(0, 16),
+  ...autoRows.slice(0, 10),
+  ".SOOOOOOOOS.....",  // 10 left arm swings fwd (+1 px left)
+  ".SOOOOOOOOS.....",  // 11
+  ...autoRows.slice(12, 16),
   "...GGG...GGG....", // 16 right leg +1 (3-dot gap)
   "...GGG...GGG....", // 17
   "...ggg...ggg....", // 18 shadow follows
@@ -331,7 +325,10 @@ const autoWalkARows: string[] = [
   "..wwww...wwww...", // 21
 ];
 const autoWalkBRows: string[] = [
-  ...autoRows.slice(0, 16),
+  ...autoRows.slice(0, 10),
+  "..SOOOOOOOOSS...",  // 10 right arm swings fwd (+1 px right)
+  "..SOOOOOOOOSS...",  // 11
+  ...autoRows.slice(12, 16),
   "..GGG...GGG.....", // 16 left leg -1 (3-dot gap)
   "..GGG...GGG.....", // 17
   "..ggg...ggg.....", // 18
@@ -350,16 +347,22 @@ const autoSitRows: string[] = [
   "................", // 21
 ];
 
-// ── AGENT walking frames (rows 18-21 change; skirt rows 15-17 intact) ──
+// ── AGENT walking frames (arm swing on rows 10-11, heel shift on rows 18-21) ──
 const agentWalkARows: string[] = [
-  ...agentRows.slice(0, 18),
+  ...agentRows.slice(0, 10),
+  ".SRRRRRRRRS.....",  // 10 left arm swings fwd (+1 px left)
+  ".SRRRRRRRRS.....",  // 11
+  ...agentRows.slice(12, 18),
   "....SS...SS.....", // 18 right leg +1 (3-dot gap)
   "...XXX...XXX....", // 19 right heel +1
   "...XX.....XX....", // 20 right heel tip +1
   "................", // 21
 ];
 const agentWalkBRows: string[] = [
-  ...agentRows.slice(0, 18),
+  ...agentRows.slice(0, 10),
+  "..SRRRRRRRRSS...",  // 10 right arm swings fwd (+1 px right)
+  "..SRRRRRRRRSS...",  // 11
+  ...agentRows.slice(12, 18),
   "...SS...SS......", // 18 left leg -1 (3-dot gap)
   "..XXX...XXX.....", // 19 left heel -1
   "..XX.....XX.....", // 20 left heel tip -1
