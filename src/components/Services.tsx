@@ -272,8 +272,8 @@ const devWalkBRows: string[] = [
 ];
 const devSitRows: string[] = [
   ...devRows.slice(0, 16),
-  "...JJJJJJJJJJJJJJ......", // 16 thighs spread (14px)
-  "....JJJJJ......JJJJJ...", // 17 knees apart
+  "...JJJJJJJJJJJJJJ.......", // 16 thighs spread (14px)
+  "....JJJJJ......JJJJJ....", // 17 knees apart
   "....NNN..........NNN....", // 18 shoe tops visible
   "....www..........www....", // 19 sole edges
   "........................", // 20-35 feet hidden under desk
@@ -481,10 +481,6 @@ const services: Service[] = [
       "Build successful · Deploy ready ✓",
     ],
     sprite: { rows: devRows, walkA: devWalkARows, walkB: devWalkBRows, sit: devSitRows, palette: devPalette },
-    imageSprite: {
-      walkSrc: "/sprites/dev-walk-lpc.png",
-      frameW: 64, frameH: 48, walkFrames: 4, fps: 7,
-    },
     paceFactor: 1.0,
     startIdx: 0,
   },
@@ -510,10 +506,6 @@ const services: Service[] = [
       "Response quality score: 94% ✓",
     ],
     sprite: { rows: aiRows, walkA: aiWalkARows, walkB: aiWalkBRows, sit: aiSitRows, palette: aiPalette },
-    imageSprite: {
-      walkSrc: "/sprites/ai-walk-lpc.png",
-      frameW: 64, frameH: 48, walkFrames: 4, fps: 7,
-    },
     paceFactor: 1.15,
     startIdx: 2,
   },
@@ -539,10 +531,6 @@ const services: Service[] = [
       "Emails dispatched · 100% success ✓",
     ],
     sprite: { rows: autoRows, walkA: autoWalkARows, walkB: autoWalkBRows, sit: autoSitRows, palette: autoPalette },
-    imageSprite: {
-      walkSrc: "/sprites/auto-walk-lpc.png",
-      frameW: 64, frameH: 48, walkFrames: 4, fps: 7,
-    },
     paceFactor: 0.85,
     startIdx: 4,
   },
@@ -568,10 +556,6 @@ const services: Service[] = [
       "Agent handoff: human-in-loop ready ✓",
     ],
     sprite: { rows: agentRows, walkA: agentWalkARows, walkB: agentWalkBRows, sit: agentSitRows, palette: agentPalette },
-    imageSprite: {
-      walkSrc: "/sprites/agent-walk-lpc.png",
-      frameW: 64, frameH: 48, walkFrames: 4, fps: 7,
-    },
     paceFactor: 1.05,
     startIdx: 6,
   },
