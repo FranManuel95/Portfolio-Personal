@@ -565,35 +565,8 @@ const services: Service[] = [
 ];
 
 /* =========================================================================
-   Pixel Sprite component
+   AnimatedPixelSprite component
    ========================================================================= */
-function PixelSprite({
-  rows,
-  palette,
-  className,
-  style,
-}: {
-  rows: string[];
-  palette: Palette;
-  className?: string;
-  style?: React.CSSProperties;
-}) {
-  const w = rows[0]?.length ?? 16;
-  const h = rows.length;
-  const rects = useMemo(() => spriteRects(rows, palette), [rows, palette]);
-  return (
-    <svg
-      viewBox={`0 0 ${w} ${h}`}
-      width="100%"
-      height="100%"
-      className={className}
-      style={{ imageRendering: "pixelated", ...style }}
-      aria-hidden
-    >
-      {rects}
-    </svg>
-  );
-}
 
 /**
  * AnimatedPixelSprite — pre-renders all animation frames once via useMemo.
@@ -648,66 +621,6 @@ function AnimatedPixelSprite({
       >
         {sitRects}
       </svg>
-    </div>
-  );
-}
-
-/**
- * ImageSprite — renders an animated PNG sprite sheet, scaling to fill its container.
- * The sprite strip is positioned as an <img> that is frameCount times wider than the
- * container; translateX(-frame/frameCount * 100%) clips to the correct frame.
- * row: which vertical row in the sheet (0 = top).
- */
-function ImageSprite({
-  src,
-  frameCount,
-  fps = 8,
-  row = 0,
-  style,
-  className,
-}: {
-  src: string;
-  frameW?: number;
-  frameH?: number;
-  frameCount: number;
-  fps?: number;
-  row?: number;
-  style?: React.CSSProperties;
-  className?: string;
-}) {
-  const [frame, setFrame] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFrame(f => (f + 1) % frameCount);
-    }, 1000 / fps);
-    return () => clearInterval(interval);
-  }, [frameCount, fps]);
-
-  // The img is frameCount× wider than the container; shift left by frame×100/frameCount%
-  // to show the correct frame. translateX uses % of the img's own width so we need
-  // to compute relative to the container: each frame = containerWidth, img = frameCount×containerWidth,
-  // so shift = frame × containerWidth = frame × (1/frameCount) × imgWidth → frame/frameCount × 100% of img.
-  return (
-    <div
-      className={className}
-      style={{ overflow: "hidden", width: "100%", height: "100%", position: "relative", ...style }}
-    >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={src}
-        alt=""
-        aria-hidden
-        style={{
-          imageRendering: "pixelated",
-          position: "absolute",
-          left: `${-frame * 100}%`,
-          top: `${-row * 100}%`,
-          width: `${frameCount * 100}%`,
-          height: "auto",
-          display: "block",
-        }}
-      />
     </div>
   );
 }
