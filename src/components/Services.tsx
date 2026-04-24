@@ -482,7 +482,7 @@ const services: Service[] = [
     ],
     sprite: { rows: devRows, walkA: devWalkARows, walkB: devWalkBRows, sit: devSitRows, palette: devPalette },
     imageSprite: {
-      walkSrc: "/sprites/dev-walk.png",
+      walkSrc: "/sprites/dev-walk-lpc.png",
       frameW: 64, frameH: 48, walkFrames: 4, fps: 7,
     },
     paceFactor: 1.0,
@@ -511,7 +511,7 @@ const services: Service[] = [
     ],
     sprite: { rows: aiRows, walkA: aiWalkARows, walkB: aiWalkBRows, sit: aiSitRows, palette: aiPalette },
     imageSprite: {
-      walkSrc: "/sprites/ai-walk.png",
+      walkSrc: "/sprites/ai-walk-lpc.png",
       frameW: 64, frameH: 48, walkFrames: 4, fps: 7,
     },
     paceFactor: 1.15,
@@ -540,7 +540,7 @@ const services: Service[] = [
     ],
     sprite: { rows: autoRows, walkA: autoWalkARows, walkB: autoWalkBRows, sit: autoSitRows, palette: autoPalette },
     imageSprite: {
-      walkSrc: "/sprites/auto-walk.png",
+      walkSrc: "/sprites/auto-walk-lpc.png",
       frameW: 64, frameH: 48, walkFrames: 4, fps: 7,
     },
     paceFactor: 0.85,
@@ -569,7 +569,7 @@ const services: Service[] = [
     ],
     sprite: { rows: agentRows, walkA: agentWalkARows, walkB: agentWalkBRows, sit: agentSitRows, palette: agentPalette },
     imageSprite: {
-      walkSrc: "/sprites/agent-walk.png",
+      walkSrc: "/sprites/agent-walk-lpc.png",
       frameW: 64, frameH: 48, walkFrames: 4, fps: 7,
     },
     paceFactor: 1.05,
@@ -609,16 +609,13 @@ function PixelSprite({
 }
 
 /**
- * ImageSprite — renders an animated PNG sprite sheet.
- * frameW/frameH: dimensions of a single frame in px.
- * frameCount: total frames in the walk cycle.
- * fps: animation speed.
- * row: which row in the sprite sheet (0=down, 1=left, 2=right, 3=up).
+ * ImageSprite — renders an animated PNG sprite sheet, scaling to fill its container.
+ * The sprite strip is positioned as an <img> that is frameCount times wider than the
+ * container; translateX(-frame/frameCount * 100%) clips to the correct frame.
+ * row: which vertical row in the sheet (0 = top).
  */
 function ImageSprite({
   src,
-  frameW,
-  frameH,
   frameCount,
   fps = 8,
   row = 0,
@@ -626,8 +623,8 @@ function ImageSprite({
   className,
 }: {
   src: string;
-  frameW: number;
-  frameH: number;
+  frameW?: number;
+  frameH?: number;
   frameCount: number;
   fps?: number;
   row?: number;
@@ -643,20 +640,31 @@ function ImageSprite({
     return () => clearInterval(interval);
   }, [frameCount, fps]);
 
+  // The img is frameCount× wider than the container; shift left by frame×100/frameCount%
+  // to show the correct frame. translateX uses % of the img's own width so we need
+  // to compute relative to the container: each frame = containerWidth, img = frameCount×containerWidth,
+  // so shift = frame × containerWidth = frame × (1/frameCount) × imgWidth → frame/frameCount × 100% of img.
   return (
     <div
       className={className}
-      style={{
-        width: "100%",
-        height: "100%",
-        backgroundImage: `url(${src})`,
-        backgroundRepeat: "no-repeat",
-        backgroundSize: `${frameW * frameCount}px auto`,
-        backgroundPosition: `-${frame * frameW}px -${row * frameH}px`,
-        imageRendering: "pixelated",
-        ...style,
-      }}
-    />
+      style={{ overflow: "hidden", width: "100%", height: "100%", position: "relative", ...style }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt=""
+        aria-hidden
+        style={{
+          imageRendering: "pixelated",
+          position: "absolute",
+          left: `${-frame * 100}%`,
+          top: `${-row * 100}%`,
+          width: `${frameCount * 100}%`,
+          height: "auto",
+          display: "block",
+        }}
+      />
+    </div>
   );
 }
 
@@ -1883,7 +1891,7 @@ const CharacterActor = React.forwardRef<HTMLButtonElement, {
               ? (service.imageSprite.sitFrames ?? 1)
               : service.imageSprite.walkFrames}
             fps={wp.pose === "walking" ? (service.imageSprite.fps ?? 8) : 2}
-            row={wp.pose === "sitting" ? 0 : (wp.flip ? 1 : 2)}
+            row={0}
             className="agent-sprite"
           />
         ) : (
