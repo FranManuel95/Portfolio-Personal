@@ -157,7 +157,7 @@ export default function ProjectsShowcase() {
             </div>
 
             {/* Tabs de tipo */}
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
+            <div className="mt-4 flex flex-wrap gap-2">
               {(["all", "app", "landing"] as TypeFilter[]).map((t) => (
                 <button
                   key={t}
@@ -174,7 +174,7 @@ export default function ProjectsShowcase() {
             </div>
 
             {/* Techs */}
-            <div className="mt-3 flex flex-wrap justify-center gap-2">
+            <div className="mt-3 flex flex-wrap gap-2">
               {allTechs.map((tech) => {
                 const active = selected.has(tech);
                 return (
