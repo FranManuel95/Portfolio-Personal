@@ -117,9 +117,9 @@ const About = () => {
                   {group.icon}
                   <span className="text-sm font-semibold uppercase tracking-widest">{group.label}</span>
                 </div>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+                <div className="flex flex-wrap justify-center gap-3">
                   {group.items.map((tech) => (
-                    <div key={tech.name} className="surface p-3 flex flex-col items-center gap-1">
+                    <div key={tech.name} className="surface p-3 flex flex-col items-center gap-1 w-24">
                       <div className="text-2xl flex items-center justify-center h-7">{tech.icon}</div>
                       <span className="text-xs font-medium text-[var(--text-dim)] text-center leading-tight">{tech.name}</span>
                     </div>
