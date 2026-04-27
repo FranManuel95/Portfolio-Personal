@@ -109,11 +109,11 @@ const About = () => {
           </h3>
         </Reveal>
 
-        <div className="flex flex-col gap-8 text-left">
+        <div className="flex flex-col gap-8">
           {stackGroups.map((group, gi) => (
             <Reveal replay key={group.label} delayMs={160 + gi * 60}>
               <div>
-                <div className="flex items-center gap-2 mb-4 text-[var(--text-dim)]">
+                <div className="flex items-center justify-center gap-2 mb-4 text-[var(--text-dim)]">
                   {group.icon}
                   <span className="text-sm font-semibold uppercase tracking-widest">{group.label}</span>
                 </div>
