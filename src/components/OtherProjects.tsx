@@ -5,6 +5,38 @@ import ProjectCard from "./ProjectCard";
 
 const otherprojects = [
   {
+    title: "Web Techno Festival",
+    description:
+      "Web de un festival de música electrónica, con información sobre el evento, artistas, horarios y venta de entradas.",
+    link: "/SaSS/index.html",
+    image: "/techno.webp",
+    technologies: ["html", "css", "javascript", "sass"],
+  },
+  {
+    title: "Blog Rick and Morty",
+    description:
+      "Web de blog sobre la serie Rick and Morty, con información sobre personajes, episodios y curiosidades.",
+    link: "/Creación/index.html",
+    image: "/rick-morty.webp",
+    technologies: ["html", "css", "javascript"],
+  },
+  {
+    title: "Frontend Academia",
+    description:
+      "Web de una academia de formación online, con información sobre cursos, proyectos, testimonios y contacto.",
+    link: "/PortafolioBootstrap/index.html",
+    image: "/academia.webp",
+    technologies: ["html", "css", "bootstrap"],
+  },
+  {
+    title: "Frontend Store",
+    description:
+      "Web de tienda de ropa online, con catálogo de productos y carrito de compra.",
+    link: "/FrontendStore/index.html",
+    image: "/front.webp",
+    technologies: ["html", "css"],
+  },
+  {
     title: "Citas motivacionales",
     description:
       "Web de citas motivacionales, con frases de personajes célebres y un botón para generar una nueva cita.",
