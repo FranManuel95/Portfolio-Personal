@@ -7,7 +7,6 @@ import About from "../components/About";
 import Footer from "../components/Footer";
 import Experience from "../components/Experience";
 import ProjectsShowcase from "../components/ProjectsShowCase";
-import OtherProjects from "../components/OtherProjects";
 import FabContact from "../components/FabContact";
 import ContactForm from "../components/ContactForm";
 import Services from "../components/Services";
@@ -56,11 +55,6 @@ export default function Home() {
             <ProjectsShowcase />
           
         </div>
-      </section>
-
-      {/* Otros proyectos */}
-      <section id="otros-proyectos" className="py-9">
-        <OtherProjects />
       </section>
 
       {/* Contacto + Footer */}
