@@ -28,45 +28,6 @@ const otherprojects = [
     image: "/academia.webp",
     technologies: ["html", "css", "bootstrap"],
   },
-  {
-    title: "Frontend Store",
-    description:
-      "Web de tienda de ropa online, con catálogo de productos y carrito de compra.",
-    link: "/FrontendStore/index.html",
-    image: "/front.webp",
-    technologies: ["html", "css"],
-  },
-  {
-    title: "Citas motivacionales",
-    description:
-      "Web de citas motivacionales, con frases de personajes célebres y un botón para generar una nueva cita.",
-    link: "/CitasMotivacionales/index3.html",
-    image: "/citas.webp",
-    technologies: ["html", "css", "javascript"],
-  },
-  {
-    title: "Lista de tareas",
-    description:
-      "Web de lista de tareas, con la posibilidad de añadir, eliminar y marcar como completadas las tareas.",
-    link: "/ListaDeTareas/index5.html",
-    image: "/tareas.webp",
-    technologies: ["html", "css", "javascript"],
-  },
-  {
-    title: "RGB",
-    description: "Web para generar colores RGB aleatorios.",
-    link: "/RGB/index2.html",
-    image: "/colores.webp",
-    technologies: ["html", "css", "javascript"],
-  },
-  {
-    title: "Cronómetro",
-    description:
-      "Web de cronómetro con botones para iniciar, pausar y reiniciar el tiempo.",
-    link: "/Cronómetro/index4.html",
-    image: "/crono.webp",
-    technologies: ["html", "css", "javascript"],
-  },
 ];
 
 export default function OtherProjects() {
@@ -81,13 +42,13 @@ export default function OtherProjects() {
   }, []);
 
   return (
-    <section id="otherprojects" className="py-16 bg-gray-100 dark:bg-[var(--bg)]">
+    <section id="otherprojects" className="py-16 bg-[var(--bg)]">
       <div className="max-w-7xl mx-auto text-center px-6">
         <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-[var(--accent)]">
-          Otros proyectos más pequeños
+          Landing Pages
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 cv-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {otherprojects.map((p, i) => (
             <ProjectCard
               key={i}
