@@ -19,55 +19,38 @@ export default function Home() {
     <>
       <Header setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen} />
 
-      {/* Héroe: sipara que aparezca inmediato */}
-      <section id="hero" className="pt-16">
-        <Hero isMenuOpen={isMenuOpen} />
-      </section>
+      {/* Hero – section id managed inside Hero.tsx */}
+      <Hero isMenuOpen={isMenuOpen} />
 
       {/* Servicios */}
-      <section id="servicios" className="py-9">
-        <div className="container">
-          <Services />
-        </div>
+      <section id="servicios" className="py-12">
+        <Services />
       </section>
 
       {/* Experiencia */}
-      <section id="experiencia" className="py-9">
-        <div className="container">
-        
-            <Experience />
-          
-        </div>
+      <section id="experiencia" className="py-12">
+        <Experience />
       </section>
 
       {/* Sobre mí */}
-      <section id="sobremí" className="py-9">
-        <div className="container">
-                    <About />
-          
-        </div>
+      <section id="sobremi" className="py-12">
+        <About />
       </section>
 
       {/* Proyectos */}
-      <section id="proyectos" className="py-9">
+      <section id="proyectos" className="py-12">
         <div className="container">
-        
-            <ProjectsShowcase />
-          
+          <ProjectsShowcase />
         </div>
       </section>
 
       {/* Contacto + Footer */}
-      <section id="contacto" className="py-9">
+      <section id="contacto" className="py-12">
         <div className="container">
-          
-            <ContactForm />
-          
-        
-            <div className="mt-10">
-              <Footer />
-            </div>
-          
+          <ContactForm />
+          <div className="mt-10">
+            <Footer />
+          </div>
         </div>
       </section>
 

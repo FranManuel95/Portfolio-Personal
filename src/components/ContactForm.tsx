@@ -128,8 +128,8 @@ export default function ContactForm() {
         </Reveal>
 
         <form onSubmit={onSubmit} className="grid grid-cols-1 gap-4">
-          {/* Honeypot oculto (sin reveal) */}
-          <div >
+          {/* Honeypot — visually hidden from real users */}
+          <div style={{ position: "absolute", left: "-9999px", top: "auto", width: "1px", height: "1px", overflow: "hidden" }} aria-hidden="true">
             <label>
               Empresa
               <input
@@ -159,7 +159,7 @@ export default function ContactForm() {
 
               <label className="text-sm text-[var(--text-dim)] text-left">
                 Email *
-                <div className="mt-1 grid gap-2 xsm:grid-cols-1 sm:grid-cols-2">
+                <div className="mt-1 grid gap-2 grid-cols-1 sm:grid-cols-2">
                   <input
                     className="flex-1 rounded-lg bg-[var(--bg-elev-2)] border border-[var(--line)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--ring)]"
                     placeholder="tu@email.com"

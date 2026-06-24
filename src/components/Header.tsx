@@ -9,7 +9,7 @@ const NAV: NavItem[] = [
   { label: "Perfil", id: "hero" },
   { label: "Servicios", id: "servicios" },
   { label: "Experiencia", id: "experiencia" },
-  { label: "Sobre mí", id: "sobremí" },
+  { label: "Sobre mí", id: "sobremi" },
   { label: "Proyectos", id: "proyectos" },
   { label: "Contacto", id: "contacto" },
 ];

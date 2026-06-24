@@ -1,55 +1,35 @@
-/* globals.css – Radical Dark */
+/* globals.css – Redesign: Dark Slate + Emerald */
 
-/* Tailwind v4 base */
 @import "tailwindcss";
 
 /* =========================
-   TOKENS – ULTRADARK
+   TOKENS
    ========================= */
 :root {
-  /* Base */
-  --bg: #000000;             /* Dominante absoluto */
-  --bg-elev-1: #060608;      /* Superficie 1 */
-  --bg-elev-2: #0b0c10;      /* Superficie 2 */
-  --bg-elev-3: #111218;      /* Superficie 3 */
+  /* Base backgrounds */
+  --bg: #06090f;
+  --bg-elev-1: #0c1420;
+  --bg-elev-2: #111c2c;
+  --bg-elev-3: #182438;
 
-  /* Texto */
-  --text: #e8e8ef;
-  --text-dim: #a7a9b4;
+  /* Text */
+  --text: #dde8f5;
+  --text-dim: #6e85a2;
 
-  /* Bordes / líneas */
-  --line: #1d1f2a;
+  /* Borders */
+  --line: #1c2d42;
 
-  /* Acentos */
-  --accent: #7c86ff;       /* azul violeta (puedes cambiar a #00e5ff si quieres cian) */
-  --accent-2: #ff3b81;     /* magenta punch */
+  /* Accents */
+  --accent: #10b981;      /* emerald-500 */
+  --accent-2: #f59e0b;    /* amber-500  */
 
-  /* Estados / focus */
-  --ring-rgb: 251 191 36;            /* amber-400 */
-  --ring-alpha: 1;                   /* ajusta 0..1 si quieres */
+  /* Focus ring */
+  --ring-rgb: 16 185 129;
+  --ring-alpha: 1;
   --ring: rgb(var(--ring-rgb) / var(--ring-alpha));
 
   /* Easing */
-  --ease: cubic-bezier(.22,1,.36,1); /* easeOutQuint-like */
-}
-
-.dark { /* por si luego alternas tema */
-  --bg: #000000;
-  --bg-elev-1: #060608;
-  --bg-elev-2: #0b0c10;
-  --bg-elev-3: #111218;
-
-  --text: #e8e8ef;
-  --text-dim: #a7a9b4;
-
-  --line: #1d1f2a;
-
-
-  --accent-2: #ff3b81;
-
-  
-
-
+  --ease: cubic-bezier(.22,1,.36,1);
 }
 
 /* =========================
@@ -69,61 +49,64 @@ body {
   overflow-x: hidden;
 }
 
-/* Vignette + glow sutil en todo el site */
-body::before,
+/* Ambient glow */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(1200px 500px at 50% -8%, rgba(16,185,129,0.09), transparent),
+    radial-gradient(800px 400px at 95% 100%, rgba(245,158,11,0.06), transparent);
+  filter: blur(24px);
+  opacity: .7;
+}
+
+/* Subtle grain overlay */
 body::after {
   content: "";
   position: fixed;
   inset: -10%;
   pointer-events: none;
   z-index: -1;
-}
-body::before {
-  /* viñeta negra alrededor */
-  background: radial-gradient(1200px 600px at 50% -10%, rgba(124,134,255,0.12), transparent),
-              radial-gradient(900px 400px at 90% 110%, rgba(255,59,129,0.08), transparent);
-  filter: blur(20px);
-  opacity: .6;
-}
-body::after {
-  /* grano sutil */
   background-image:
-    linear-gradient(transparent 0, rgba(255,255,255,0.02) 100%),
-    repeating-linear-gradient(0deg, rgba(255,255,255,0.015), rgba(255,255,255,0.015) 1px, transparent 2px, transparent 3px);
+    linear-gradient(transparent 0, rgba(255,255,255,0.015) 100%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.012), rgba(255,255,255,0.012) 1px, transparent 2px, transparent 3px);
   mix-blend-mode: overlay;
-  opacity: .4;
+  opacity: .35;
 }
 
-/* Contenedor consistente */
+/* Container */
 .container {
   max-width: 1200px;
   margin-inline: auto;
   padding-inline: 1rem;
 }
 
-/* Enlaces */
+/* Links */
 a { color: inherit; transition: color .25s var(--ease), opacity .25s var(--ease); }
-a:hover { color: var(--ring); }
+a:hover { color: var(--accent); }
 
-/* Imágenes */
+/* Images */
 img { max-width: 100%; height: auto; display: block; }
 
-/* Focus accesible */
+/* Focus */
 :focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
   border-radius: .5rem;
 }
 
-/* Bordes suaves en superficies */
+/* Surface card */
 .surface {
   background: var(--bg-elev-1);
   border: 1px solid var(--line);
   border-radius: 1rem;
-  box-shadow: 0 10px 40px -30px rgba(0,0,0,.8);
+  box-shadow: 0 10px 40px -30px rgba(0,0,0,.9);
 }
 
-/* Headings con subrayado glow */
+/* Headings with glow underline */
 .headline {
   position: relative;
   font-weight: 800;
@@ -134,16 +117,16 @@ img { max-width: 100%; height: auto; display: block; }
   position: absolute;
   left: 50%;
   bottom: -10px;
-  width: 120px;
+  width: 100px;
   height: 2px;
   transform: translateX(-50%);
   background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  filter: drop-shadow(0 0 12px rgba(124,134,255,.6));
-  opacity: .8;
+  filter: drop-shadow(0 0 10px rgba(16,185,129,.7));
+  opacity: .85;
 }
 
 /* =========================
-   DESACTIVAR REVEAL (no-op)
+   REVEAL DISABLE (handled via Framer)
    ========================= */
 .reveal,
 .reveal.is-visible,
@@ -157,14 +140,10 @@ img { max-width: 100%; height: auto; display: block; }
   transition: none !important;
 }
 
-/* Accesibilidad: por coherencia si alguien activa reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .reveal,
-  .reveal.is-visible,
-  .reveal-x,
-  .reveal-x.is-visible,
-  .reveal-up,
-  .reveal-up.is-visible {
+  .reveal, .reveal.is-visible,
+  .reveal-x, .reveal-x.is-visible,
+  .reveal-up, .reveal-up.is-visible {
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;
@@ -173,16 +152,17 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 /* =========================
-   BOTONES – ULTRADARK
+   BUTTONS
    ========================= */
 .btn {
   position: relative;
   display: inline-flex;
   align-items: center;
   gap: .5rem;
-  padding: .7rem 1rem;
-  border-radius: .9rem;
+  padding: .65rem 1.1rem;
+  border-radius: .75rem;
   font-weight: 600;
+  font-size: .875rem;
   border: 1px solid var(--line);
   background: linear-gradient(180deg, var(--bg-elev-2), var(--bg-elev-1));
   color: var(--text);
@@ -191,12 +171,12 @@ img { max-width: 100%; height: auto; display: block; }
 .btn:hover {
   transform: translateY(-2px);
   border-color: color-mix(in oklab, var(--accent) 35%, var(--line));
-  box-shadow: 0 14px 40px -24px rgba(124,134,255,.6);
+  box-shadow: 0 12px 32px -20px rgba(16,185,129,.5);
 }
 .btn-primary {
-  background: radial-gradient(130% 180% at 50% -20%, color-mix(in oklab, var(--accent) 22%, #000), var(--bg-elev-2));
-  border-color: color-mix(in oklab, var(--accent) 35%, var(--line));
-  color: #eaf0ff;
+  background: radial-gradient(130% 200% at 50% -20%, color-mix(in oklab, var(--accent) 28%, #000), var(--bg-elev-2));
+  border-color: color-mix(in oklab, var(--accent) 40%, var(--line));
+  color: #e0fdf4;
 }
 .btn-ghost {
   background: transparent;
@@ -204,16 +184,26 @@ img { max-width: 100%; height: auto; display: block; }
   color: var(--text-dim);
 }
 
-/* Evitar “pop-in” por content-visibility */
+/* cv-auto content-visibility helper */
 .cv-auto {
   content-visibility: visible !important;
   contain-intrinsic-size: auto !important;
 }
 
+/* Shimmer animation */
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
+  0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
 .animate-shimmer {
-  animation: shimmer 3.2s linear infinite;
+  animation: shimmer 3.5s linear infinite;
+}
+
+/* Pulse dot */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: .6; transform: scale(1.35); }
+}
+.animate-pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
 }

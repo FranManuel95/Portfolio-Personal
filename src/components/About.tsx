@@ -30,7 +30,7 @@ const stackGroups = [
       { name: "Claude",      icon: <span className="text-orange-400 font-bold text-xs">AI</span> },
       { name: "Gemini",      icon: <span className="text-blue-400 font-bold text-xs">G</span> },
       { name: "OpenRouter",  icon: <span className="text-purple-400 font-bold text-xs">OR</span> },
-      { name: "OpenClaw",    icon: <span className="text-amber-400 font-bold text-xs">OC</span> },
+      { name: "LangChain",   icon: <span className="text-emerald-500 font-bold text-xs">LC</span> },
       { name: "RAG / Agentes", icon: <BrainCircuit className="w-4 h-4 text-violet-400" /> },
     ],
   },
