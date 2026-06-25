@@ -13,6 +13,8 @@ const stackGroups = [
   {
     label: "Desarrollo Web",
     icon: <Globe className="w-4 h-4" />,
+    auroraFrom: "rgba(14,165,233,0.08)",
+    auroraTo: "transparent",
     items: [
       { name: "Next.js",     icon: <SiNextdotjs className="text-gray-200" /> },
       { name: "React",       icon: <FaReact className="text-blue-400" /> },
@@ -25,6 +27,8 @@ const stackGroups = [
   {
     label: "IA Generativa",
     icon: <BrainCircuit className="w-4 h-4" />,
+    auroraFrom: "rgba(139,92,246,0.08)",
+    auroraTo: "transparent",
     items: [
       { name: "OpenAI",      icon: <SiOpenai className="text-gray-200" /> },
       { name: "Claude",      icon: <span className="text-orange-400 font-bold text-xs">AI</span> },
@@ -37,6 +41,8 @@ const stackGroups = [
   {
     label: "Automatización",
     icon: <Workflow className="w-4 h-4" />,
+    auroraFrom: "rgba(251,146,60,0.08)",
+    auroraTo: "transparent",
     items: [
       { name: "n8n",         icon: <SiN8N className="text-orange-500" /> },
       { name: "Webhooks",    icon: <span className="text-green-400 font-bold text-xs">{"{}"}</span> },
@@ -46,6 +52,8 @@ const stackGroups = [
   {
     label: "Agentes de Voz",
     icon: <Mic className="w-4 h-4" />,
+    auroraFrom: "rgba(167,139,250,0.08)",
+    auroraTo: "transparent",
     items: [
       { name: "VAPI",        icon: <Mic className="w-4 h-4 text-purple-400" /> },
       { name: "ElevenLabs",  icon: <span className="text-yellow-400 font-bold text-xs">11</span> },
@@ -55,6 +63,8 @@ const stackGroups = [
   {
     label: "DevOps & Tools",
     icon: <FaDocker className="w-4 h-4" />,
+    auroraFrom: "rgba(16,185,129,0.08)",
+    auroraTo: "transparent",
     items: [
       { name: "Git",         icon: <FaGit className="text-red-500" /> },
       { name: "Docker",      icon: <FaDocker className="text-blue-400" /> },
@@ -66,7 +76,7 @@ const stackGroups = [
 const About = () => {
   return (
     <section className="relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg)] via-[var(--bg-elev-1)] to-[var(--bg)]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg)] via-transparent to-[var(--bg)]" />
       <div className="container relative text-center">
 
         <Reveal replay>
@@ -113,13 +123,25 @@ const About = () => {
           {stackGroups.map((group, gi) => (
             <Reveal replay key={group.label} delayMs={160 + gi * 60}>
               <div>
-                <div className="flex items-center justify-center gap-2 mb-4 text-[var(--text-dim)]">
+                {/* Group label with subtle aurora gradient background */}
+                <div
+                  className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full text-[var(--text-dim)]"
+                  style={{
+                    background: `linear-gradient(135deg, ${group.auroraFrom}, ${group.auroraTo})`,
+                    border: "1px solid rgba(255,255,255,0.06)",
+                    backdropFilter: "blur(8px)",
+                    WebkitBackdropFilter: "blur(8px)",
+                  }}
+                >
                   {group.icon}
                   <span className="text-sm font-semibold uppercase tracking-widest">{group.label}</span>
                 </div>
                 <div className="flex flex-wrap justify-center gap-3">
                   {group.items.map((tech) => (
-                    <div key={tech.name} className="surface p-3 flex flex-col items-center gap-1 w-24">
+                    <div
+                      key={tech.name}
+                      className="glass-card p-3 flex flex-col items-center gap-1 w-24 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)]"
+                    >
                       <div className="text-2xl flex items-center justify-center h-7">{tech.icon}</div>
                       <span className="text-xs font-medium text-[var(--text-dim)] text-center leading-tight">{tech.name}</span>
                     </div>

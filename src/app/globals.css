@@ -1,55 +1,57 @@
-/* globals.css – Radical Dark */
+/* globals.css – Aurora + Glassmorphism */
 
 /* Tailwind v4 base */
 @import "tailwindcss";
 
 /* =========================
-   TOKENS – ULTRADARK
+   TOKENS – AURORA DARK
    ========================= */
 :root {
   /* Base */
-  --bg: #000000;             /* Dominante absoluto */
-  --bg-elev-1: #060608;      /* Superficie 1 */
-  --bg-elev-2: #0b0c10;      /* Superficie 2 */
-  --bg-elev-3: #111218;      /* Superficie 3 */
+  --bg: #030711;
+  --bg-elev-1: rgba(12, 20, 32, 0.5);
+  --bg-elev-2: #111c2c;
+  --bg-elev-3: #182438;
 
   /* Texto */
-  --text: #e8e8ef;
-  --text-dim: #a7a9b4;
+  --text: #dde8f5;
+  --text-dim: #6e85a2;
 
   /* Bordes / líneas */
-  --line: #1d1f2a;
+  --line: #1c2d42;
 
   /* Acentos */
-  --accent: #7c86ff;       /* azul violeta (puedes cambiar a #00e5ff si quieres cian) */
-  --accent-2: #ff3b81;     /* magenta punch */
+  --accent: #10b981;       /* emerald */
+  --accent-2: #f59e0b;     /* amber */
+
+  /* Aurora palette */
+  --aurora-1: #0ea5e9;     /* sky blue */
+  --aurora-2: #8b5cf6;     /* violet */
+  --aurora-3: #10b981;     /* emerald */
+  --aurora-4: #f59e0b;     /* amber */
 
   /* Estados / focus */
-  --ring-rgb: 251 191 36;            /* amber-400 */
-  --ring-alpha: 1;                   /* ajusta 0..1 si quieres */
+  --ring-rgb: 251 191 36;
+  --ring-alpha: 1;
   --ring: rgb(var(--ring-rgb) / var(--ring-alpha));
 
   /* Easing */
-  --ease: cubic-bezier(.22,1,.36,1); /* easeOutQuint-like */
+  --ease: cubic-bezier(.22,1,.36,1);
 }
 
-.dark { /* por si luego alternas tema */
-  --bg: #000000;
-  --bg-elev-1: #060608;
-  --bg-elev-2: #0b0c10;
-  --bg-elev-3: #111218;
+.dark {
+  --bg: #030711;
+  --bg-elev-1: rgba(12, 20, 32, 0.5);
+  --bg-elev-2: #111c2c;
+  --bg-elev-3: #182438;
 
-  --text: #e8e8ef;
-  --text-dim: #a7a9b4;
+  --text: #dde8f5;
+  --text-dim: #6e85a2;
 
-  --line: #1d1f2a;
+  --line: #1c2d42;
 
-
-  --accent-2: #ff3b81;
-
-  
-
-
+  --accent: #10b981;
+  --accent-2: #f59e0b;
 }
 
 /* =========================
@@ -69,23 +71,36 @@ body {
   overflow-x: hidden;
 }
 
-/* Vignette + glow sutil en todo el site */
-body::before,
+/* =========================
+   AURORA ANIMATION
+   ========================= */
+@keyframes aurora-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 20%, rgba(139,92,246,0.18), transparent),
+    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(14,165,233,0.15), transparent),
+    radial-gradient(ellipse 70% 60% at 50% 50%, rgba(16,185,129,0.10), transparent);
+  background-size: 200% 200%;
+  animation: aurora-shift 12s ease infinite;
+  filter: blur(40px);
+}
+
 body::after {
   content: "";
   position: fixed;
   inset: -10%;
   pointer-events: none;
   z-index: -1;
-}
-body::before {
-  /* viñeta negra alrededor */
-  background: radial-gradient(1200px 600px at 50% -10%, rgba(124,134,255,0.12), transparent),
-              radial-gradient(900px 400px at 90% 110%, rgba(255,59,129,0.08), transparent);
-  filter: blur(20px);
-  opacity: .6;
-}
-body::after {
   /* grano sutil */
   background-image:
     linear-gradient(transparent 0, rgba(255,255,255,0.02) 100%),
@@ -115,12 +130,30 @@ img { max-width: 100%; height: auto; display: block; }
   border-radius: .5rem;
 }
 
-/* Bordes suaves en superficies */
+/* =========================
+   GLASSMORPHISM SURFACES
+   ========================= */
 .surface {
-  background: var(--bg-elev-1);
-  border: 1px solid var(--line);
+  background: rgba(12, 20, 32, 0.55);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 1rem;
-  box-shadow: 0 10px 40px -30px rgba(0,0,0,.8);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.25rem;
+  box-shadow:
+    0 16px 48px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
 }
 
 /* Headings con subrayado glow */
@@ -138,7 +171,7 @@ img { max-width: 100%; height: auto; display: block; }
   height: 2px;
   transform: translateX(-50%);
   background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  filter: drop-shadow(0 0 12px rgba(124,134,255,.6));
+  filter: drop-shadow(0 0 12px rgba(16,185,129,.6));
   opacity: .8;
 }
 
@@ -157,7 +190,6 @@ img { max-width: 100%; height: auto; display: block; }
   transition: none !important;
 }
 
-/* Accesibilidad: por coherencia si alguien activa reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .reveal,
   .reveal.is-visible,
@@ -173,7 +205,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 /* =========================
-   BOTONES – ULTRADARK
+   BOTONES – GLASSMORPHISM
    ========================= */
 .btn {
   position: relative;
@@ -183,28 +215,31 @@ img { max-width: 100%; height: auto; display: block; }
   padding: .7rem 1rem;
   border-radius: .9rem;
   font-weight: 600;
-  border: 1px solid var(--line);
-  background: linear-gradient(180deg, var(--bg-elev-2), var(--bg-elev-1));
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: var(--text);
-  transition: transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s var(--ease);
+  transition: transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s var(--ease), background .2s var(--ease);
 }
 .btn:hover {
   transform: translateY(-2px);
-  border-color: color-mix(in oklab, var(--accent) 35%, var(--line));
-  box-shadow: 0 14px 40px -24px rgba(124,134,255,.6);
+  background: rgba(255, 255, 255, 0.10);
+  border-color: color-mix(in oklab, var(--accent) 35%, rgba(255,255,255,0.12));
+  box-shadow: 0 14px 40px -24px rgba(16,185,129,.6);
 }
 .btn-primary {
-  background: radial-gradient(130% 180% at 50% -20%, color-mix(in oklab, var(--accent) 22%, #000), var(--bg-elev-2));
-  border-color: color-mix(in oklab, var(--accent) 35%, var(--line));
+  background: radial-gradient(130% 180% at 50% -20%, color-mix(in oklab, var(--accent) 22%, rgba(12,20,32,0.7)), rgba(12,20,32,0.6));
+  border-color: color-mix(in oklab, var(--accent) 35%, rgba(255,255,255,0.12));
   color: #eaf0ff;
 }
 .btn-ghost {
   background: transparent;
-  border-color: var(--line);
+  border-color: rgba(255, 255, 255, 0.08);
   color: var(--text-dim);
 }
 
-/* Evitar “pop-in” por content-visibility */
+/* Evitar "pop-in" por content-visibility */
 .cv-auto {
   content-visibility: visible !important;
   contain-intrinsic-size: auto !important;

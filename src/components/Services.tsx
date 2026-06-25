@@ -10,9 +10,9 @@ const services = [
     title: "Desarrollo Web",
     accent: "#60a5fa",        // blue-400
     textColor: "text-blue-400",
-    bgGlow: "rgba(96,165,250,0.14)",
-    borderHover: "hover:border-blue-400/40",
-    shadowHover: "hover:shadow-[0_0_40px_-12px_rgba(96,165,250,0.35)]",
+    bgGlow: "rgba(96,165,250,0.10)",
+    borderHover: "hover:border-blue-400/30",
+    shadowHover: "hover:shadow-[0_0_40px_-12px_rgba(96,165,250,0.3)]",
     items: [
       "Aplicaciones full-stack con Next.js y React",
       "APIs REST y arquitecturas serverless",
@@ -25,9 +25,9 @@ const services = [
     title: "IA Generativa",
     accent: "#a78bfa",        // violet-400
     textColor: "text-violet-400",
-    bgGlow: "rgba(167,139,250,0.14)",
-    borderHover: "hover:border-violet-400/40",
-    shadowHover: "hover:shadow-[0_0_40px_-12px_rgba(167,139,250,0.35)]",
+    bgGlow: "rgba(167,139,250,0.10)",
+    borderHover: "hover:border-violet-400/30",
+    shadowHover: "hover:shadow-[0_0_40px_-12px_rgba(167,139,250,0.3)]",
     items: [
       "Sistemas RAG con bases de conocimiento propias",
       "Agentes conversacionales con memoria y herramientas",
@@ -40,9 +40,9 @@ const services = [
     title: "Automatización",
     accent: "#fb923c",        // orange-400
     textColor: "text-orange-400",
-    bgGlow: "rgba(251,146,60,0.14)",
-    borderHover: "hover:border-orange-400/40",
-    shadowHover: "hover:shadow-[0_0_40px_-12px_rgba(251,146,60,0.35)]",
+    bgGlow: "rgba(251,146,60,0.10)",
+    borderHover: "hover:border-orange-400/30",
+    shadowHover: "hover:shadow-[0_0_40px_-12px_rgba(251,146,60,0.3)]",
     items: [
       "Flujos end-to-end con n8n",
       "Integración de webhooks y APIs externas",
@@ -55,9 +55,9 @@ const services = [
     title: "Agentes Inteligentes",
     accent: "#34d399",        // emerald-400
     textColor: "text-emerald-400",
-    bgGlow: "rgba(52,211,153,0.14)",
-    borderHover: "hover:border-emerald-400/40",
-    shadowHover: "hover:shadow-[0_0_40px_-12px_rgba(52,211,153,0.35)]",
+    bgGlow: "rgba(52,211,153,0.10)",
+    borderHover: "hover:border-emerald-400/30",
+    shadowHover: "hover:shadow-[0_0_40px_-12px_rgba(52,211,153,0.3)]",
     items: [
       "Agentes de atención al cliente 24/7 (voz y chat)",
       "Agentes internos para tareas operativas y de empresa",
@@ -70,7 +70,7 @@ const services = [
 const Services = () => {
   return (
     <section className="relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg)] via-[var(--bg-elev-1)] to-[var(--bg)]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg)] via-transparent to-[var(--bg)]" />
       <div className="container relative">
         <Reveal replay>
           <h2 className="headline text-3xl text-center py-4 mt-6 mb-6">
@@ -91,8 +91,7 @@ const Services = () => {
               <Reveal replay key={s.title} delayMs={80 + i * 60}>
                 <div
                   className={[
-                    "group relative h-full rounded-2xl p-6",
-                    "border border-[var(--line)] bg-[var(--bg-elev-1)]",
+                    "group relative h-full glass-card p-6 overflow-hidden",
                     "transition-all duration-300",
                     s.borderHover,
                     s.shadowHover,
@@ -102,9 +101,15 @@ const Services = () => {
                     backgroundImage: `radial-gradient(400px 300px at 0% 0%, ${s.bgGlow}, transparent)`,
                   }}
                 >
+                  {/* Barra de gradiente superior */}
+                  <div
+                    className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl"
+                    style={{ background: `linear-gradient(90deg, transparent, ${s.accent}, transparent)` }}
+                  />
+
                   {/* Icono */}
                   <div
-                    className={`inline-flex items-center justify-center w-11 h-11 rounded-xl mb-4 border border-[var(--line)] bg-[var(--bg-elev-2)] ${s.textColor} transition-transform duration-300 group-hover:scale-110`}
+                    className={`inline-flex items-center justify-center w-11 h-11 rounded-xl mb-4 border border-white/10 bg-white/5 backdrop-blur-sm ${s.textColor} transition-transform duration-300 group-hover:scale-110`}
                   >
                     <Icon className="w-5 h-5" />
                   </div>
