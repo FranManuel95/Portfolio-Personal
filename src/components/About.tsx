@@ -5,24 +5,24 @@ import Reveal from "./Reveal";
 
 const techStack = [
   {
-    category: "Frontend",
-    items: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Framer Motion"],
-  },
-  {
-    category: "Backend & APIs",
-    items: ["Node.js", "Python", "PHP / Symfony", "REST APIs", "Supabase / PostgreSQL"],
-  },
-  {
-    category: "IA & Modelos",
-    items: ["OpenAI API", "Claude API", "Gemini", "LangChain", "RAG", "OpenRouter"],
+    category: "IA & Agentes",
+    items: ["Claude", "OpenAI", "Gemini", "MCP Servers", "Skills propios", "OpenClaw", "RAG", "Pinecone"],
   },
   {
     category: "Automatización",
-    items: ["n8n", "Webhooks", "VAPI", "ElevenLabs", "Twilio"],
+    items: ["n8n", "Airtable", "UltraMsg / Baileys", "API"],
   },
   {
-    category: "Infraestructura",
-    items: ["Docker", "Vercel", "Git", "CI/CD"],
+    category: "Frontend",
+    items: ["Next.js", "React", "TypeScript", "Tailwind CSS", "HTML/CSS", "SCSS", "Vite"],
+  },
+  {
+    category: "Backend & BD",
+    items: ["Node.js", "Express", "PHP", "Symfony", "Django", "Supabase", "MySQL", "PostgreSQL"],
+  },
+  {
+    category: "Infra & DevOps",
+    items: ["Linux / VPS", "Docker", "Vercel", "Netlify", "Cloudflare", "Azure", "Stripe", "Teachable", "Git"],
   },
 ];
 
@@ -34,22 +34,22 @@ const About = () => {
       <Reveal replay>
         <div>
           <p className="text-[var(--text)] text-lg leading-relaxed mb-6">
-            Mi base es el{" "}
-            <span className="text-[var(--accent-2)] font-medium">desarrollo web</span>, pero he
-            evolucionado hacia un perfil híbrido donde combino frontend, backend,{" "}
-            <span className="text-[var(--accent-2)] font-medium">inteligencia artificial</span> y
-            automatización.
+            Construyo{" "}
+            <span className="text-[var(--accent-2)] font-medium">sistemas de IA aplicada</span>{" "}
+            que resuelven problemas concretos de negocio y llegan a producción: agentes
+            conversacionales, pipelines RAG y automatizaciones que sustituyen procesos manuales.
           </p>
           <p className="text-[var(--text-dim)] text-base leading-relaxed mb-6">
-            Diseño y construyo sistemas completos: agentes conversacionales, flujos RAG y
-            arquitecturas de IA escalables e independientes de proveedor. Me muevo bien entre
-            controlar la infraestructura de modelos, optimizar costes y llevar soluciones a
-            producción.
+            Mi base{" "}
+            <span className="text-[var(--accent-2)] font-medium">full-stack</span>{" "}
+            me permite controlar el sistema completo —de la interfaz a la infraestructura de IA—,
+            optimizando costes de modelos y desplegando soluciones estables y mantenibles.
           </p>
           <p className="text-[var(--text-dim)] text-base leading-relaxed">
             Actualmente en{" "}
             <span className="text-[var(--accent)] font-semibold">Derecho Virtual</span> como
-            Especialista en IA, donde construyo el core tecnológico de IA del producto.
+            AI Engineer, liderando proyectos en los sectores jurídico y educativo desde la
+            concepción hasta producción, con cientos de usuarios activos.
           </p>
 
         </div>

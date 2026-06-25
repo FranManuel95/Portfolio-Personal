@@ -50,9 +50,9 @@ function ScrambleText({
 
 const STATS = [
   { num: 2, suffix: "+", label: "Años exp" },
-  { num: 10, suffix: "+", label: "Proyectos" },
   { num: 3, suffix: "", label: "Empresas" },
-  { num: 4, suffix: "", label: "Especialidades" },
+  { num: 100, suffix: "+", label: "Usuarios activos" },
+  { num: 10, suffix: "+", label: "Proyectos" },
 ];
 
 function AnimatedStat({ num, suffix, label }: { num: number; suffix: string; label: string }) {
@@ -85,9 +85,10 @@ function AnimatedStat({ num, suffix, label }: { num: number; suffix: string; lab
 }
 
 const SKILLS = [
-  "Next.js", "TypeScript", "React", "Python", "n8n", "OpenAI API",
-  "Claude API", "LangChain", "Supabase", "Docker", "Vercel", "Tailwind CSS",
-  "Node.js", "PHP / Symfony", "VAPI", "ElevenLabs", "RAG", "Agentes IA",
+  "Claude", "OpenAI", "Gemini", "MCP Servers", "RAG", "Pinecone",
+  "n8n", "Airtable", "OpenClaw", "Next.js", "TypeScript", "React",
+  "Node.js", "PHP / Symfony", "Django", "Supabase", "Docker", "Vercel",
+  "Cloudflare", "Azure", "Scrum", "Agentes IA",
 ];
 const TICKER = [...SKILLS, ...SKILLS];
 
@@ -165,7 +166,7 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
                   WebkitTextStroke: "1px rgba(245,245,245,0.22)",
                 }}
               >
-                Dev Web &amp; IA Aplicada
+                AI Engineer &amp; Automatización
               </h2>
 
               <div
@@ -174,10 +175,10 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
               />
 
               <p className="text-[var(--text-dim)] max-w-lg text-sm leading-relaxed mb-8">
-                Construyo aplicaciones web y sistemas de IA que van a producción.
-                Actualmente Especialista en IA en{" "}
-                <span className="text-[var(--accent)] font-medium">Derecho Virtual</span>,
-                diseñando agentes, flujos RAG y automatizaciones end-to-end.
+                Construyo sistemas de IA aplicada que llegan a producción: agentes conversacionales,
+                pipelines RAG y automatizaciones que sustituyen procesos manuales. Actualmente AI Engineer en{" "}
+                <span className="text-[var(--accent)] font-medium">Derecho Virtual</span>{" "}
+                —sectores jurídico y educativo— con cientos de usuarios activos.
               </p>
 
               <div className="flex flex-wrap gap-3">

@@ -5,30 +5,43 @@ import { AnimatePresence, motion } from "framer-motion";
 
 const experiences = [
   {
-    role: "Especialista en IA",
+    role: "AI Engineer / Especialista en IA",
     company: "Derecho Virtual",
-    period: "Feb 2026 — Actualidad",
-    description:
-      "Desarrollo e implementación de soluciones basadas en IA generativa y automatización de procesos que forman parte del núcleo del producto. Diseño de agentes conversacionales, sistemas RAG y flujos automatizados con n8n para gestión de emails, validación de documentos y procesos educativos. Integración de múltiples LLMs con optimización de costes mediante orquestación de modelos.",
-    tags: ["n8n", "OpenAI", "Claude", "Gemini", "RAG", "Next.js", "Supabase", "TypeScript"],
+    period: "Feb 2026 — Presente",
+    bullets: [
+      "Lidero la parte técnica de varios proyectos digitales (sectores jurídico y educativo), desde la concepción hasta producción.",
+      "Diseño y despliego MCP Servers propios para casos de uso jurídicos, integrando Claude con herramientas y datos internos.",
+      "Desarrollo un sistema RAG con recuperación semántica sobre normativa legal (Pinecone) para consultar documentación jurídica.",
+      "Construyo un agente comercial por WhatsApp (UltraMsg / Baileys + OpenClaw) y agentes de comunicación interna.",
+      "Optimizo costes mediante routing inteligente entre LLMs (Claude, OpenAI, Gemini) según el tipo de operación.",
+      "Opero una plataforma con cientos de alumnos activos y múltiples automatizaciones en producción.",
+    ],
+    tags: ["Claude", "OpenAI", "Gemini", "MCP Servers", "RAG", "Pinecone", "n8n", "Airtable", "OpenClaw", "Next.js", "TypeScript"],
     highlight: true,
   },
   {
     role: "Desarrollador Full-Stack",
     company: "CodeArts Solutions",
     period: "Ene 2025 — Mar 2025",
-    description:
-      "Proyecto integral con Docker, PHP, Symfony, Next.js, React y TypeScript para un cliente enterprise. Posterior mejora de funcionalidades y optimización de una aplicación móvil con Unity y C# para DPTelemetry.",
-    tags: ["Next.js", "React", "TypeScript", "Docker", "Symfony", "PHP", "Unity", "C#"],
+    bullets: [
+      "Desarrollo integral de una aplicación web en producción con Docker, PHP/Symfony en backend y Next.js, React y TypeScript en frontend.",
+      "Optimización de rendimiento y escalabilidad de aplicaciones web en entornos de producción reales.",
+      "Desarrollo y optimización de una aplicación móvil en Unity y C# para el cliente DPTelemetry.",
+      "Trabajo en equipo ágil con Scrum: code reviews, planificación de sprints y entrega continua.",
+    ],
+    tags: ["Next.js", "React", "TypeScript", "Docker", "PHP", "Symfony", "Unity", "C#", "Scrum"],
     highlight: false,
   },
   {
-    role: "Desarrollador Frontend",
+    role: "Desarrollador Web",
     company: "Amograe Internacional",
-    period: "2024",
-    description:
-      "Mejora de un sistema CRM en Django (Python), centrado en optimizar la sección de facturas. Implementación de mejoras en la interfaz y funcionalidades para una gestión más ágil y eficiente.",
-    tags: ["Django", "Python"],
+    period: "Ene 2024 — Dic 2024",
+    bullets: [
+      "Mejora y evolución de un sistema CRM/ERP en Django (Python), con foco en el módulo de facturación.",
+      "Optimización de UI/UX: filtros avanzados, validaciones y gestión de estados de documentos.",
+      "Reducción de incidencias mejorando workflows internos y el rendimiento del sistema.",
+    ],
+    tags: ["Django", "Python", "MySQL", "UI/UX"],
     highlight: false,
   },
 ];
@@ -159,9 +172,14 @@ const Experience = () => {
                 </div>
 
                 {/* Description */}
-                <p className="text-[var(--text-dim)] text-sm leading-relaxed mb-6 max-w-2xl">
-                  {e.description}
-                </p>
+                <ul className="mb-6 max-w-2xl space-y-2">
+                  {e.bullets.map((b, bi) => (
+                    <li key={bi} className="text-[var(--text-dim)] text-sm leading-relaxed flex items-start gap-2">
+                      <span className="flex-shrink-0 mt-1.5 w-1 h-1 rounded-full bg-[var(--accent)] opacity-60" />
+                      {b}
+                    </li>
+                  ))}
+                </ul>
 
                 {/* Tags with stagger */}
                 <motion.div
