@@ -182,7 +182,7 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
 
         {/* Móvil */}
         <button
-          className="sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-md border border-white/10 bg-white/5 hover:bg-white/10 transition"
+          className="sm:hidden inline-flex items-center justify-center h-10 w-10 border border-[var(--line)] bg-[var(--bg-elev-2)] hover:bg-[var(--bg-elev-3)] hover:border-[var(--accent)]/30 transition-all duration-200"
           onClick={toggleMenu}
           aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
           aria-expanded={isMenuOpen}
@@ -202,16 +202,15 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
             isMenuOpen ? "top-20 scale-100 opacity-100" : "top-10 scale-95 opacity-0 pointer-events-none"
           } transition-all duration-300 ease-out`}
         >
-          <ul id="main-menu" className="rounded-2xl border border-white/10 bg-gray-900/95 backdrop-blur-2xl p-3 flex flex-col items-stretch gap-2 shadow-2xl">
+          <ul id="main-menu" className="border border-[var(--line)] bg-[var(--bg-elev-1)]/95 backdrop-blur-2xl p-2 flex flex-col items-stretch gap-1">
             {NAV.map((item) => {
-              // mismo criterio en móvil
               if (item.id === "contacto" && !contactShown) return null;
               return (
                 <li key={item.id}>
                   <Link
                     href={`#${item.id}`}
                     onClick={() => setIsMenuOpen(false)}
-                    className="block w-full text-center py-3 rounded-xl font-medium bg-white/5 hover:bg-white/10 transition"
+                    className="block w-full text-center py-3 text-sm font-medium text-[var(--text-dim)] hover:text-[var(--text)] hover:bg-[var(--bg-elev-2)] transition-all duration-200 tracking-wider uppercase"
                   >
                     {item.label}
                   </Link>
