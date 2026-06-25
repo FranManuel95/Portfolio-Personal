@@ -11,7 +11,6 @@ import FabContact from "../components/FabContact";
 import ContactForm from "../components/ContactForm";
 import Services from "../components/Services";
 
-
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -19,65 +18,109 @@ export default function Home() {
     <>
       <Header setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen} />
 
-      {/* Héroe */}
       <Hero isMenuOpen={isMenuOpen} />
 
-      {/* Servicios */}
-      <section id="servicios" className="py-16 relative overflow-hidden">
-        <span className="absolute -top-4 right-4 text-[20rem] font-black text-white/[0.02] select-none pointer-events-none leading-none">01</span>
-        <div className="container">
-          <h2 className="section-title mb-12">
-            <span className="outline-word">Qué</span><br />
-            <span className="accent-word">hago</span>
-          </h2>
+      {/* ── 01 QUÉ HAGO ──────────────────────────────────────── */}
+      <section id="servicios" className="relative">
+        <div className="w-full h-px bg-[var(--line)]" />
+        <div className="container py-16 lg:py-24">
+          <div className="flex items-end justify-between mb-14">
+            <h2 className="section-title">
+              <span className="outline-word">Qué</span>
+              <br />
+              <span className="accent-word">hago</span>
+            </h2>
+            <span
+              className="text-6xl lg:text-8xl font-black leading-none self-start mt-1"
+              style={{ color: "var(--bg-elev-3)", letterSpacing: "-0.04em" }}
+            >
+              01
+            </span>
+          </div>
           <Services />
         </div>
       </section>
 
-      {/* Experiencia */}
-      <section id="experiencia" className="py-16 relative overflow-hidden">
-        <span className="absolute -top-4 right-4 text-[20rem] font-black text-white/[0.02] select-none pointer-events-none leading-none">02</span>
-        <div className="container">
-          <h2 className="section-title mb-12">
-            <span className="outline-word">Mi</span><br />
-            <span className="accent-word">trayectoria</span>
-          </h2>
+      {/* ── 02 TRAYECTORIA ───────────────────────────────────── */}
+      <section id="experiencia" className="relative">
+        <div className="w-full h-px bg-[var(--line)]" />
+        <div className="container py-16 lg:py-24">
+          <div className="flex items-end justify-between mb-14">
+            <h2 className="section-title">
+              <span className="outline-word">Mi</span>
+              <br />
+              <span className="accent-word">trayectoria</span>
+            </h2>
+            <span
+              className="text-6xl lg:text-8xl font-black leading-none self-start mt-1"
+              style={{ color: "var(--bg-elev-3)", letterSpacing: "-0.04em" }}
+            >
+              02
+            </span>
+          </div>
           <Experience />
         </div>
       </section>
 
-      {/* Sobre mí */}
-      <section id="sobremi" className="py-16 relative overflow-hidden">
-        <span className="absolute -top-4 right-4 text-[20rem] font-black text-white/[0.02] select-none pointer-events-none leading-none">03</span>
-        <div className="container">
-          <h2 className="section-title mb-12">
-            <span className="outline-word">Sobre</span><br />
-            <span className="accent-word">mí</span>
-          </h2>
+      {/* ── 03 SOBRE MÍ ──────────────────────────────────────── */}
+      <section id="sobremi" className="relative">
+        <div className="w-full h-px bg-[var(--line)]" />
+        <div className="container py-16 lg:py-24">
+          <div className="flex items-end justify-between mb-14">
+            <h2 className="section-title">
+              <span className="outline-word">Sobre</span>
+              <br />
+              <span className="accent-word">mí</span>
+            </h2>
+            <span
+              className="text-6xl lg:text-8xl font-black leading-none self-start mt-1"
+              style={{ color: "var(--bg-elev-3)", letterSpacing: "-0.04em" }}
+            >
+              03
+            </span>
+          </div>
           <About />
         </div>
       </section>
 
-      {/* Proyectos */}
-      <section id="proyectos" className="py-16 relative overflow-hidden">
-        <span className="absolute -top-4 right-4 text-[20rem] font-black text-white/[0.02] select-none pointer-events-none leading-none">04</span>
-        <div className="container">
-          <h2 className="section-title mb-12">
-            <span className="outline-word">Mis</span><br />
-            <span className="accent-word">proyectos</span>
-          </h2>
+      {/* ── 04 PROYECTOS ─────────────────────────────────────── */}
+      <section id="proyectos" className="relative">
+        <div className="w-full h-px bg-[var(--line)]" />
+        <div className="container py-16 lg:py-24">
+          <div className="flex items-end justify-between mb-14">
+            <h2 className="section-title">
+              <span className="outline-word">Mis</span>
+              <br />
+              <span className="accent-word">proyectos</span>
+            </h2>
+            <span
+              className="text-6xl lg:text-8xl font-black leading-none self-start mt-1"
+              style={{ color: "var(--bg-elev-3)", letterSpacing: "-0.04em" }}
+            >
+              04
+            </span>
+          </div>
           <ProjectsShowcase />
         </div>
       </section>
 
-      {/* Contacto + Footer */}
-      <section id="contacto" className="py-16 relative overflow-hidden">
-        <span className="absolute -top-4 right-4 text-[20rem] font-black text-white/[0.02] select-none pointer-events-none leading-none">05</span>
-        <div className="container">
-          <h2 className="section-title mb-12">
-            <span className="outline-word">Hablemos</span><br />
-            <span className="accent-word">hoy</span>
-          </h2>
+      {/* ── 05 CONTACTO ──────────────────────────────────────── */}
+      <section id="contacto" className="relative">
+        <div className="w-full h-px bg-[var(--line)]" />
+        <div className="container py-16 lg:py-24">
+          <div className="flex items-end justify-between mb-14">
+            <h2 className="section-title">
+              <span className="outline-word">Hablemos</span>
+              <br />
+              <span className="accent-word">hoy</span>
+            </h2>
+            <span
+              className="text-6xl lg:text-8xl font-black leading-none self-start mt-1"
+              style={{ color: "var(--bg-elev-3)", letterSpacing: "-0.04em" }}
+            >
+              05
+            </span>
+          </div>
           <ContactForm />
           <div className="mt-10">
             <Footer />

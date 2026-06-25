@@ -128,7 +128,7 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
     >
       <div className="absolute inset-0 bg-gray-900/70 backdrop-blur-xl border-b border-white/10" />
       <div
-        className="absolute top-0 left-0 h-[3px] bg-[var(--accent)]/95 shadow-[0_0_18px_rgba(124,134,255,0.8)]"
+        className="absolute top-0 left-0 h-[3px] bg-[var(--accent)]/95 shadow-[0_0_18px_rgba(0,255,135,0.5)]"
         style={{ width: `${scrollProgress}%` }}
       />
 
@@ -138,7 +138,7 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
           <span
             className="pointer-events-none absolute -inset-2 rounded-lg opacity-0 hover:opacity-100 transition"
             style={{
-              background: "radial-gradient(200px 60px at 50% 100%, rgba(124,134,255,0.18), rgba(0,0,0,0))",
+              background: "radial-gradient(200px 60px at 50% 100%, rgba(0,255,135,0.12), rgba(0,0,0,0))",
               filter: "blur(8px)",
             }}
           />
@@ -168,7 +168,7 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
                     <span
                       className="pointer-events-none absolute -inset-3 rounded-lg opacity-0 hover:opacity-100 transition"
                       style={{
-                        background: "radial-gradient(120px 40px at 50% 120%, rgba(124,134,255,0.18), rgba(0,0,0,0))",
+                        background: "radial-gradient(120px 40px at 50% 120%, rgba(0,255,135,0.1), rgba(0,0,0,0))",
                         filter: "blur(10px)",
                       }}
                     />

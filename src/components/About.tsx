@@ -1,136 +1,96 @@
 "use client";
 
 import React from "react";
-import {
-  FaReact, FaNodeJs, FaGit, FaDocker,
-} from "react-icons/fa";
-import { SiTailwindcss, SiNextdotjs, SiTypescript, SiSupabase, SiN8N, SiOpenai, SiVercel } from "react-icons/si";
-import { BrainCircuit, Mic, Workflow, Globe } from "lucide-react";
 import Reveal from "./Reveal";
-import TypewriterText from "./TypewriterText";
 
-const stackGroups = [
+const techStack = [
   {
-    label: "Desarrollo Web",
-    icon: <Globe className="w-4 h-4" />,
-    items: [
-      { name: "Next.js",     icon: <SiNextdotjs className="text-gray-200" /> },
-      { name: "React",       icon: <FaReact className="text-blue-400" /> },
-      { name: "TypeScript",  icon: <SiTypescript className="text-blue-500" /> },
-      { name: "Tailwind",    icon: <SiTailwindcss className="text-cyan-500" /> },
-      { name: "Supabase",    icon: <SiSupabase className="text-emerald-500" /> },
-      { name: "Node.js",     icon: <FaNodeJs className="text-green-500" /> },
-    ],
+    category: "Frontend",
+    items: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Framer Motion"],
   },
   {
-    label: "IA Generativa",
-    icon: <BrainCircuit className="w-4 h-4" />,
-    items: [
-      { name: "OpenAI",      icon: <SiOpenai className="text-gray-200" /> },
-      { name: "Claude",      icon: <span className="text-orange-400 font-bold text-xs">AI</span> },
-      { name: "Gemini",      icon: <span className="text-blue-400 font-bold text-xs">G</span> },
-      { name: "OpenRouter",  icon: <span className="text-purple-400 font-bold text-xs">OR</span> },
-      { name: "LangChain",   icon: <span className="text-emerald-500 font-bold text-xs">LC</span> },
-      { name: "RAG / Agentes", icon: <BrainCircuit className="w-4 h-4 text-violet-400" /> },
-    ],
+    category: "Backend & APIs",
+    items: ["Node.js", "Python", "PHP / Symfony", "REST APIs", "Supabase / PostgreSQL"],
   },
   {
-    label: "Automatización",
-    icon: <Workflow className="w-4 h-4" />,
-    items: [
-      { name: "n8n",         icon: <SiN8N className="text-orange-500" /> },
-      { name: "Webhooks",    icon: <span className="text-green-400 font-bold text-xs">{"{}"}</span> },
-      { name: "APIs REST",   icon: <span className="text-blue-300 font-bold text-xs">API</span> },
-    ],
+    category: "IA & Modelos",
+    items: ["OpenAI API", "Claude API", "Gemini", "LangChain", "RAG", "OpenRouter"],
   },
   {
-    label: "Agentes de Voz",
-    icon: <Mic className="w-4 h-4" />,
-    items: [
-      { name: "VAPI",        icon: <Mic className="w-4 h-4 text-purple-400" /> },
-      { name: "ElevenLabs",  icon: <span className="text-yellow-400 font-bold text-xs">11</span> },
-      { name: "Twilio",      icon: <span className="text-red-400 font-bold text-xs">T</span> },
-    ],
+    category: "Automatización",
+    items: ["n8n", "Webhooks", "VAPI", "ElevenLabs", "Twilio"],
   },
   {
-    label: "DevOps & Tools",
-    icon: <FaDocker className="w-4 h-4" />,
-    items: [
-      { name: "Git",         icon: <FaGit className="text-red-500" /> },
-      { name: "Docker",      icon: <FaDocker className="text-blue-400" /> },
-      { name: "Vercel",      icon: <SiVercel className="text-gray-200" /> },
-    ],
+    category: "Infraestructura",
+    items: ["Docker", "Vercel", "Git", "CI/CD"],
   },
 ];
 
 const About = () => {
   return (
-    <section className="relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg)] via-[var(--bg-elev-1)] to-[var(--bg)]" />
-      <div className="container relative text-center">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
 
-        <Reveal replay>
-          <h2 className="headline text-3xl py-4 mt-6 mb-6">Sobre mí</h2>
-        </Reveal>
+      {/* LEFT: Bio */}
+      <Reveal replay>
+        <div>
+          <p className="text-[var(--text)] text-lg leading-relaxed mb-6">
+            Mi base es el{" "}
+            <span className="text-[var(--accent-2)] font-medium">desarrollo web</span>, pero he
+            evolucionado hacia un perfil híbrido donde combino frontend, backend,{" "}
+            <span className="text-[var(--accent-2)] font-medium">inteligencia artificial</span> y
+            automatización.
+          </p>
+          <p className="text-[var(--text-dim)] text-base leading-relaxed mb-6">
+            Diseño y construyo sistemas completos: agentes conversacionales, flujos RAG y
+            arquitecturas de IA escalables e independientes de proveedor. Me muevo bien entre
+            controlar la infraestructura de modelos, optimizar costes y llevar soluciones a
+            producción.
+          </p>
+          <p className="text-[var(--text-dim)] text-base leading-relaxed">
+            Actualmente en{" "}
+            <span className="text-[var(--accent)] font-semibold">Derecho Virtual</span> como
+            Especialista en IA, donde construyo el core tecnológico de IA del producto.
+          </p>
 
-        <Reveal replay delayMs={60}>
-          <TypewriterText
-            as="p"
-            className="md:text-2xl text-[color-mix(in_oklab,var(--text)_90%,#fff)] leading-relaxed max-w-4xl mx-auto"
-            speed={26}
-            startDelay={120}
-            punctuationPauseMs={110}
-            inViewMargin="0px 0px -12% 0px"
-            segments={[
-              { text: "Mi base es el " },
-              { text: "desarrollo web", className: "text-[var(--accent-2)]" },
-              { text: ", pero he evolucionado hacia un perfil híbrido donde combino " },
-              { text: "frontend, backend, inteligencia artificial y automatización", className: "text-[var(--accent-2)]" },
-              { text: ". " },
+          <div className="mt-8 flex gap-6 pt-8 border-t border-[var(--line)]">
+            <div>
+              <p className="text-2xl font-black text-[var(--accent)]" style={{ letterSpacing: "-0.03em" }}>3</p>
+              <p className="text-[10px] uppercase tracking-widest text-[var(--text-dim)] mt-0.5">Empresas</p>
+            </div>
+            <div>
+              <p className="text-2xl font-black text-[var(--accent)]" style={{ letterSpacing: "-0.03em" }}>10+</p>
+              <p className="text-[10px] uppercase tracking-widest text-[var(--text-dim)] mt-0.5">Proyectos</p>
+            </div>
+            <div>
+              <p className="text-2xl font-black text-[var(--accent)]" style={{ letterSpacing: "-0.03em" }}>2+</p>
+              <p className="text-[10px] uppercase tracking-widest text-[var(--text-dim)] mt-0.5">Años exp</p>
+            </div>
+          </div>
+        </div>
+      </Reveal>
 
-              { text: "Diseño y construyo " },
-              { text: "sistemas completos", className: "text-[var(--accent-2)]" },
-              { text: " que van más allá de una web tradicional: agentes conversacionales, flujos automatizados y arquitecturas de IA " },
-              { text: "escalables e independientes de proveedor", className: "text-[var(--accent-2)]" },
-              { text: ". " },
-
-              { text: "Me muevo bien entre " },
-              { text: "controlar la infraestructura de IA", className: "text-[var(--accent-2)]" },
-              { text: ", optimizar costes de modelos y llevar soluciones reales a " },
-              { text: "producción", className: "text-[var(--accent-2)]" },
-              { text: "." },
-            ]}
-          />
-        </Reveal>
-
-        <Reveal replay delayMs={120}>
-          <h3 className="text-2xl sm:text-3xl font-semibold mt-14 mb-8 text-[var(--accent)]">
-            Stack & Capacidades
-          </h3>
-        </Reveal>
-
-        <div className="flex flex-col gap-8">
-          {stackGroups.map((group, gi) => (
-            <Reveal replay key={group.label} delayMs={160 + gi * 60}>
-              <div>
-                <div className="flex items-center justify-center gap-2 mb-4 text-[var(--text-dim)]">
-                  {group.icon}
-                  <span className="text-sm font-semibold uppercase tracking-widest">{group.label}</span>
-                </div>
-                <div className="flex flex-wrap justify-center gap-3">
-                  {group.items.map((tech) => (
-                    <div key={tech.name} className="surface p-3 flex flex-col items-center gap-1 w-24">
-                      <div className="text-2xl flex items-center justify-center h-7">{tech.icon}</div>
-                      <span className="text-xs font-medium text-[var(--text-dim)] text-center leading-tight">{tech.name}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </Reveal>
+      {/* RIGHT: Tech stack by category */}
+      <Reveal replay delayMs={80}>
+        <div className="space-y-6">
+          {techStack.map((group, gi) => (
+            <div key={group.category}>
+              <h4
+                className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-2"
+                style={{ color: "var(--accent)" }}
+              >
+                {group.category}
+              </h4>
+              <p className="text-sm text-[var(--text-dim)] leading-relaxed">
+                {group.items.join(" · ")}
+              </p>
+              {gi < techStack.length - 1 && (
+                <div className="mt-5 h-px bg-[var(--line)]" />
+              )}
+            </div>
           ))}
         </div>
-      </div>
-    </section>
+      </Reveal>
+    </div>
   );
 };
 

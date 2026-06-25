@@ -242,3 +242,33 @@ img { max-width: 100%; height: auto; display: block; }
 .animate-pulse-dot {
   animation: pulse-dot 2s ease-in-out infinite;
 }
+
+/* Skills ticker */
+@keyframes ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker 28s linear infinite;
+}
+.ticker-track:hover { animation-play-state: paused; }
+
+/* Tab panel (Experience v7) */
+.exp-tab {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 1.25rem 1.5rem;
+  border-left: 2px solid transparent;
+  transition: background .2s var(--ease), border-color .2s var(--ease), color .2s var(--ease);
+  cursor: pointer;
+  color: var(--text-dim);
+}
+.exp-tab:hover { color: var(--text); background: color-mix(in oklab, var(--bg-elev-1) 60%, transparent); }
+.exp-tab.active {
+  border-left-color: var(--accent);
+  background: var(--bg-elev-1);
+  color: var(--text);
+}

@@ -61,35 +61,47 @@ const services = [
 
 const Services = () => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+    <div className="divide-y divide-[var(--line)]">
       {services.map((s, i) => {
         const Icon = s.icon;
         return (
-          <Reveal replay key={s.title} delayMs={80 + i * 60}>
-            <div
-              className="border-l-2 pl-6 py-4"
-              style={{ borderColor: s.accent }}
-            >
-              <div className="flex items-start gap-3 mb-2">
-                <span
-                  className="text-5xl font-black leading-none select-none"
-                  style={{ color: "var(--bg-elev-3)" }}
-                >
-                  {s.num}
-                </span>
+          <Reveal replay key={s.title} delayMs={i * 60}>
+            <div className="group grid grid-cols-1 md:grid-cols-[200px_1fr] lg:grid-cols-[80px_200px_1fr] gap-4 md:gap-8 py-8 px-4 -mx-4 hover:bg-[var(--bg-elev-1)] transition-colors duration-200 cursor-default">
+
+              {/* Number + Icon: desktop only column */}
+              <div className="hidden lg:flex items-center gap-4">
+                <span className="text-[var(--text-dim)]/40 font-mono text-sm tabular-nums">{s.num}</span>
                 <div
-                  className={`inline-flex items-center justify-center w-9 h-9 mt-1 border border-[var(--line)] bg-[var(--bg-elev-2)] ${s.textColor} flex-shrink-0`}
+                  className={`inline-flex items-center justify-center w-9 h-9 flex-shrink-0 ${s.textColor}`}
+                  style={{ border: `1px solid ${s.accent}40`, background: "var(--bg-elev-2)" }}
                 >
                   <Icon className="w-4 h-4" />
                 </div>
               </div>
-              <h3 className={`text-xl font-bold uppercase tracking-tight ${s.textColor} -mt-1 mb-3`}>
-                {s.title}
-              </h3>
-              <ul className="space-y-1.5">
+
+              {/* Title column */}
+              <div className="flex items-center gap-3">
+                {/* Mobile: show number+icon inline with title */}
+                <div className="flex items-center gap-3 lg:hidden">
+                  <span className="text-[var(--text-dim)]/40 font-mono text-xs tabular-nums">{s.num}</span>
+                  <div
+                    className={`inline-flex items-center justify-center w-8 h-8 flex-shrink-0 ${s.textColor}`}
+                    style={{ border: `1px solid ${s.accent}40`, background: "var(--bg-elev-2)" }}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                  </div>
+                </div>
+                <h3 className={`text-base font-bold uppercase tracking-tight ${s.textColor}`}>
+                  {s.title}
+                </h3>
+              </div>
+
+              {/* Items: 2-col on wider screens */}
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5">
                 {s.items.map((item) => (
-                  <li key={item} className="text-sm text-[var(--text-dim)]">
-                    — {item}
+                  <li key={item} className="text-sm text-[var(--text-dim)] flex items-start gap-2">
+                    <span className="mt-[5px] flex-shrink-0 text-xs" style={{ color: s.accent }}>—</span>
+                    {item}
                   </li>
                 ))}
               </ul>

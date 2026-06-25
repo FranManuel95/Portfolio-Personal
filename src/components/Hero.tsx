@@ -5,6 +5,13 @@ import React from "react";
 import { FaLinkedin, FaGithub, FaDownload } from "react-icons/fa";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 
+const SKILLS = [
+  "Next.js", "TypeScript", "React", "Python", "n8n", "OpenAI API",
+  "Claude API", "LangChain", "Supabase", "Docker", "Vercel", "Tailwind CSS",
+  "Node.js", "PHP / Symfony", "VAPI", "ElevenLabs", "RAG", "Agentes IA",
+];
+const TICKER = [...SKILLS, ...SKILLS];
+
 const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
   const mx = useMotionValue(0.5);
   const my = useMotionValue(0.5);
@@ -14,7 +21,7 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
   return (
     <section
       id="hero"
-      className={`${isMenuOpen ? "pt-[8.5rem]" : "pt-16"} min-h-screen flex items-center relative overflow-hidden`}
+      className={`${isMenuOpen ? "pt-[8.5rem]" : "pt-16"} min-h-screen flex flex-col relative overflow-hidden`}
       onPointerMove={(e) => {
         if (window.matchMedia("(min-width: 768px)").matches) {
           const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -23,101 +30,139 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
         }
       }}
     >
-      {/* Vertical accent line */}
+      {/* Left accent rail */}
       <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--accent)]" />
 
-      {/* Subtle moving glow */}
+      {/* Ambient glow that follows cursor */}
       <motion.div
         aria-hidden
-        className="hidden md:block pointer-events-none absolute w-[44vw] h-[44vw] max-w-[580px] max-h-[580px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl bg-[var(--accent)]/10"
+        className="hidden md:block pointer-events-none absolute w-[44vw] h-[44vw] max-w-[580px] max-h-[580px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl bg-[var(--accent)]/8"
         style={{ left: glowX, top: glowY, willChange: "transform", contain: "paint" }}
       />
 
-      <div className="container relative z-10 pl-8 md:pl-16">
-        <p className="text-[var(--accent)] text-sm font-mono uppercase tracking-[0.3em] mb-6">
-          Disponible para proyectos
-        </p>
+      {/* Main content */}
+      <div className="flex-1 flex items-center">
+        <div className="container relative z-10 pl-8 md:pl-16 py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-10 lg:gap-16 items-center">
 
-        {/* Giant name */}
-        <h1
-          className="font-black uppercase leading-none mb-4"
-          style={{ fontSize: "clamp(4rem, 15vw, 12rem)", letterSpacing: "-0.04em" }}
-        >
-          <span style={{ color: "var(--text)" }}>Fra</span>
-          <span style={{ color: "var(--accent)" }}>n</span>
-        </h1>
+            {/* LEFT: Editorial text */}
+            <div>
+              <p className="text-[var(--accent)] text-xs font-mono uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse-dot inline-block" />
+                Disponible · Sevilla, España
+              </p>
 
-        {/* Outline subtitle */}
-        <h2
-          className="font-black uppercase text-transparent leading-none mb-8"
-          style={{
-            fontSize: "clamp(1.5rem, 5vw, 4rem)",
-            letterSpacing: "-0.03em",
-            WebkitTextStroke: "1px rgba(245,245,245,0.3)",
-          }}
-        >
-          Dev Web &amp; IA Aplicada
-        </h2>
+              <h1
+                className="font-black uppercase leading-none mb-2"
+                style={{ fontSize: "clamp(4rem, 15vw, 11rem)", letterSpacing: "-0.04em" }}
+              >
+                <span style={{ color: "var(--text)" }}>Fra</span>
+                <span style={{ color: "var(--accent)" }}>n</span>
+              </h1>
 
-        {/* Accent divider */}
-        <div className="h-px w-32 bg-[var(--accent)] mb-8" />
+              <h2
+                className="font-black uppercase text-transparent leading-none mb-6"
+                style={{
+                  fontSize: "clamp(1rem, 3.8vw, 3rem)",
+                  letterSpacing: "-0.03em",
+                  WebkitTextStroke: "1px rgba(245,245,245,0.22)",
+                }}
+              >
+                Dev Web &amp; IA Aplicada
+              </h2>
 
-        {/* Buttons and photo in row */}
-        <div className="flex flex-col lg:flex-row items-start lg:items-center gap-8">
-          <div className="flex flex-wrap gap-4">
-            <a
-              href="https://www.linkedin.com/in/francisco-manuel-perej%C3%B3n-carmona-7bbb1214a/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-[var(--accent)] text-black px-4 py-2 font-semibold text-sm uppercase tracking-wider transition-opacity hover:opacity-90"
-            >
-              <FaLinkedin /> <span>LinkedIn</span>
-            </a>
-            <a
-              href="https://github.com/FranManuel95"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 border border-[var(--line)] text-[var(--text)] px-4 py-2 text-sm uppercase tracking-wider hover:border-[var(--text-dim)] transition-colors"
-            >
-              <FaGithub /> <span>GitHub</span>
-            </a>
-            <a
-              href="/Fran%20Perej%C3%B3n%20%E2%80%94%20CV.pdf"
-              download
-              className="inline-flex items-center gap-2 border border-[var(--accent-2)] text-[var(--accent-2)] px-4 py-2 text-sm uppercase tracking-wider hover:bg-[var(--accent-2)] hover:text-black transition-colors"
-            >
-              <FaDownload /> <span>Descargar CV</span>
-            </a>
+              <div
+                className="h-px w-24 mb-6"
+                style={{ background: "linear-gradient(90deg, var(--accent), transparent)" }}
+              />
+
+              <p className="text-[var(--text-dim)] max-w-lg text-sm leading-relaxed mb-8">
+                Construyo aplicaciones web y sistemas de IA que van a producción.
+                Actualmente Especialista en IA en{" "}
+                <span className="text-[var(--accent)] font-medium">Derecho Virtual</span>,
+                diseñando agentes, flujos RAG y automatizaciones end-to-end.
+              </p>
+
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href="https://www.linkedin.com/in/francisco-manuel-perej%C3%B3n-carmona-7bbb1214a/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-[var(--accent)] text-black px-4 py-2.5 font-semibold text-sm uppercase tracking-wider hover:opacity-90 transition-opacity"
+                >
+                  <FaLinkedin /> LinkedIn
+                </a>
+                <a
+                  href="https://github.com/FranManuel95"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 border border-[var(--line)] text-[var(--text)] px-4 py-2.5 text-sm uppercase tracking-wider hover:border-[var(--text-dim)] transition-colors"
+                >
+                  <FaGithub /> GitHub
+                </a>
+                <a
+                  href="/Fran%20Perej%C3%B3n%20%E2%80%94%20CV.pdf"
+                  download
+                  className="inline-flex items-center gap-2 border border-[var(--accent-2)] text-[var(--accent-2)] px-4 py-2.5 text-sm uppercase tracking-wider hover:bg-[var(--accent-2)] hover:text-black transition-colors"
+                >
+                  <FaDownload /> Descargar CV
+                </a>
+              </div>
+            </div>
+
+            {/* RIGHT: Editorial photo frame */}
+            <div className="hidden lg:block relative flex-shrink-0">
+              <div className="relative w-52 h-64">
+                <div className="absolute -inset-3 border border-[var(--accent)]/20" />
+                <div className="absolute -bottom-4 -right-4 w-full h-full border border-[var(--line)]" />
+                <Image
+                  src="/FotoSinFondo.webp"
+                  alt="Fran Perejón"
+                  fill
+                  className="object-contain grayscale hover:grayscale-0 transition-all duration-700"
+                  sizes="208px"
+                  priority
+                />
+              </div>
+            </div>
           </div>
 
-          {/* Photo with editorial treatment */}
-          <div className="relative w-48 h-48 border-2 border-[var(--accent)] flex-shrink-0">
-            <Image
-              src="/FotoSinFondo.webp"
-              alt="Fran"
-              fill
-              className="object-contain grayscale hover:grayscale-0 transition-all duration-500"
-              sizes="192px"
-              priority
-            />
-            <div className="absolute -bottom-3 -right-3 w-full h-full border border-[var(--text-dim)]" />
+          {/* Stats row */}
+          <div className="mt-12 grid grid-cols-4 gap-0 border-t border-[var(--line)] pt-8 max-w-lg">
+            {[
+              { val: "2+", label: "Años exp" },
+              { val: "10+", label: "Proyectos" },
+              { val: "3", label: "Empresas" },
+              { val: "4", label: "Especialidades" },
+            ].map((s) => (
+              <div key={s.label} className="pr-6">
+                <p
+                  className="text-3xl font-black text-[var(--accent)]"
+                  style={{ letterSpacing: "-0.03em" }}
+                >
+                  {s.val}
+                </p>
+                <p className="text-[10px] uppercase tracking-widest text-[var(--text-dim)] mt-0.5">
+                  {s.label}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
+      </div>
 
-        {/* Stats row */}
-        <div className="mt-12 flex gap-8 border-t border-[var(--line)] pt-8">
-          <div>
-            <p className="text-4xl font-black text-[var(--accent)]">3+</p>
-            <p className="text-xs uppercase tracking-widest text-[var(--text-dim)]">Años exp</p>
-          </div>
-          <div>
-            <p className="text-4xl font-black text-[var(--accent)]">10+</p>
-            <p className="text-xs uppercase tracking-widest text-[var(--text-dim)]">Proyectos</p>
-          </div>
-          <div>
-            <p className="text-4xl font-black text-[var(--accent)]">4</p>
-            <p className="text-xs uppercase tracking-widest text-[var(--text-dim)]">Especialidades</p>
-          </div>
+      {/* SKILLS TICKER — bottom strip */}
+      <div className="border-t border-[var(--line)] py-3 overflow-hidden flex-shrink-0">
+        <div className="ticker-track select-none">
+          {TICKER.map((s, i) => (
+            <span
+              key={i}
+              className="inline-flex items-center gap-3 px-5 text-[11px] font-mono uppercase tracking-widest text-[var(--text-dim)]"
+            >
+              <span className="text-[var(--accent)] opacity-50">·</span>
+              {s}
+            </span>
+          ))}
         </div>
       </div>
     </section>
