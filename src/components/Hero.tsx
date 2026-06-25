@@ -159,10 +159,10 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
               </h1>
 
               <h2
-                className="font-black uppercase leading-none mb-6"
+                className="font-bold uppercase leading-none mb-6"
                 style={{
-                  fontSize: "clamp(1rem, 3.2vw, 2.4rem)",
-                  letterSpacing: "-0.03em",
+                  fontSize: "clamp(0.85rem, 2.2vw, 1.6rem)",
+                  letterSpacing: "0.08em",
                   color: "var(--accent)",
                 }}
               >
@@ -226,7 +226,7 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
                   src="/FotoSinFondo.webp"
                   alt="Fran Perejón"
                   fill
-                  className="object-contain grayscale hover:grayscale-0 transition-all duration-700"
+                  className="object-contain transition-all duration-700"
                   sizes="288px"
                   priority
                 />
