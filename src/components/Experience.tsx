@@ -37,7 +37,7 @@ const Experience = () => {
   const exp = experiences[active];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] bg-[var(--bg-elev-1)] border border-[var(--line)]">
+    <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr]">
       {/* LEFT: tabs — on mobile scrollable horizontal row, on desktop vertical column */}
       <div className="flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible lg:border-r border-[var(--line)]">
         {experiences.map((e, i) => (

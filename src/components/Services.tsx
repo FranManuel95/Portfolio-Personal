@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Globe, BrainCircuit, Workflow, Mic } from "lucide-react";
-import Reveal from "./Reveal";
 
 const services = [
   {
@@ -10,7 +9,6 @@ const services = [
     icon: Globe,
     title: "Desarrollo Web",
     accent: "#60a5fa",
-    textColor: "text-blue-400",
     items: [
       "Aplicaciones full-stack con Next.js y React",
       "APIs REST y arquitecturas serverless",
@@ -23,7 +21,6 @@ const services = [
     icon: BrainCircuit,
     title: "IA Generativa",
     accent: "#a78bfa",
-    textColor: "text-violet-400",
     items: [
       "Sistemas RAG con bases de conocimiento propias",
       "Agentes conversacionales con memoria y herramientas",
@@ -36,7 +33,6 @@ const services = [
     icon: Workflow,
     title: "Automatización",
     accent: "#fb923c",
-    textColor: "text-orange-400",
     items: [
       "Flujos end-to-end con n8n",
       "Integración de webhooks y APIs externas",
@@ -49,7 +45,6 @@ const services = [
     icon: Mic,
     title: "Agentes Inteligentes",
     accent: "#34d399",
-    textColor: "text-emerald-400",
     items: [
       "Agentes de atención al cliente 24/7 (voz y chat)",
       "Agentes internos para tareas operativas",
@@ -60,53 +55,102 @@ const services = [
 ];
 
 const Services = () => {
+  const [open, setOpen] = useState<number>(0);
+
   return (
     <div className="divide-y divide-[var(--line)]">
       {services.map((s, i) => {
         const Icon = s.icon;
+        const isOpen = open === i;
+
         return (
-          <Reveal replay key={s.title} delayMs={i * 60}>
-            <div className="group grid grid-cols-1 md:grid-cols-[200px_1fr] lg:grid-cols-[80px_200px_1fr] gap-4 md:gap-8 py-8 px-4 -mx-4 hover:bg-[var(--bg-elev-1)] transition-colors duration-200 cursor-default">
+          <div key={s.title}>
+            <button
+              onClick={() => setOpen(i)}
+              className="w-full text-left py-5 md:py-6 group focus-visible:outline-none"
+              aria-expanded={isOpen}
+            >
+              <div className="flex items-center gap-4 md:gap-6">
 
-              {/* Number + Icon: desktop only column */}
-              <div className="hidden lg:flex items-center gap-4">
-                <span className="text-[var(--text-dim)]/40 font-mono text-sm tabular-nums">{s.num}</span>
-                <div
-                  className={`inline-flex items-center justify-center w-9 h-9 flex-shrink-0 ${s.textColor}`}
-                  style={{ border: `1px solid ${s.accent}40`, background: "var(--bg-elev-2)" }}
+                {/* Giant number — changes color when open */}
+                <span
+                  className="font-black leading-none tabular-nums flex-shrink-0 transition-all duration-500"
+                  style={{
+                    fontSize: "clamp(3rem, 10vw, 6rem)",
+                    letterSpacing: "-0.05em",
+                    color: isOpen ? s.accent : "rgba(245,245,245,0.06)",
+                    textShadow: isOpen ? `0 0 60px ${s.accent}50` : "none",
+                  }}
                 >
-                  <Icon className="w-4 h-4" />
-                </div>
-              </div>
+                  {s.num}
+                </span>
 
-              {/* Title column */}
-              <div className="flex items-center gap-3">
-                {/* Mobile: show number+icon inline with title */}
-                <div className="flex items-center gap-3 lg:hidden">
-                  <span className="text-[var(--text-dim)]/40 font-mono text-xs tabular-nums">{s.num}</span>
-                  <div
-                    className={`inline-flex items-center justify-center w-8 h-8 flex-shrink-0 ${s.textColor}`}
-                    style={{ border: `1px solid ${s.accent}40`, background: "var(--bg-elev-2)" }}
+                {/* Title + Icon + Toggle */}
+                <div className="flex-1 flex items-center justify-between gap-4 min-w-0">
+                  <h3
+                    className="font-black uppercase tracking-tight truncate transition-colors duration-300"
+                    style={{
+                      fontSize: "clamp(1.1rem, 3.5vw, 1.875rem)",
+                      color: isOpen ? s.accent : "var(--text)",
+                    }}
                   >
-                    <Icon className="w-3.5 h-3.5" />
+                    {s.title}
+                  </h3>
+
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <div
+                      className="w-9 h-9 flex items-center justify-center border transition-all duration-300"
+                      style={{
+                        borderColor: isOpen ? `${s.accent}60` : "var(--line)",
+                        color: isOpen ? s.accent : "var(--text-dim)",
+                        background: isOpen ? `${s.accent}12` : "var(--bg-elev-2)",
+                      }}
+                    >
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <span
+                      className="w-5 text-xl font-light leading-none transition-all duration-300"
+                      style={{ color: isOpen ? s.accent : "var(--text-dim)" }}
+                    >
+                      {isOpen ? "−" : "+"}
+                    </span>
                   </div>
                 </div>
-                <h3 className={`text-base font-bold uppercase tracking-tight ${s.textColor}`}>
-                  {s.title}
-                </h3>
               </div>
+            </button>
 
-              {/* Items: 2-col on wider screens */}
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5">
+            {/* Expandable items — smooth height + opacity */}
+            <div
+              style={{
+                maxHeight: isOpen ? "220px" : "0",
+                opacity: isOpen ? 1 : 0,
+                overflow: "hidden",
+                transition: "max-height 0.45s cubic-bezier(.22,1,.36,1), opacity 0.3s ease",
+              }}
+            >
+              <ul
+                className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 pb-6"
+                style={{
+                  paddingLeft: "clamp(3.5rem, 11vw, 7rem)",
+                }}
+              >
                 {s.items.map((item) => (
-                  <li key={item} className="text-sm text-[var(--text-dim)] flex items-start gap-2">
-                    <span className="mt-[5px] flex-shrink-0 text-xs" style={{ color: s.accent }}>—</span>
+                  <li
+                    key={item}
+                    className="text-sm text-[var(--text-dim)] flex items-start gap-2"
+                  >
+                    <span
+                      className="flex-shrink-0 mt-0.5"
+                      style={{ color: s.accent }}
+                    >
+                      —
+                    </span>
                     {item}
                   </li>
                 ))}
               </ul>
             </div>
-          </Reveal>
+          </div>
         );
       })}
     </div>
