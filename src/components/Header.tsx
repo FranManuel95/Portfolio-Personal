@@ -150,7 +150,7 @@ export default function Header({ isMenuOpen, setIsMenuOpen }: Props) {
             <span
               ref={indicatorRef}
               className="pointer-events-none absolute -bottom-1 h-0.5 w-0 bg-[var(--accent)] rounded-full transition-all duration-300"
-              style={{ left: 0, transform: "translateX(0)", opacity: 0, boxShadow: "0 0 10px rgba(124,134,255,.8)" }}
+              style={{ left: 0, transform: "translateX(0)", opacity: 0, boxShadow: "0 0 10px rgba(0,255,135,0.7)" }}
             />
             {NAV.map((item) => {
               const isActive = activeId === item.id;

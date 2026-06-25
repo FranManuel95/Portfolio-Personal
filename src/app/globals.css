@@ -53,6 +53,11 @@
    ========================= */
 html { scroll-behavior: smooth; overflow-x: hidden; }
 
+/* Hide native cursor on pointer devices — MagicCursor takes over */
+@media (pointer: fine) {
+  *, *::before, *::after { cursor: none !important; }
+}
+
 body {
   background: var(--bg);
   color: var(--text);

@@ -50,7 +50,7 @@ const Footer = () => {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={l.label}
-              className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-[var(--line)] bg-[var(--bg-elev-2)] text-[var(--text-dim)] hover:text-[var(--accent)] hover:border-[var(--accent)]/40 transition-all duration-200"
+              className="inline-flex items-center justify-center w-9 h-9 border border-[var(--line)] bg-[var(--bg-elev-2)] text-[var(--text-dim)] hover:text-[var(--accent)] hover:border-[var(--accent)]/40 transition-all duration-200"
             >
               {l.icon}
             </a>
