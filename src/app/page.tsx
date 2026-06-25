@@ -19,34 +19,65 @@ export default function Home() {
     <>
       <Header setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen} />
 
-      {/* Hero – section id managed inside Hero.tsx */}
+      {/* Héroe */}
       <Hero isMenuOpen={isMenuOpen} />
 
       {/* Servicios */}
-      <section id="servicios" className="py-12">
-        <Services />
+      <section id="servicios" className="py-16 relative overflow-hidden">
+        <span className="absolute -top-4 right-4 text-[20rem] font-black text-white/[0.02] select-none pointer-events-none leading-none">01</span>
+        <div className="container">
+          <h2 className="section-title mb-12">
+            <span className="outline-word">Qué</span><br />
+            <span className="accent-word">hago</span>
+          </h2>
+          <Services />
+        </div>
       </section>
 
       {/* Experiencia */}
-      <section id="experiencia" className="py-12">
-        <Experience />
+      <section id="experiencia" className="py-16 relative overflow-hidden">
+        <span className="absolute -top-4 right-4 text-[20rem] font-black text-white/[0.02] select-none pointer-events-none leading-none">02</span>
+        <div className="container">
+          <h2 className="section-title mb-12">
+            <span className="outline-word">Mi</span><br />
+            <span className="accent-word">trayectoria</span>
+          </h2>
+          <Experience />
+        </div>
       </section>
 
       {/* Sobre mí */}
-      <section id="sobremi" className="py-12">
-        <About />
+      <section id="sobremi" className="py-16 relative overflow-hidden">
+        <span className="absolute -top-4 right-4 text-[20rem] font-black text-white/[0.02] select-none pointer-events-none leading-none">03</span>
+        <div className="container">
+          <h2 className="section-title mb-12">
+            <span className="outline-word">Sobre</span><br />
+            <span className="accent-word">mí</span>
+          </h2>
+          <About />
+        </div>
       </section>
 
       {/* Proyectos */}
-      <section id="proyectos" className="py-12">
+      <section id="proyectos" className="py-16 relative overflow-hidden">
+        <span className="absolute -top-4 right-4 text-[20rem] font-black text-white/[0.02] select-none pointer-events-none leading-none">04</span>
         <div className="container">
+          <h2 className="section-title mb-12">
+            <span className="outline-word">Mis</span><br />
+            <span className="accent-word">proyectos</span>
+          </h2>
           <ProjectsShowcase />
         </div>
       </section>
 
       {/* Contacto + Footer */}
-      <section id="contacto" className="py-12">
+      <section id="contacto" className="py-16 relative overflow-hidden">
+        <span className="absolute -top-4 right-4 text-[20rem] font-black text-white/[0.02] select-none pointer-events-none leading-none">05</span>
         <div className="container">
+          <h2 className="section-title mb-12">
+            <span className="outline-word">Hablemos</span><br />
+            <span className="accent-word">hoy</span>
+          </h2>
           <ContactForm />
           <div className="mt-10">
             <Footer />
