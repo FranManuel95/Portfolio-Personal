@@ -1,9 +1,45 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { FaLinkedin, FaGithub, FaDownload } from "react-icons/fa";
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import { motion, useMotionValue, useTransform, useInView } from "framer-motion";
+
+const STATS = [
+  { num: 2, suffix: "+", label: "Años exp" },
+  { num: 10, suffix: "+", label: "Proyectos" },
+  { num: 3, suffix: "", label: "Empresas" },
+  { num: 4, suffix: "", label: "Especialidades" },
+];
+
+function AnimatedStat({ num, suffix, label }: { num: number; suffix: string; label: string }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!inView) return;
+    let start = 0;
+    const duration = 1200;
+    const step = 16;
+    const increment = num / (duration / step);
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= num) { setCount(num); clearInterval(timer); }
+      else setCount(Math.floor(start));
+    }, step);
+    return () => clearInterval(timer);
+  }, [inView, num]);
+
+  return (
+    <div ref={ref} className="pr-6">
+      <p className="text-3xl font-black text-[var(--accent)]" style={{ letterSpacing: "-0.03em" }}>
+        {count}{suffix}
+      </p>
+      <p className="text-[10px] uppercase tracking-widest text-[var(--text-dim)] mt-0.5">{label}</p>
+    </div>
+  );
+}
 
 const SKILLS = [
   "Next.js", "TypeScript", "React", "Python", "n8n", "OpenAI API",
@@ -143,25 +179,10 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
             </div>
           </div>
 
-          {/* Stats row */}
+          {/* Stats row — animated counters */}
           <div className="mt-12 grid grid-cols-4 gap-0 border-t border-[var(--line)] pt-8 max-w-lg">
-            {[
-              { val: "2+", label: "Años exp" },
-              { val: "10+", label: "Proyectos" },
-              { val: "3", label: "Empresas" },
-              { val: "4", label: "Especialidades" },
-            ].map((s) => (
-              <div key={s.label} className="pr-6">
-                <p
-                  className="text-3xl font-black text-[var(--accent)]"
-                  style={{ letterSpacing: "-0.03em" }}
-                >
-                  {s.val}
-                </p>
-                <p className="text-[10px] uppercase tracking-widest text-[var(--text-dim)] mt-0.5">
-                  {s.label}
-                </p>
-              </div>
+            {STATS.map((s) => (
+              <AnimatedStat key={s.label} num={s.num} suffix={s.suffix} label={s.label} />
             ))}
           </div>
         </div>

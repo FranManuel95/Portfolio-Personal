@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 const experiences = [
   {
@@ -34,132 +35,163 @@ const experiences = [
 
 const N = experiences.length;
 
+const slideVariants = {
+  enter: (dir: number) => ({
+    x: dir > 0 ? 80 : -80,
+    opacity: 0,
+    filter: "blur(6px)",
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    filter: "blur(0px)",
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+  },
+  exit: (dir: number) => ({
+    x: dir > 0 ? -80 : 80,
+    opacity: 0,
+    filter: "blur(6px)",
+    transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
+
 const Experience = () => {
   const [active, setActive] = useState(0);
+  const [dir, setDir] = useState(1);
 
-  const go = (i: number) => setActive(Math.max(0, Math.min(N - 1, i)));
+  const go = (i: number) => {
+    if (i === active) return;
+    setDir(i > active ? 1 : -1);
+    setActive(i);
+  };
+
+  const e = experiences[active];
 
   return (
     <div>
       {/* ── Company selector ─────────────────────────────────── */}
-      <div className="relative border-b border-[var(--line)] mb-10">
-        <div className="flex">
-          {experiences.map((e, i) => {
-            const sel = active === i;
-            return (
-              <button
-                key={e.company}
-                onClick={() => setActive(i)}
-                className="flex-1 py-4 px-3 md:px-6 text-left relative transition-colors duration-300 focus-visible:outline-none group"
+      <div className="flex border-b border-[var(--line)] mb-10">
+        {experiences.map((exp, i) => {
+          const sel = active === i;
+          return (
+            <button
+              key={exp.company}
+              onClick={() => go(i)}
+              className="flex-1 py-4 px-3 md:px-6 text-left relative focus-visible:outline-none group"
+            >
+              <span
+                className="block text-[10px] font-mono uppercase tracking-widest mb-1 transition-colors duration-300"
+                style={{ color: sel ? "var(--accent)" : "var(--text-dim)" }}
               >
-                <span
-                  className="block text-[10px] font-mono uppercase tracking-widest mb-1 transition-colors duration-300"
-                  style={{ color: sel ? "var(--accent)" : "var(--text-dim)" }}
-                >
-                  0{i + 1}
-                </span>
-                <span
-                  className="block font-black uppercase text-xs md:text-sm tracking-tight leading-tight transition-colors duration-300"
-                  style={{ color: sel ? "var(--text)" : "var(--text-dim)" }}
-                >
-                  {e.company}
-                </span>
+                0{i + 1}
+              </span>
+              <span
+                className="block font-black uppercase text-xs md:text-sm tracking-tight leading-tight transition-colors duration-300"
+                style={{ color: sel ? "var(--text)" : "var(--text-dim)" }}
+              >
+                {exp.company}
+              </span>
 
-                {/* Sliding accent underline */}
-                <div
-                  className="absolute bottom-0 left-0 right-0 h-[2px] transition-all duration-400"
-                  style={{
-                    background: sel ? "var(--accent)" : "transparent",
-                    boxShadow: sel ? "0 0 14px rgba(0,255,135,0.7)" : "none",
-                  }}
-                />
-              </button>
-            );
-          })}
-        </div>
+              {/* Animated underline */}
+              <motion.div
+                className="absolute bottom-0 left-0 right-0 h-[2px]"
+                initial={false}
+                animate={{
+                  scaleX: sel ? 1 : 0,
+                  background: "var(--accent)",
+                  boxShadow: sel ? "0 0 14px rgba(0,255,135,0.7)" : "none",
+                }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                style={{ transformOrigin: "left" }}
+              />
+            </button>
+          );
+        })}
       </div>
 
-      {/* ── Horizontal sliding panels ─────────────────────────── */}
-      <div style={{ overflow: "hidden" }}>
-        <div
-          style={{
-            display: "flex",
-            width: `${N * 100}%`,
-            transform: `translateX(-${(active * 100) / N}%)`,
-            transition: "transform 0.55s cubic-bezier(.22,1,.36,1)",
-            willChange: "transform",
-          }}
-        >
-          {experiences.map((e, i) => (
-            <div
-              key={e.company}
-              style={{ width: `${100 / N}%`, flexShrink: 0 }}
-              className="pr-4 md:pr-20"
-            >
-              <div className="relative min-h-[220px]">
-                {/* Giant background number */}
-                <span
-                  aria-hidden
-                  className="absolute -top-6 -left-1 font-black pointer-events-none select-none leading-none"
-                  style={{
-                    fontSize: "clamp(7rem, 22vw, 15rem)",
-                    color: "rgba(245,245,245,0.03)",
-                    letterSpacing: "-0.05em",
+      {/* ── Animated panel ───────────────────────────────────── */}
+      <div style={{ position: "relative", minHeight: 260, overflow: "hidden" }}>
+        <AnimatePresence custom={dir} mode="wait">
+          <motion.div
+            key={active}
+            custom={dir}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+          >
+            <div className="relative">
+              {/* Giant background number */}
+              <span
+                aria-hidden
+                className="absolute -top-6 -left-1 font-black pointer-events-none select-none leading-none"
+                style={{
+                  fontSize: "clamp(7rem, 22vw, 15rem)",
+                  color: "rgba(245,245,245,0.03)",
+                  letterSpacing: "-0.05em",
+                }}
+              >
+                {String(active + 1).padStart(2, "0")}
+              </span>
+
+              <div className="relative z-10">
+                {/* Header */}
+                <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+                  <div>
+                    <h3
+                      className="font-black uppercase tracking-tight text-[var(--text)]"
+                      style={{ fontSize: "clamp(1.2rem, 3.5vw, 2rem)", letterSpacing: "-0.03em" }}
+                    >
+                      {e.role}
+                    </h3>
+                    <p className="text-[var(--accent)] text-sm font-semibold mt-1 flex items-center gap-2">
+                      {e.company}
+                      {e.highlight && (
+                        <span className="text-[10px] px-2 py-0.5 border border-[var(--accent)]/40 font-mono uppercase tracking-wider">
+                          Actual
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                  <time className="text-xs text-[var(--text-dim)] font-mono bg-[var(--bg-elev-2)] px-3 py-1.5 border border-[var(--line)] whitespace-nowrap flex-shrink-0">
+                    {e.period}
+                  </time>
+                </div>
+
+                {/* Description */}
+                <p className="text-[var(--text-dim)] text-sm leading-relaxed mb-6 max-w-2xl">
+                  {e.description}
+                </p>
+
+                {/* Tags with stagger */}
+                <motion.div
+                  className="flex flex-wrap gap-1.5"
+                  initial="hidden"
+                  animate="show"
+                  variants={{
+                    show: { transition: { staggerChildren: 0.04, delayChildren: 0.2 } },
                   }}
                 >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-
-                <div className="relative z-10">
-                  {/* Header row */}
-                  <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
-                    <div>
-                      <h3
-                        className="font-black uppercase tracking-tight text-[var(--text)]"
-                        style={{ fontSize: "clamp(1.2rem, 3.5vw, 2rem)", letterSpacing: "-0.03em" }}
-                      >
-                        {e.role}
-                      </h3>
-                      <p className="text-[var(--accent)] text-sm font-semibold mt-1 flex items-center gap-2">
-                        {e.company}
-                        {e.highlight && (
-                          <span className="text-[10px] px-2 py-0.5 border border-[var(--accent)]/40 font-mono uppercase tracking-wider">
-                            Actual
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                    <time className="text-xs text-[var(--text-dim)] font-mono bg-[var(--bg-elev-2)] px-3 py-1.5 border border-[var(--line)] whitespace-nowrap flex-shrink-0">
-                      {e.period}
-                    </time>
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-[var(--text-dim)] text-sm leading-relaxed mb-6 max-w-2xl">
-                    {e.description}
-                  </p>
-
-                  {/* Tags */}
-                  {e.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {e.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-[11px] px-2 py-0.5 bg-[var(--bg-elev-2)] border border-[var(--line)] text-[var(--text-dim)] font-medium"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                  {e.tags.map((tag) => (
+                    <motion.span
+                      key={tag}
+                      variants={{
+                        hidden: { opacity: 0, scale: 0.85 },
+                        show: { opacity: 1, scale: 1, transition: { ease: [0.22, 1, 0.36, 1] } },
+                      }}
+                      className="text-[11px] px-2 py-0.5 bg-[var(--bg-elev-2)] border border-[var(--line)] text-[var(--text-dim)] font-medium"
+                    >
+                      {tag}
+                    </motion.span>
+                  ))}
+                </motion.div>
               </div>
             </div>
-          ))}
-        </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      {/* ── Navigation bar ────────────────────────────────────── */}
+      {/* ── Navigation ───────────────────────────────────────── */}
       <div className="flex items-center justify-between mt-10 pt-6 border-t border-[var(--line)]">
         <button
           onClick={() => go(active - 1)}
@@ -170,19 +202,18 @@ const Experience = () => {
           ← Anterior
         </button>
 
-        {/* Progress dots */}
         <div className="flex items-center gap-3">
           {experiences.map((_, i) => (
-            <button
+            <motion.button
               key={i}
-              onClick={() => setActive(i)}
-              className="transition-all duration-300"
-              style={{
-                width: active === i ? "24px" : "8px",
-                height: "8px",
+              onClick={() => go(i)}
+              animate={{
+                width: active === i ? 24 : 8,
                 background: active === i ? "var(--accent)" : "var(--line)",
                 boxShadow: active === i ? "0 0 10px rgba(0,255,135,0.7)" : "none",
               }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              style={{ height: 8, borderRadius: 0 }}
               aria-label={`Ir a ${experiences[i].company}`}
             />
           ))}
