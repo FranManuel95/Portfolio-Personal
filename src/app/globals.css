@@ -94,7 +94,7 @@ body::after {
 .container {
   max-width: 1200px;
   margin-inline: auto;
-  padding-inline: 1rem;
+  padding-inline: clamp(1.25rem, 5vw, 3.5rem);
 }
 
 /* Links */

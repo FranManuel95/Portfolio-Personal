@@ -122,12 +122,12 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
 
       {/* Main content */}
       <div className="flex-1 flex items-center">
-        <div className="container relative z-10 pl-8 md:pl-16 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-10 lg:gap-16 items-center">
+        <div className="container relative z-10 pl-5 md:pl-8 py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-10 lg:gap-20 items-center">
 
-            {/* Mobile photo (visible only on small screens, centered) */}
+            {/* Mobile photo */}
             <div className="lg:hidden flex justify-center">
-              <div className="relative w-36 h-44">
+              <div className="relative w-44 h-56">
                 <div className="absolute -inset-2 border border-[var(--accent)]/20" />
                 <div className="absolute -bottom-3 -right-3 w-full h-full border border-[var(--line)]" />
                 <Image
@@ -135,7 +135,7 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
                   alt="Fran Perejón"
                   fill
                   className="object-contain"
-                  sizes="144px"
+                  sizes="176px"
                   priority
                 />
               </div>
@@ -150,20 +150,20 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
 
               <h1
                 className="font-black uppercase leading-none mb-2"
-                style={{ fontSize: "clamp(4rem, 15vw, 11rem)", letterSpacing: "-0.04em" }}
+                style={{ fontSize: "clamp(4rem, 12vw, 9rem)", letterSpacing: "-0.04em" }}
               >
                 <ScrambleText
                   text="FRAN"
-                  colors={["var(--text)", "var(--text)", "var(--text)", "var(--accent)"]}
+                  colors={["var(--text)", "var(--text)", "var(--text)", "var(--text)"]}
                 />
               </h1>
 
               <h2
-                className="font-black uppercase text-transparent leading-none mb-6"
+                className="font-black uppercase leading-none mb-6"
                 style={{
-                  fontSize: "clamp(1rem, 3.8vw, 3rem)",
+                  fontSize: "clamp(1rem, 3.2vw, 2.4rem)",
                   letterSpacing: "-0.03em",
-                  WebkitTextStroke: "1px rgba(245,245,245,0.22)",
+                  color: "var(--accent)",
                 }}
               >
                 AI Engineer &amp; Automatización
@@ -217,17 +217,17 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
               </div>
             </div>
 
-            {/* RIGHT: Editorial photo frame */}
-            <div className="hidden lg:block relative flex-shrink-0">
-              <div className="relative w-52 h-64">
+            {/* RIGHT: Editorial photo frame — larger & more balanced */}
+            <div className="hidden lg:flex items-center justify-end flex-shrink-0">
+              <div className="relative w-72 h-[22rem]">
                 <div className="absolute -inset-3 border border-[var(--accent)]/20" />
-                <div className="absolute -bottom-4 -right-4 w-full h-full border border-[var(--line)]" />
+                <div className="absolute -bottom-5 -right-5 w-full h-full border border-[var(--line)]" />
                 <Image
                   src="/FotoSinFondo.webp"
                   alt="Fran Perejón"
                   fill
                   className="object-contain grayscale hover:grayscale-0 transition-all duration-700"
-                  sizes="208px"
+                  sizes="288px"
                   priority
                 />
               </div>
