@@ -8,12 +8,12 @@ interface Props {
   strength?: number;
 }
 
-export default function MagneticButton({ children, strength = 0.38 }: Props) {
+export default function MagneticButton({ children, strength = 0.6 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 280, damping: 18, mass: 0.6 });
-  const springY = useSpring(y, { stiffness: 280, damping: 18, mass: 0.6 });
+  const springX = useSpring(x, { stiffness: 200, damping: 14, mass: 0.8 });
+  const springY = useSpring(y, { stiffness: 200, damping: 14, mass: 0.8 });
 
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = ref.current?.getBoundingClientRect();
@@ -30,6 +30,8 @@ export default function MagneticButton({ children, strength = 0.38 }: Props) {
       style={{ x: springX, y: springY, display: "inline-block" }}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
+      whileTap={{ scale: 0.93 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
     >
       {children}
     </motion.div>

@@ -71,48 +71,58 @@ function TiltCard({ children }: { children: React.ReactNode }) {
   const glowX = useMotionValue(50);
   const glowY = useMotionValue(50);
 
-  const rotX = useSpring(rawX, { stiffness: 240, damping: 22, mass: 0.5 });
-  const rotY = useSpring(rawY, { stiffness: 240, damping: 22, mass: 0.5 });
+  const rotX = useSpring(rawX, { stiffness: 200, damping: 18, mass: 0.5 });
+  const rotY = useSpring(rawY, { stiffness: 200, damping: 18, mass: 0.5 });
 
   const shine = useTransform(
     [glowX, glowY],
     ([gx, gy]) =>
-      `radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.07) 0%, transparent 65%)`
+      `radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.13) 0%, transparent 60%)`
   );
 
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = ref.current?.getBoundingClientRect();
-    if (!rect) return;
-    const px = (e.clientX - rect.left) / rect.width;
-    const py = (e.clientY - rect.top) / rect.height;
-    rawY.set((px - 0.5) * 18);
-    rawX.set((py - 0.5) * -18);
+  const applyTilt = (px: number, py: number) => {
+    rawY.set((px - 0.5) * 28);
+    rawX.set((py - 0.5) * -28);
     glowX.set(px * 100);
     glowY.set(py * 100);
   };
 
-  const onLeave = () => {
+  const reset = () => {
     rawX.set(0);
     rawY.set(0);
     glowX.set(50);
     glowY.set(50);
   };
 
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = ref.current?.getBoundingClientRect();
+    if (!rect) return;
+    applyTilt((e.clientX - rect.left) / rect.width, (e.clientY - rect.top) / rect.height);
+  };
+
+  const onTouch = (e: React.TouchEvent<HTMLDivElement>) => {
+    const rect = ref.current?.getBoundingClientRect();
+    if (!rect) return;
+    const t = e.touches[0];
+    applyTilt((t.clientX - rect.left) / rect.width, (t.clientY - rect.top) / rect.height);
+  };
+
   return (
     <motion.div
       ref={ref}
       onMouseMove={onMove}
-      onMouseLeave={onLeave}
+      onMouseLeave={reset}
+      onTouchMove={onTouch}
+      onTouchEnd={reset}
       style={{
         rotateX: rotX,
         rotateY: rotY,
-        transformPerspective: 900,
+        transformPerspective: 700,
         transformStyle: "preserve-3d",
       }}
     >
       <div style={{ position: "relative" }}>
         {children}
-        {/* Specular shine overlay */}
         <motion.div
           aria-hidden
           style={{

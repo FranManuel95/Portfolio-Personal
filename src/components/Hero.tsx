@@ -6,7 +6,7 @@ import { FaLinkedin, FaGithub, FaDownload } from "react-icons/fa";
 import { motion, useMotionValue, useTransform, useInView } from "framer-motion";
 import MagneticButton from "./MagneticButton";
 
-const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*!/";
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*!/<>[]{}";
 
 function ScrambleText({
   text,
@@ -15,16 +15,20 @@ function ScrambleText({
   text: string;
   colors: string[];
 }) {
-  const [chars, setChars] = useState<string[]>(() => text.split(""));
+  // Start fully scrambled
+  const [chars, setChars] = useState<string[]>(() =>
+    text.split("").map(() => CHARS[Math.floor(Math.random() * CHARS.length)])
+  );
 
   useEffect(() => {
     let frame = 0;
-    const total = 48;
+    const total = 140; // ~2.3s at 16ms
     const id = setInterval(() => {
       frame++;
       setChars(
         text.split("").map((ch, i) => {
-          const resolveAt = Math.floor((i / text.length) * total * 0.75);
+          // Each letter resolves sequentially, last one very late
+          const resolveAt = Math.floor(20 + (i / text.length) * total * 0.82);
           return frame > resolveAt ? ch : CHARS[Math.floor(Math.random() * CHARS.length)];
         })
       );
@@ -59,7 +63,7 @@ function AnimatedStat({ num, suffix, label }: { num: number; suffix: string; lab
   useEffect(() => {
     if (!inView) return;
     let start = 0;
-    const duration = 1200;
+    const duration = 2400;
     const step = 16;
     const increment = num / (duration / step);
     const timer = setInterval(() => {
