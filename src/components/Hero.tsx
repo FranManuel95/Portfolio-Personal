@@ -4,6 +4,45 @@ import Image from "next/image";
 import React, { useRef, useEffect, useState } from "react";
 import { FaLinkedin, FaGithub, FaDownload } from "react-icons/fa";
 import { motion, useMotionValue, useTransform, useInView } from "framer-motion";
+import MagneticButton from "./MagneticButton";
+
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*!/";
+
+function ScrambleText({
+  text,
+  colors,
+}: {
+  text: string;
+  colors: string[];
+}) {
+  const [chars, setChars] = useState<string[]>(() => text.split(""));
+
+  useEffect(() => {
+    let frame = 0;
+    const total = 48;
+    const id = setInterval(() => {
+      frame++;
+      setChars(
+        text.split("").map((ch, i) => {
+          const resolveAt = Math.floor((i / text.length) * total * 0.75);
+          return frame > resolveAt ? ch : CHARS[Math.floor(Math.random() * CHARS.length)];
+        })
+      );
+      if (frame >= total) clearInterval(id);
+    }, 16);
+    return () => clearInterval(id);
+  }, [text]);
+
+  return (
+    <>
+      {chars.map((ch, i) => (
+        <span key={i} style={{ color: colors[i] }}>
+          {ch}
+        </span>
+      ))}
+    </>
+  );
+}
 
 const STATS = [
   { num: 2, suffix: "+", label: "Años exp" },
@@ -108,8 +147,10 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
                 className="font-black uppercase leading-none mb-2"
                 style={{ fontSize: "clamp(4rem, 15vw, 11rem)", letterSpacing: "-0.04em" }}
               >
-                <span style={{ color: "var(--text)" }}>Fra</span>
-                <span style={{ color: "var(--accent)" }}>n</span>
+                <ScrambleText
+                  text="FRAN"
+                  colors={["var(--text)", "var(--text)", "var(--text)", "var(--accent)"]}
+                />
               </h1>
 
               <h2
@@ -136,29 +177,38 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
               </p>
 
               <div className="flex flex-wrap gap-3">
-                <a
-                  href="https://www.linkedin.com/in/francisco-manuel-perej%C3%B3n-carmona-7bbb1214a/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-[var(--accent)] text-black px-4 py-2.5 font-semibold text-sm uppercase tracking-wider hover:opacity-90 transition-opacity"
-                >
-                  <FaLinkedin /> LinkedIn
-                </a>
-                <a
-                  href="https://github.com/FranManuel95"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 border border-[var(--line)] text-[var(--text)] px-4 py-2.5 text-sm uppercase tracking-wider hover:border-[var(--text-dim)] transition-colors"
-                >
-                  <FaGithub /> GitHub
-                </a>
-                <a
-                  href="/Fran%20Perej%C3%B3n%20%E2%80%94%20CV.pdf"
-                  download
-                  className="inline-flex items-center gap-2 border border-[var(--accent-2)] text-[var(--accent-2)] px-4 py-2.5 text-sm uppercase tracking-wider hover:bg-[var(--accent-2)] hover:text-black transition-colors"
-                >
-                  <FaDownload /> Descargar CV
-                </a>
+                <MagneticButton>
+                  <a
+                    href="https://www.linkedin.com/in/francisco-manuel-perej%C3%B3n-carmona-7bbb1214a/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-cursor
+                    className="inline-flex items-center gap-2 bg-[var(--accent)] text-black px-4 py-2.5 font-semibold text-sm uppercase tracking-wider hover:opacity-90 transition-opacity"
+                  >
+                    <FaLinkedin /> LinkedIn
+                  </a>
+                </MagneticButton>
+                <MagneticButton>
+                  <a
+                    href="https://github.com/FranManuel95"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-cursor
+                    className="inline-flex items-center gap-2 border border-[var(--line)] text-[var(--text)] px-4 py-2.5 text-sm uppercase tracking-wider hover:border-[var(--text-dim)] transition-colors"
+                  >
+                    <FaGithub /> GitHub
+                  </a>
+                </MagneticButton>
+                <MagneticButton>
+                  <a
+                    href="/Fran%20Perej%C3%B3n%20%E2%80%94%20CV.pdf"
+                    download
+                    data-cursor
+                    className="inline-flex items-center gap-2 border border-[var(--accent-2)] text-[var(--accent-2)] px-4 py-2.5 text-sm uppercase tracking-wider hover:bg-[var(--accent-2)] hover:text-black transition-colors"
+                  >
+                    <FaDownload /> Descargar CV
+                  </a>
+                </MagneticButton>
               </div>
             </div>
 
