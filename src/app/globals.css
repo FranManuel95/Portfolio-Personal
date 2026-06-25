@@ -287,3 +287,7 @@ img { max-width: 100%; height: auto; display: block; }
     border-left-color: var(--accent);
   }
 }
+
+/* v7 editorial: sharp corners everywhere */
+.surface { border-radius: 0; }
+.btn { border-radius: 0; }

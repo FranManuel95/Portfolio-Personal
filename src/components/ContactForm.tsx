@@ -111,15 +111,10 @@ export default function ContactForm() {
 
   return (
     <Reveal replay>
-    <div className="relative">
-      <div
-        
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[var(--bg)] via-[var(--bg-elev-1)] to-[var(--bg)]"
-      />
-      <div className="relative surface max-w-3xl mx-auto p-6 md:p-8">
-        <p className="text-[var(--text-dim)] text-sm mb-6">
-          Verifica tu email antes de enviar el mensaje.
-        </p>
+    <div className="max-w-2xl">
+      <p className="text-[var(--text-dim)] text-sm mb-8">
+        Verifica tu email antes de enviar — así puedo responderte con seguridad.
+      </p>
 
         <form onSubmit={onSubmit} className="grid grid-cols-1 gap-4">
           {/* Honeypot — visually hidden from real users */}
@@ -142,7 +137,7 @@ export default function ContactForm() {
               <label className="text-sm text-[var(--text-dim)] text-left">
                 Nombre *
                 <input
-                  className="mt-1 w-full rounded-lg bg-[var(--bg-elev-2)] border border-[var(--line)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--ring)]"
+                  className="mt-1 w-full bg-[var(--bg-elev-2)] border border-[var(--line)] px-3 py-2.5 outline-none focus:border-[var(--accent)]/50 focus:ring-1 focus:ring-[var(--ring)] transition-colors"
                   placeholder="Tu nombre"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -155,7 +150,7 @@ export default function ContactForm() {
                 Email *
                 <div className="mt-1 grid gap-2 grid-cols-1 sm:grid-cols-2">
                   <input
-                    className="flex-1 rounded-lg bg-[var(--bg-elev-2)] border border-[var(--line)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--ring)]"
+                    className="flex-1 bg-[var(--bg-elev-2)] border border-[var(--line)] px-3 py-2.5 outline-none focus:border-[var(--accent)]/50 focus:ring-1 focus:ring-[var(--ring)] transition-colors"
                     placeholder="tu@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -191,7 +186,7 @@ export default function ContactForm() {
             <label className="text-sm text-[var(--text-dim)] text-left">
               Código de verificación *
               <input
-                className="mt-1 w-full rounded-lg bg-[var(--bg-elev-2)] border border-[var(--line)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--ring)]"
+                className="mt-1 w-full bg-[var(--bg-elev-2)] border border-[var(--line)] px-3 py-2.5 outline-none focus:border-[var(--accent)]/50 focus:ring-1 focus:ring-[var(--ring)] transition-colors"
                 placeholder="000000"
                 value={code}
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
@@ -208,7 +203,7 @@ export default function ContactForm() {
             <label className="text-sm text-[var(--text-dim)] text-left">
               Asunto (opcional)
               <input
-                className="mt-1 w-full rounded-lg bg-[var(--bg-elev-2)] border border-[var(--line)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--ring)]"
+                className="mt-1 w-full bg-[var(--bg-elev-2)] border border-[var(--line)] px-3 py-2.5 outline-none focus:border-[var(--accent)]/50 focus:ring-1 focus:ring-[var(--ring)] transition-colors"
                 placeholder="Proyecto de IA, automatización, web..."
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
@@ -221,7 +216,7 @@ export default function ContactForm() {
             <label className="text-sm text-[var(--text-dim)] text-left">
               Mensaje *
               <textarea
-                className="mt-1 min-h-40 w-full rounded-lg bg-[var(--bg-elev-2)] border border-[var(--line)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--ring)]"
+                className="mt-1 min-h-40 w-full bg-[var(--bg-elev-2)] border border-[var(--line)] px-3 py-2.5 outline-none focus:border-[var(--accent)]/50 focus:ring-1 focus:ring-[var(--ring)] transition-colors"
                 placeholder="¿Qué necesitas? ¿Plazos, stack, alcance…?"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
@@ -264,7 +259,6 @@ export default function ContactForm() {
             </div>
           </Reveal>
         </form>
-      </div>
     </div>
     </Reveal>
   );

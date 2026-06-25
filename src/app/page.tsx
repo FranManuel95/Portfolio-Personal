@@ -32,7 +32,7 @@ export default function Home() {
             </h2>
             <span
               className="text-6xl lg:text-8xl font-black leading-none self-start mt-1"
-              style={{ color: "var(--bg-elev-3)", letterSpacing: "-0.04em" }}
+              style={{ color: "rgba(245,245,245,0.07)", letterSpacing: "-0.04em" }}
             >
               01
             </span>
@@ -53,7 +53,7 @@ export default function Home() {
             </h2>
             <span
               className="text-6xl lg:text-8xl font-black leading-none self-start mt-1"
-              style={{ color: "var(--bg-elev-3)", letterSpacing: "-0.04em" }}
+              style={{ color: "rgba(245,245,245,0.07)", letterSpacing: "-0.04em" }}
             >
               02
             </span>
@@ -74,7 +74,7 @@ export default function Home() {
             </h2>
             <span
               className="text-6xl lg:text-8xl font-black leading-none self-start mt-1"
-              style={{ color: "var(--bg-elev-3)", letterSpacing: "-0.04em" }}
+              style={{ color: "rgba(245,245,245,0.07)", letterSpacing: "-0.04em" }}
             >
               03
             </span>
@@ -95,7 +95,7 @@ export default function Home() {
             </h2>
             <span
               className="text-6xl lg:text-8xl font-black leading-none self-start mt-1"
-              style={{ color: "var(--bg-elev-3)", letterSpacing: "-0.04em" }}
+              style={{ color: "rgba(245,245,245,0.07)", letterSpacing: "-0.04em" }}
             >
               04
             </span>
@@ -116,7 +116,7 @@ export default function Home() {
             </h2>
             <span
               className="text-6xl lg:text-8xl font-black leading-none self-start mt-1"
-              style={{ color: "var(--bg-elev-3)", letterSpacing: "-0.04em" }}
+              style={{ color: "rgba(245,245,245,0.07)", letterSpacing: "-0.04em" }}
             >
               05
             </span>

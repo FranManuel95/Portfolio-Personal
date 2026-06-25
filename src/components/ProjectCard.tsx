@@ -55,7 +55,7 @@ const TechBadge = ({ tech }: { tech: string }) => {
   if (!icon) return null;
   return (
     <span
-      className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-[var(--bg-elev-3)] border border-[var(--line)] text-base"
+      className="inline-flex items-center justify-center w-7 h-7 bg-[var(--bg-elev-3)] border border-[var(--line)] text-base"
       title={tech}
     >
       {icon}
@@ -80,18 +80,19 @@ export default function ProjectCard(props: ProjectCardProps) {
     <Reveal replay>
       <article
         className={[
-          "rounded-xl shadow-md",
-          "bg-[var(--bg-elev-1)] border border-[var(--line)]",
-          featured ? "ring-1 ring-[var(--accent)]/60" : "",
+          "bg-[var(--bg-elev-1)] border border-[var(--line)] overflow-hidden",
+          "transition-all duration-300 hover:border-[var(--accent)]/30",
+          "hover:shadow-[0_0_40px_-12px_rgba(0,255,135,0.2)]",
+          featured ? "border-[var(--accent)]/40" : "",
         ].join(" ")}
       >
         {/* Imagen */}
-        <div className="relative w-full aspect-[16/9] bg-black/10 rounded-t-xl overflow-hidden">
+        <div className="relative w-full aspect-[16/9] bg-black/20 overflow-hidden">
           <Image
             src={image}
             alt={title}
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-500 hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             loading="lazy"
             decoding="async"
@@ -99,27 +100,25 @@ export default function ProjectCard(props: ProjectCardProps) {
         </div>
 
         {/* Contenido */}
-        <div className="p-5 border-t border-[var(--line)] bg-[var(--bg-elev-1)] rounded-b-xl text-center">
-          <h3 className="text-xl font-semibold text-[var(--text)]">{title}</h3>
-          <p className="mt-2 text-[var(--text-dim)] text-base">{description}</p>
+        <div className="p-5 border-t border-[var(--line)]">
+          <h3 className="text-lg font-bold text-[var(--text)] tracking-tight">{title}</h3>
+          <p className="mt-2 text-[var(--text-dim)] text-sm leading-relaxed">{description}</p>
 
           {/* Tecnologías */}
-          <div className="mt-3 flex justify-center gap-2 text-xl">
+          <div className="mt-4 flex flex-wrap gap-1.5">
             {technologies.map((t, i) => (
-              <span key={`${t}-${i}`} className="inline-flex items-center">
-                <TechBadge tech={t} />
-              </span>
+              <TechBadge key={`${t}-${i}`} tech={t} />
             ))}
           </div>
 
           {/* Botones */}
-          <div className="mt-4 flex gap-3 items-center justify-center">
+          <div className="mt-4 flex gap-3 items-center">
             {link && (
               <a
                 href={link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium bg-[var(--accent)] text-black"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider bg-[var(--accent)] text-black hover:opacity-90 transition-opacity"
               >
                 Ver demo
               </a>
@@ -129,7 +128,7 @@ export default function ProjectCard(props: ProjectCardProps) {
                 href={repo}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium bg-white/25"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider border border-[var(--line)] text-[var(--text-dim)] hover:border-[var(--text-dim)] hover:text-[var(--text)] transition-colors"
               >
                 Ver código
               </a>
