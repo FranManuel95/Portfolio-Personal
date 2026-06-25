@@ -207,3 +207,38 @@ img { max-width: 100%; height: auto; display: block; }
 .animate-pulse-dot {
   animation: pulse-dot 2s ease-in-out infinite;
 }
+
+/* ─── Bento Grid ─────────────────────────────────────────── */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.bento-col-4  { grid-column: span 12; }
+.bento-col-6  { grid-column: span 12; }
+.bento-col-8  { grid-column: span 12; }
+.bento-col-12 { grid-column: span 12; }
+
+@media (min-width: 768px) {
+  .bento-grid { gap: 1.25rem; }
+  .bento-col-4  { grid-column: span 4; }
+  .bento-col-6  { grid-column: span 6; }
+  .bento-col-8  { grid-column: span 8; }
+  .bento-col-12 { grid-column: span 12; }
+}
+
+.bento-card {
+  background: var(--bg-elev-1);
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.bento-card:hover {
+  border-color: color-mix(in oklab, var(--accent) 25%, var(--line));
+  transform: translateY(-2px);
+}
