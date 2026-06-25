@@ -33,62 +33,115 @@ const experiences = [
 ];
 
 const Experience = () => {
-  const [active, setActive] = useState(0);
-  const exp = experiences[active];
+  const [open, setOpen] = useState<number>(0);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr]">
-      {/* LEFT: tabs — on mobile scrollable horizontal row, on desktop vertical column */}
-      <div className="flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible lg:border-r border-[var(--line)]">
-        {experiences.map((e, i) => (
-          <button
-            key={e.company}
-            onClick={() => setActive(i)}
-            className={["exp-tab flex-shrink-0", active === i ? "active" : ""].join(" ")}
-          >
-            <div className="font-bold text-sm uppercase tracking-tight whitespace-nowrap">
-              {e.company}
-            </div>
-            <div className="text-[10px] font-mono text-[var(--text-dim)] mt-0.5 whitespace-nowrap">
-              {e.period}
-            </div>
-          </button>
-        ))}
-      </div>
+    <div className="relative">
+      {/* Vertical timeline rail */}
+      <div
+        className="absolute top-0 bottom-0"
+        style={{ left: "11px", width: "1px", background: "var(--line)" }}
+      />
 
-      {/* RIGHT: Detail panel */}
-      <div className="p-6 lg:px-10 lg:py-8">
-        <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
-          <div>
-            <h3 className="text-xl font-bold text-[var(--text)] tracking-tight">{exp.role}</h3>
-            <p className="text-[var(--accent)] text-sm font-semibold mt-1 flex items-center gap-2">
-              {exp.company}
-              {exp.highlight && (
-                <span className="text-[10px] px-2 py-0.5 border border-[var(--accent)]/40 font-mono uppercase tracking-wider">
-                  Actual
-                </span>
-              )}
-            </p>
-          </div>
-          <time className="text-xs text-[var(--text-dim)] font-mono bg-[var(--bg-elev-2)] px-3 py-1.5 border border-[var(--line)] whitespace-nowrap flex-shrink-0">
-            {exp.period}
-          </time>
-        </div>
+      <div className="divide-y divide-[var(--line)]">
+        {experiences.map((e, i) => {
+          const isOpen = open === i;
 
-        <p className="text-[var(--text-dim)] leading-relaxed text-sm">{exp.description}</p>
+          return (
+            <div key={e.company} className="relative pl-10">
+              {/* Timeline dot */}
+              <div className="absolute left-0 top-6 w-6 h-6 flex items-center justify-center">
+                <div
+                  className="w-2.5 h-2.5 rounded-full transition-all duration-400"
+                  style={{
+                    background: isOpen ? "var(--accent)" : "var(--bg-elev-3)",
+                    border: `1px solid ${isOpen ? "var(--accent)" : "var(--line)"}`,
+                    boxShadow: isOpen ? "0 0 12px rgba(0,255,135,0.6)" : "none",
+                  }}
+                />
+              </div>
 
-        {exp.tags.length > 0 && (
-          <div className="mt-6 flex flex-wrap gap-1.5">
-            {exp.tags.map((tag) => (
-              <span
-                key={tag}
-                className="text-[11px] px-2 py-0.5 bg-[var(--bg-elev-2)] border border-[var(--line)] text-[var(--text-dim)] font-medium"
+              {/* Clickable header */}
+              <button
+                onClick={() => setOpen(i)}
+                className="w-full text-left py-5 md:py-6 focus-visible:outline-none"
+                aria-expanded={isOpen}
               >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span
+                        className="text-[11px] font-mono uppercase tracking-widest transition-colors duration-300"
+                        style={{ color: isOpen ? "var(--accent)" : "var(--text-dim)" }}
+                      >
+                        {e.period}
+                      </span>
+                      {e.highlight && (
+                        <span
+                          className="text-[10px] px-1.5 py-0.5 border font-mono uppercase tracking-wider"
+                          style={{ borderColor: "var(--accent)", color: "var(--accent)" }}
+                        >
+                          Actual
+                        </span>
+                      )}
+                    </div>
+
+                    <h3
+                      className="font-black uppercase tracking-tight transition-colors duration-300"
+                      style={{
+                        fontSize: "clamp(1rem, 3vw, 1.5rem)",
+                        color: isOpen ? "var(--text)" : "var(--text-dim)",
+                      }}
+                    >
+                      {e.role}
+                    </h3>
+
+                    <p
+                      className="text-sm font-semibold mt-0.5 transition-colors duration-300"
+                      style={{ color: isOpen ? "var(--accent)" : "var(--text-dim)" }}
+                    >
+                      {e.company}
+                    </p>
+                  </div>
+
+                  <span
+                    className="text-xl font-light flex-shrink-0 mt-1 transition-colors duration-300"
+                    style={{ color: isOpen ? "var(--accent)" : "var(--text-dim)" }}
+                  >
+                    {isOpen ? "−" : "+"}
+                  </span>
+                </div>
+              </button>
+
+              {/* Expandable detail */}
+              <div
+                style={{
+                  maxHeight: isOpen ? "400px" : "0",
+                  opacity: isOpen ? 1 : 0,
+                  overflow: "hidden",
+                  transition: "max-height 0.45s cubic-bezier(.22,1,.36,1), opacity 0.3s ease",
+                }}
+              >
+                <p className="text-[var(--text-dim)] text-sm leading-relaxed pb-4">
+                  {e.description}
+                </p>
+
+                {e.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 pb-6">
+                    {e.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-[11px] px-2 py-0.5 bg-[var(--bg-elev-2)] border border-[var(--line)] text-[var(--text-dim)] font-medium"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
