@@ -260,15 +260,30 @@ img { max-width: 100%; height: auto; display: block; }
   display: block;
   width: 100%;
   text-align: left;
-  padding: 1.25rem 1.5rem;
-  border-left: 2px solid transparent;
+  padding: 1rem 1.5rem;
+  background: none;
+  border: none;
+  font: inherit;
+  /* Mobile default: bottom border indicator */
+  border-bottom: 2px solid transparent;
   transition: background .2s var(--ease), border-color .2s var(--ease), color .2s var(--ease);
   cursor: pointer;
   color: var(--text-dim);
+  white-space: nowrap;
 }
-.exp-tab:hover { color: var(--text); background: color-mix(in oklab, var(--bg-elev-1) 60%, transparent); }
+.exp-tab:hover { color: var(--text); background: color-mix(in oklab, var(--bg-elev-1) 50%, transparent); }
 .exp-tab.active {
-  border-left-color: var(--accent);
+  border-bottom-color: var(--accent);
   background: var(--bg-elev-1);
   color: var(--text);
+}
+@media (min-width: 1024px) {
+  .exp-tab {
+    border-bottom: none;
+    border-left: 2px solid transparent;
+    white-space: normal;
+  }
+  .exp-tab.active {
+    border-left-color: var(--accent);
+  }
 }

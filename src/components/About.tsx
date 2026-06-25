@@ -52,20 +52,6 @@ const About = () => {
             Especialista en IA, donde construyo el core tecnológico de IA del producto.
           </p>
 
-          <div className="mt-8 flex gap-6 pt-8 border-t border-[var(--line)]">
-            <div>
-              <p className="text-2xl font-black text-[var(--accent)]" style={{ letterSpacing: "-0.03em" }}>3</p>
-              <p className="text-[10px] uppercase tracking-widest text-[var(--text-dim)] mt-0.5">Empresas</p>
-            </div>
-            <div>
-              <p className="text-2xl font-black text-[var(--accent)]" style={{ letterSpacing: "-0.03em" }}>10+</p>
-              <p className="text-[10px] uppercase tracking-widest text-[var(--text-dim)] mt-0.5">Proyectos</p>
-            </div>
-            <div>
-              <p className="text-2xl font-black text-[var(--accent)]" style={{ letterSpacing: "-0.03em" }}>2+</p>
-              <p className="text-[10px] uppercase tracking-widest text-[var(--text-dim)] mt-0.5">Años exp</p>
-            </div>
-          </div>
         </div>
       </Reveal>
 

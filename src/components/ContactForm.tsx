@@ -117,15 +117,9 @@ export default function ContactForm() {
         className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[var(--bg)] via-[var(--bg-elev-1)] to-[var(--bg)]"
       />
       <div className="relative surface max-w-3xl mx-auto p-6 md:p-8">
-        <Reveal>
-          <h2 className="headline text-3xl text-center mb-2">Contacto</h2>
-        </Reveal>
-
-        <Reveal replay delayMs={60}>
-          <p className="text-[var(--text-dim)] text-center mt-6 mb-6">
-            Verifica tu email para evitar suplantaciones y poder responderte.
-          </p>
-        </Reveal>
+        <p className="text-[var(--text-dim)] text-sm mb-6">
+          Verifica tu email antes de enviar el mensaje.
+        </p>
 
         <form onSubmit={onSubmit} className="grid grid-cols-1 gap-4">
           {/* Honeypot — visually hidden from real users */}

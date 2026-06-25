@@ -45,6 +45,22 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
         <div className="container relative z-10 pl-8 md:pl-16 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-10 lg:gap-16 items-center">
 
+            {/* Mobile photo (visible only on small screens, centered) */}
+            <div className="lg:hidden flex justify-center">
+              <div className="relative w-36 h-44">
+                <div className="absolute -inset-2 border border-[var(--accent)]/20" />
+                <div className="absolute -bottom-3 -right-3 w-full h-full border border-[var(--line)]" />
+                <Image
+                  src="/FotoSinFondo.webp"
+                  alt="Fran Perejón"
+                  fill
+                  className="object-contain"
+                  sizes="144px"
+                  priority
+                />
+              </div>
+            </div>
+
             {/* LEFT: Editorial text */}
             <div>
               <p className="text-[var(--accent)] text-xs font-mono uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
