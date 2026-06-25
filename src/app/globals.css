@@ -1,40 +1,23 @@
-/* globals.css – Redesign: Dark Slate + Emerald */
+/* globals.css – v3 Bento Grid */
 
 @import "tailwindcss";
 
-/* =========================
-   TOKENS
-   ========================= */
 :root {
-  /* Base backgrounds */
   --bg: #06090f;
   --bg-elev-1: #0c1420;
   --bg-elev-2: #111c2c;
   --bg-elev-3: #182438;
-
-  /* Text */
   --text: #dde8f5;
   --text-dim: #6e85a2;
-
-  /* Borders */
   --line: #1c2d42;
-
-  /* Accents */
-  --accent: #10b981;      /* emerald-500 */
-  --accent-2: #f59e0b;    /* amber-500  */
-
-  /* Focus ring */
+  --accent: #10b981;
+  --accent-2: #f59e0b;
   --ring-rgb: 16 185 129;
   --ring-alpha: 1;
   --ring: rgb(var(--ring-rgb) / var(--ring-alpha));
-
-  /* Easing */
   --ease: cubic-bezier(.22,1,.36,1);
 }
 
-/* =========================
-   BASE
-   ========================= */
 html { scroll-behavior: smooth; }
 
 body {
@@ -42,14 +25,10 @@ body {
   color: var(--text);
   font-family: var(--font-geist-sans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  transition: background-color .5s var(--ease), color .5s var(--ease);
   min-height: 100dvh;
-  position: relative;
   overflow-x: hidden;
 }
 
-/* Ambient glow */
 body::before {
   content: "";
   position: fixed;
@@ -63,50 +42,66 @@ body::before {
   opacity: .7;
 }
 
-/* Subtle grain overlay */
-body::after {
-  content: "";
-  position: fixed;
-  inset: -10%;
-  pointer-events: none;
-  z-index: -1;
-  background-image:
-    linear-gradient(transparent 0, rgba(255,255,255,0.015) 100%),
-    repeating-linear-gradient(0deg, rgba(255,255,255,0.012), rgba(255,255,255,0.012) 1px, transparent 2px, transparent 3px);
-  mix-blend-mode: overlay;
-  opacity: .35;
-}
-
-/* Container */
 .container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin-inline: auto;
   padding-inline: 1rem;
 }
 
-/* Links */
-a { color: inherit; transition: color .25s var(--ease), opacity .25s var(--ease); }
+a { color: inherit; transition: color .25s var(--ease); }
 a:hover { color: var(--accent); }
-
-/* Images */
 img { max-width: 100%; height: auto; display: block; }
 
-/* Focus */
 :focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
   border-radius: .5rem;
 }
 
-/* Surface card */
+/* ─── Bento Grid ────────────────────────────────── */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0.875rem;
+}
+
+.bento-card {
+  background: var(--bg-elev-1);
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  position: relative;
+  transition: border-color .3s var(--ease), box-shadow .3s var(--ease), transform .3s var(--ease);
+}
+.bento-card:hover {
+  border-color: color-mix(in oklab, var(--accent) 28%, var(--line));
+  box-shadow: 0 0 40px -12px rgba(16,185,129,0.28);
+  transform: translateY(-2px);
+}
+
+.bento-col-4  { grid-column: span 12; }
+.bento-col-5  { grid-column: span 12; }
+.bento-col-6  { grid-column: span 12; }
+.bento-col-7  { grid-column: span 12; }
+.bento-col-8  { grid-column: span 12; }
+.bento-col-12 { grid-column: span 12; }
+
+@media (min-width: 768px) {
+  .bento-col-4  { grid-column: span 4; }
+  .bento-col-5  { grid-column: span 5; }
+  .bento-col-6  { grid-column: span 6; }
+  .bento-col-7  { grid-column: span 7; }
+  .bento-col-8  { grid-column: span 8; }
+  .bento-col-12 { grid-column: span 12; }
+}
+
+/* ─── Surface, Headline, Buttons ────────────────── */
 .surface {
   background: var(--bg-elev-1);
   border: 1px solid var(--line);
   border-radius: 1rem;
-  box-shadow: 0 10px 40px -30px rgba(0,0,0,.9);
 }
 
-/* Headings with glow underline */
 .headline {
   position: relative;
   font-weight: 800;
@@ -115,130 +110,54 @@ img { max-width: 100%; height: auto; display: block; }
 .headline::after {
   content: "";
   position: absolute;
-  left: 50%;
-  bottom: -10px;
-  width: 100px;
+  left: 0;
+  bottom: -8px;
+  width: 40px;
   height: 2px;
-  transform: translateX(-50%);
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  filter: drop-shadow(0 0 10px rgba(16,185,129,.7));
-  opacity: .85;
+  background: var(--accent);
+  filter: drop-shadow(0 0 8px rgba(16,185,129,.7));
 }
 
-/* =========================
-   REVEAL DISABLE (handled via Framer)
-   ========================= */
-.reveal,
-.reveal.is-visible,
-.reveal-x,
-.reveal-x.is-visible,
-.reveal-up,
-.reveal-up.is-visible {
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-  transition: none !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reveal, .reveal.is-visible,
-  .reveal-x, .reveal-x.is-visible,
-  .reveal-up, .reveal-up.is-visible {
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
-    transition: none !important;
-  }
-}
-
-/* =========================
-   BUTTONS
-   ========================= */
 .btn {
-  position: relative;
   display: inline-flex;
   align-items: center;
   gap: .5rem;
-  padding: .65rem 1.1rem;
+  padding: .6rem 1rem;
   border-radius: .75rem;
   font-weight: 600;
   font-size: .875rem;
   border: 1px solid var(--line);
-  background: linear-gradient(180deg, var(--bg-elev-2), var(--bg-elev-1));
+  background: var(--bg-elev-2);
   color: var(--text);
-  transition: transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s var(--ease);
+  transition: transform .2s var(--ease), box-shadow .2s, border-color .2s;
 }
 .btn:hover {
   transform: translateY(-2px);
   border-color: color-mix(in oklab, var(--accent) 35%, var(--line));
-  box-shadow: 0 12px 32px -20px rgba(16,185,129,.5);
+  box-shadow: 0 8px 24px -12px rgba(16,185,129,.5);
 }
 .btn-primary {
-  background: radial-gradient(130% 200% at 50% -20%, color-mix(in oklab, var(--accent) 28%, #000), var(--bg-elev-2));
+  background: color-mix(in oklab, var(--accent) 20%, var(--bg-elev-2));
   border-color: color-mix(in oklab, var(--accent) 40%, var(--line));
   color: #e0fdf4;
 }
-.btn-ghost {
-  background: transparent;
-  border-color: var(--line);
-  color: var(--text-dim);
+.btn-ghost { background: transparent; border-color: var(--line); color: var(--text-dim); }
+
+.cv-auto { content-visibility: visible !important; contain-intrinsic-size: auto !important; }
+
+.reveal, .reveal.is-visible, .reveal-x, .reveal-x.is-visible,
+.reveal-up, .reveal-up.is-visible {
+  opacity: 1 !important; transform: none !important; filter: none !important; transition: none !important;
 }
 
-/* cv-auto content-visibility helper */
-.cv-auto {
-  content-visibility: visible !important;
-  contain-intrinsic-size: auto !important;
-}
-
-/* Shimmer animation */
 @keyframes shimmer {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
-.animate-shimmer {
-  animation: shimmer 3.5s linear infinite;
-}
+.animate-shimmer { animation: shimmer 3.5s linear infinite; }
 
-/* Pulse dot */
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: .6; transform: scale(1.35); }
 }
-.animate-pulse-dot {
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-
-/* ─── Bento Grid ─────────────────────────────────────────── */
-.bento-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.bento-col-4  { grid-column: span 12; }
-.bento-col-6  { grid-column: span 12; }
-.bento-col-8  { grid-column: span 12; }
-.bento-col-12 { grid-column: span 12; }
-
-@media (min-width: 768px) {
-  .bento-grid { gap: 1.25rem; }
-  .bento-col-4  { grid-column: span 4; }
-  .bento-col-6  { grid-column: span 6; }
-  .bento-col-8  { grid-column: span 8; }
-  .bento-col-12 { grid-column: span 12; }
-}
-
-.bento-card {
-  background: var(--bg-elev-1);
-  border: 1px solid var(--line);
-  border-radius: 1.25rem;
-  padding: 1.5rem;
-  position: relative;
-  overflow: hidden;
-  transition: border-color 0.3s ease, transform 0.3s ease;
-}
-
-.bento-card:hover {
-  border-color: color-mix(in oklab, var(--accent) 25%, var(--line));
-  transform: translateY(-2px);
-}
+.animate-pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
