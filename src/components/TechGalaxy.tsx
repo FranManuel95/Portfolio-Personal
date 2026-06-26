@@ -26,7 +26,7 @@ const CATEGORIES: Category[] = [
     radiusFactor: 0.14,
     direction: 1,
     duration: 70,
-    techs: ["Claude", "OpenAI", "Gemini", "MCP", "Skills", "OpenClaw", "RAG", "Pinecone"],
+    techs: ["Claude", "OpenAI", "Gemini", "DeepSeek", "MCP", "Skills", "OpenClaw", "RAG", "Pinecone", "File Search"],
   },
   {
     name: "Automatización",
@@ -34,7 +34,7 @@ const CATEGORIES: Category[] = [
     radiusFactor: 0.225,
     direction: -1,
     duration: 95,
-    techs: ["n8n", "Airtable", "UltraMsg", "API"],
+    techs: ["n8n", "Airtable", "Trello", "Calendly", "UltraMsg", "API"],
   },
   {
     name: "Frontend",
@@ -50,7 +50,7 @@ const CATEGORIES: Category[] = [
     radiusFactor: 0.395,
     direction: -1,
     duration: 165,
-    techs: ["Node.js", "Express", "PHP", "Symfony", "Django", "Supabase", "MySQL", "Postgres"],
+    techs: ["Node.js", "Express", "Python", "PHP", "Symfony", "Django", "Supabase", "MySQL", "Postgres"],
   },
   {
     name: "Infra & DevOps",
