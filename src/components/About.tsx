@@ -2,37 +2,14 @@
 
 import React from "react";
 import Reveal from "./Reveal";
-
-const techStack = [
-  {
-    category: "IA & Agentes",
-    items: ["Claude", "OpenAI", "Gemini", "MCP Servers", "Skills propios", "OpenClaw", "RAG", "Pinecone"],
-  },
-  {
-    category: "Automatización",
-    items: ["n8n", "Airtable", "UltraMsg / Baileys", "API"],
-  },
-  {
-    category: "Frontend",
-    items: ["Next.js", "React", "TypeScript", "Tailwind CSS", "HTML/CSS", "SCSS", "Vite"],
-  },
-  {
-    category: "Backend & BD",
-    items: ["Node.js", "Express", "PHP", "Symfony", "Django", "Supabase", "MySQL", "PostgreSQL"],
-  },
-  {
-    category: "Infra & DevOps",
-    items: ["Linux / VPS", "Docker", "Vercel", "Netlify", "Cloudflare", "Azure", "Stripe", "Teachable", "Git"],
-  },
-];
+import TechGalaxy from "./TechGalaxy";
 
 const About = () => {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-
-      {/* LEFT: Bio */}
+    <div>
+      {/* Bio — centered, single column for breathing room */}
       <Reveal replay>
-        <div>
+        <div className="max-w-2xl mx-auto text-center mb-16">
           <p className="text-[var(--text)] text-lg leading-relaxed mb-6">
             Construyo{" "}
             <span className="text-[var(--accent-2)] font-medium">sistemas de IA aplicada</span>{" "}
@@ -51,30 +28,12 @@ const About = () => {
             AI Engineer, liderando proyectos en los sectores jurídico y educativo desde la
             concepción hasta producción, con cientos de usuarios activos.
           </p>
-
         </div>
       </Reveal>
 
-      {/* RIGHT: Tech stack by category */}
-      <Reveal replay delayMs={80}>
-        <div className="space-y-6">
-          {techStack.map((group, gi) => (
-            <div key={group.category}>
-              <h4
-                className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-2"
-                style={{ color: "var(--accent)" }}
-              >
-                {group.category}
-              </h4>
-              <p className="text-sm text-[var(--text-dim)] leading-relaxed">
-                {group.items.join(" · ")}
-              </p>
-              {gi < techStack.length - 1 && (
-                <div className="mt-5 h-px bg-[var(--line)]" />
-              )}
-            </div>
-          ))}
-        </div>
+      {/* Tech Galaxy */}
+      <Reveal replay delayMs={120}>
+        <TechGalaxy />
       </Reveal>
     </div>
   );
