@@ -7,11 +7,20 @@ import { TechGalaxyControls } from "./TechGalaxy";
 const About = () => {
   return (
     <div>
-      {/* Bio — centered, single column for breathing room.
-          pointer-events:auto only on the centered text block so the wide empty sides
-          let drag/zoom fall through to the canvas underneath. */}
+      {/* Bio — sits at the top of the galaxy section, with a subtle vertical fade
+          from var(--bg) so the text stays legible over stars/nebulae and any
+          stray planet that passes directly underneath. pointer-events:auto only
+          on the centered block — wide side margins let drag/zoom reach the canvas. */}
       <Reveal replay>
-        <div className="max-w-2xl mx-auto text-center mb-16 pointer-events-auto">
+        <div
+          className="max-w-2xl mx-auto text-center pointer-events-auto"
+          style={{
+            marginBottom: "clamp(24vh, 32vh, 40vh)",
+            padding: "1rem 0.5rem 2rem",
+            background:
+              "radial-gradient(ellipse 90% 100% at center, rgba(8,8,8,0.78) 0%, rgba(8,8,8,0.55) 60%, transparent 100%)",
+          }}
+        >
           <p className="text-[var(--text)] text-lg leading-relaxed mb-6">
             Construyo{" "}
             <span className="text-[var(--accent-2)] font-medium">sistemas de IA aplicada</span>{" "}

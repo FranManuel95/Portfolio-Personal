@@ -699,10 +699,10 @@ function Scene({
         target={[0, 0, 0]}
       />
 
-      {/* Offset the entire solar system downward in world space so it sits in the
-          lower portion of the section, leaving the title/bio at the top with only
-          stars and nebulae behind them (no planet collisions with text). */}
-      <group position={[0, -4, 0]}>
+      {/* Offset the entire solar system far down in world space so it sits well
+          below the bio paragraphs, leaving the top half of the section with only
+          stars and nebulae behind the title/bio. */}
+      <group position={[0, -7, 0]}>
         <SunMesh />
         {CATEGORIES.map((c) => {
           const active = selected?.category.name === c.name || hoveredCategory === c.name;

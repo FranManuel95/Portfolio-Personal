@@ -110,7 +110,7 @@ export default function Home() {
         <section
           id="sobremi"
           className="relative overflow-hidden"
-          style={{ minHeight: "100vh" }}
+          style={{ minHeight: "120vh" }}
         >
           <SectionLine />
           {/* Galaxy fills the entire section as background — bio and controls float over it */}
