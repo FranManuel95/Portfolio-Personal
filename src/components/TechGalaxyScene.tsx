@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useMemo, useEffect, useCallback, Suspense } from "react";
 import { Canvas, useFrame, useLoader, extend, ThreeEvent, useThree } from "@react-three/fiber";
-import { Stars, OrbitControls, Billboard, Text } from "@react-three/drei";
+import { Stars, OrbitControls, Billboard, Text, Trail } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { KernelSize } from "postprocessing";
 import * as THREE from "three";
@@ -861,6 +861,7 @@ function Scene({
       <PaintedNebulae />
       <Stars radius={100} depth={50} count={5500} factor={3.5} saturation={0} fade speed={reduceMotion ? 0 : 0.5} />
       <ColoredStars />
+      {!reduceMotion && <Meteors />}
       <SunMesh />
 
       <OrbitControls
@@ -1007,68 +1008,133 @@ function SunProximityTracker({ onChange }: { onChange: (d: number) => void }) {
   return null;
 }
 
-// ─── SHOOTING STARS (2D overlay) ───────────────────────────────────────────
+// ─── METEORS (real 3D shooting stars) ───────────────────────────────────────
 
-function ShootingStars() {
-  const [stars, setStars] = useState<
-    { id: number; from: { x: number; y: number }; angle: number; length: number; thickness: number }[]
-  >([]);
+type MeteorData = {
+  id: number;
+  start: THREE.Vector3;
+  dir: THREE.Vector3;
+  speed: number;
+  life: number;
+  color: THREE.Color;
+  size: number;
+  width: number;
+  length: number;
+};
 
-  React.useEffect(() => {
-    let id = 0;
+function makeMeteor(id: number): MeteorData {
+  const fireball = Math.random() < 0.16;
+  // Enter from the upper/background region, streak down and across the view.
+  const start = new THREE.Vector3(
+    THREE.MathUtils.randFloatSpread(52),
+    THREE.MathUtils.randFloat(9, 26),
+    THREE.MathUtils.randFloat(-20, 12)
+  );
+  const dir = new THREE.Vector3(
+    THREE.MathUtils.randFloat(-0.65, 0.65),
+    THREE.MathUtils.randFloat(-1.0, -0.5),
+    THREE.MathUtils.randFloat(-0.3, 0.35)
+  ).normalize();
+  const color = fireball
+    ? new THREE.Color("#ffcf9a")
+    : Math.random() < 0.5
+    ? new THREE.Color("#dbeaff")
+    : new THREE.Color("#ffffff");
+  return {
+    id,
+    start,
+    dir,
+    speed: THREE.MathUtils.randFloat(16, 30),
+    life: THREE.MathUtils.randFloat(0.9, 1.7),
+    color,
+    size: fireball ? 0.24 : THREE.MathUtils.randFloat(0.06, 0.13),
+    width: fireball ? 1.0 : THREE.MathUtils.randFloat(0.22, 0.5),
+    length: fireball ? 16 : Math.round(THREE.MathUtils.randFloat(8, 13)),
+  };
+}
+
+function Meteor({ data, onDone }: { data: MeteorData; onDone: () => void }) {
+  const ref = useRef<THREE.Mesh>(null);
+  const t = useRef(0);
+  const done = useRef(false);
+
+  useFrame((_, delta) => {
+    t.current += Math.min(delta, 0.05);
+    const m = ref.current;
+    if (m) {
+      m.position.copy(data.start).addScaledVector(data.dir, t.current * data.speed);
+      // head brightness: quick fade-in, long fade-out near end of life
+      const k = t.current / data.life;
+      const fadeIn = Math.min(1, k * 7);
+      const fadeOut = 1 - THREE.MathUtils.smoothstep(k, 0.65, 1.0);
+      const flicker = 0.85 + 0.15 * Math.sin(t.current * 55);
+      const mat = m.material as THREE.MeshBasicMaterial;
+      mat.opacity = fadeIn * fadeOut * flicker;
+      m.scale.setScalar(data.size * (0.9 + 0.1 * Math.sin(t.current * 30)));
+    }
+    if (!done.current && t.current >= data.life) {
+      done.current = true;
+      onDone();
+    }
+  });
+
+  return (
+    <Trail
+      width={data.width}
+      length={data.length}
+      color={data.color}
+      attenuation={(w) => w * w * w}
+      decay={1.3}
+    >
+      <mesh ref={ref} position={data.start}>
+        <sphereGeometry args={[0.5, 10, 10]} />
+        <meshBasicMaterial
+          color={data.color}
+          transparent
+          toneMapped={false}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
+      </mesh>
+    </Trail>
+  );
+}
+
+function Meteors() {
+  const [list, setList] = useState<MeteorData[]>([]);
+  const idRef = useRef(0);
+
+  useEffect(() => {
+    let alive = true;
+    let timeout: ReturnType<typeof setTimeout>;
     const spawn = () => {
-      const fromTop = Math.random() < 0.7;
-      const from = fromTop
-        ? { x: 10 + Math.random() * 80, y: -10 }
-        : { x: -10, y: 5 + Math.random() * 50 };
-      const angle = fromTop ? 35 + Math.random() * 30 : 15 + Math.random() * 25;
-      const length = 180 + Math.random() * 140;
-      const thickness = 1 + Math.random() * 1.5;
-      const newId = ++id;
-      setStars((s) => [...s, { id: newId, from, angle, length, thickness }]);
-      setTimeout(() => setStars((s) => s.filter((x) => x.id !== newId)), 3800);
+      if (!alive) return;
+      // occasionally a quick double/triple "shower"
+      const burst = Math.random() < 0.25 ? 2 : 1;
+      setList((l) => {
+        const next = [...l];
+        for (let i = 0; i < burst; i++) next.push(makeMeteor(idRef.current++));
+        return next;
+      });
+      timeout = setTimeout(spawn, THREE.MathUtils.randFloat(1700, 4200));
     };
-    const interval = setInterval(spawn, 4500 + Math.random() * 5000);
-    setTimeout(spawn, 1500);
-    return () => clearInterval(interval);
+    timeout = setTimeout(spawn, 700);
+    return () => {
+      alive = false;
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  const remove = useCallback((id: number) => {
+    setList((l) => l.filter((m) => m.id !== id));
   }, []);
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      <AnimatePresence>
-        {stars.map((s) => {
-          const dx = Math.cos((s.angle * Math.PI) / 180) * 140;
-          const dy = Math.sin((s.angle * Math.PI) / 180) * 140;
-          return (
-            <motion.div
-              key={s.id}
-              className="absolute"
-              initial={{ left: `${s.from.x}%`, top: `${s.from.y}%`, opacity: 0 }}
-              animate={{
-                left: `${s.from.x + dx}%`,
-                top: `${s.from.y + dy}%`,
-                opacity: [0, 1, 1, 0],
-              }}
-              transition={{ duration: 3.4, ease: "easeOut", times: [0, 0.08, 0.85, 1] }}
-              style={{ transform: `rotate(${s.angle}deg)` }}
-            >
-              <div
-                style={{
-                  width: s.length,
-                  height: s.thickness,
-                  background:
-                    "linear-gradient(90deg, transparent 0%, rgba(255,240,210,0.4) 30%, rgba(255,255,255,1) 100%)",
-                  borderRadius: 999,
-                  boxShadow:
-                    "0 0 6px rgba(255,255,255,0.8), 0 0 14px rgba(255,220,150,0.5)",
-                  transform: "translateX(-100%)",
-                }}
-              />
-            </motion.div>
-          );
-        })}
-      </AnimatePresence>
-    </div>
+    <>
+      {list.map((m) => (
+        <Meteor key={m.id} data={m} onDone={() => remove(m.id)} />
+      ))}
+    </>
   );
 }
 
@@ -1321,7 +1387,6 @@ export default function TechGalaxyScene() {
             </EffectComposer>
           </Suspense>
         </Canvas>
-        {!reduceMotion && <ShootingStars />}
 
         {/* AMBIENT affordance */}
         {!live && (
