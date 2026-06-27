@@ -879,7 +879,7 @@ export default function TechGalaxyScene() {
     <div className="w-full">
       <div
         className="relative w-full aspect-square max-w-[820px] mx-auto"
-        style={{ background: "#000000" }}
+        style={{ background: "var(--bg)" }}
       >
         {/* Soft vignette — fades canvas edges into project background so the box is invisible */}
         <div
@@ -887,7 +887,7 @@ export default function TechGalaxyScene() {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "radial-gradient(ellipse at center, transparent 55%, rgba(8,8,8,0.7) 85%, var(--bg) 100%)",
+              "radial-gradient(ellipse at center, transparent 55%, rgba(8,8,8,0.5) 85%, var(--bg) 100%)",
             zIndex: 5,
           }}
         />
@@ -896,7 +896,7 @@ export default function TechGalaxyScene() {
           dpr={[1, 2]}
           gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
         >
-          <color attach="background" args={["#000000"]} />
+          <color attach="background" args={["#080808"]} />
           <Suspense fallback={null}>
             <Scene
               selected={selected}
