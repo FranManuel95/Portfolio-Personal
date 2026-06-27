@@ -9,6 +9,19 @@ export default function SmoothScroll() {
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       touchMultiplier: 2,
+      // ROOT-CAUSE FIX for the galaxy zoom/scroll conflict:
+      // Lenis registers a global non-passive wheel/touch listener and hijacks
+      // every event for page scroll — which fights drei OrbitControls' own wheel
+      // listener over the 3D canvas. `prevent` makes Lenis skip (not smooth-scroll)
+      // any event whose target is inside an element flagged [data-galaxy-canvas].
+      // The galaxy only sets that attribute while it is in interactive "LIVE" mode,
+      // so: AMBIENT → no attribute → wheel scrolls the page normally; LIVE →
+      // attribute present → wheel/touch go entirely to OrbitControls (zoom/rotate).
+      // Declarative routing — if a state transition is ever missed the page still
+      // scrolls, so this can never freeze the page (unlike lenis.stop()).
+      prevent: (node) =>
+        node.nodeType === 1 &&
+        !!(node as HTMLElement).closest?.("[data-galaxy-canvas]"),
     });
 
     function raf(time: number) {

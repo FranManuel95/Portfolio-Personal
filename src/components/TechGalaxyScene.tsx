@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useRef, useMemo, Suspense } from "react";
+import React, { useState, useRef, useMemo, useEffect, useCallback, Suspense } from "react";
 import { Canvas, useFrame, useLoader, extend, ThreeEvent, useThree } from "@react-three/fiber";
-import { Stars, Html, OrbitControls } from "@react-three/drei";
+import { Stars, Html, OrbitControls, Billboard } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { KernelSize } from "postprocessing";
 import * as THREE from "three";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { getIconTexture } from "./galaxyIcons";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -258,12 +259,16 @@ function SunMesh() {
 
 const planetVert = `
   varying vec2 vUv;
-  varying vec3 vNormal;
+  varying vec3 vNormal;       // view-space (for camera-facing rim)
   varying vec3 vWorldPos;
+  varying vec3 vWorldNormal;  // world-space (for sun lighting/terminator)
+  varying vec3 vObjPos;       // object-space position (for stable bump sampling)
   void main() {
     vUv = uv;
     vNormal = normalize(normalMatrix * normal);
+    vWorldNormal = normalize(mat3(modelMatrix) * normal);
     vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;
+    vObjPos = normalize(position);
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `;
@@ -272,12 +277,15 @@ const planetFrag = `
   varying vec2 vUv;
   varying vec3 vNormal;
   varying vec3 vWorldPos;
+  varying vec3 vWorldNormal;
+  varying vec3 vObjPos;
   uniform float uTime;
   uniform vec3 uBase;
   uniform vec3 uAccent;
   uniform vec3 uShadow;
   uniform int uSurface;       // 0 plasma 1 lava 2 earth 3 gas 4 rocky
   uniform vec3 uLightDir;     // direction TO sun in world space
+  uniform vec3 uCamPos;       // world-space camera position (specular/fresnel)
   uniform float uSelected;    // 0 or 1
 
   vec3 mod289(vec3 x) { return x - floor(x * (1.0/289.0)) * 289.0; }
@@ -338,63 +346,106 @@ const planetFrag = `
     return v;
   }
 
-  void main() {
-    vec3 n = normalize(vNormal);
-    vec3 sp = normalize(vWorldPos);
-    vec3 surfaceCol;
+  // domain-warped fbm — organic large->small structure (IQ two-level)
+  float fbm2(vec3 p) {
+    vec3 q = vec3(fbm(p), fbm(p + vec3(5.2, 1.3, 2.7)), fbm(p + vec3(1.7, 9.2, 3.1)));
+    return fbm(p + 4.0 * q);
+  }
 
+  // per-biome scalar height field (drives both bump and color)
+  float heightAt(vec3 sp) {
+    if (uSurface == 0) return fbm2(sp * 3.0 + vec3(uTime * 0.15));      // plasma
+    else if (uSurface == 1) return fbm2(sp * 4.5);                      // lava
+    else if (uSurface == 2) return fbm2(sp * 2.4);                      // earth
+    else if (uSurface == 3) return sin(sp.y * 12.0 + fbm(sp * 2.0) * 3.0) * 0.5 + 0.5; // gas bands
+    return fbm2(sp * 5.0);                                              // rocky
+  }
+
+  vec3 biomeColor(vec3 sp, float h, out float spec, out float emissive) {
+    spec = 0.0; emissive = 0.0;
+    vec3 col;
     if (uSurface == 0) {
-      // PLASMA — ionized swirling glow
-      float v = fbm(sp * 3.0 + vec3(uTime * 0.2));
-      float v2 = fbm(sp * 6.0 - vec3(uTime * 0.13));
-      float val = v * 0.6 + v2 * 0.4;
-      surfaceCol = mix(uShadow, uBase, val * 0.5 + 0.5);
-      surfaceCol = mix(surfaceCol, uAccent, smoothstep(0.4, 0.8, val));
+      // PLASMA — ionized swirl, self-lit
+      col = mix(uShadow, uBase, h * 0.5 + 0.5);
+      col = mix(col, uAccent, smoothstep(0.45, 0.85, h));
+      emissive = smoothstep(0.6, 1.0, h) * 0.8;
     } else if (uSurface == 1) {
-      // LAVA — hot cracked surface
-      float crack = fbm(sp * 4.5);
-      float hot = smoothstep(0.0, 0.3, crack);
-      surfaceCol = mix(uShadow, uBase, hot);
-      surfaceCol = mix(surfaceCol, uAccent * 1.3, smoothstep(0.35, 0.55, crack));
+      // LAVA — basalt with glowing accent cracks
+      col = mix(uShadow, uBase, smoothstep(0.0, 0.4, h));
+      float cracks = smoothstep(0.55, 0.75, h);
+      col = mix(col, uAccent * 1.4, cracks);
+      emissive = cracks * 0.9;
+      spec = 0.10;
     } else if (uSurface == 2) {
-      // EARTH-LIKE — continents + clouds
-      float land = fbm(sp * 2.5);
-      float clouds = fbm(sp * 4.0 + vec3(uTime * 0.04));
+      // EARTH — oceans, continents, ice caps, clouds
+      float landMask = smoothstep(0.48, 0.56, h * 0.5 + 0.5);
       vec3 ocean = uShadow;
-      vec3 continent = mix(uBase, vec3(0.4, 0.6, 0.25), 0.5);
-      surfaceCol = mix(ocean, continent, smoothstep(0.0, 0.15, land));
-      // ice caps
-      surfaceCol = mix(surfaceCol, vec3(0.95), smoothstep(0.75, 0.95, abs(sp.y)));
-      // clouds
-      surfaceCol = mix(surfaceCol, vec3(1.0), smoothstep(0.35, 0.55, clouds) * 0.6);
+      vec3 land = mix(uBase, vec3(0.30, 0.55, 0.22), 0.55);
+      col = mix(ocean, land, landMask);
+      col = mix(col, vec3(0.92), smoothstep(0.78, 0.95, abs(sp.y)));
+      float clouds = fbm(sp * 4.0 + vec3(uTime * 0.03));
+      col = mix(col, vec3(1.0), smoothstep(0.42, 0.60, clouds) * 0.55);
+      spec = (1.0 - landMask) * 0.5;
     } else if (uSurface == 3) {
-      // GAS GIANT — horizontal bands
-      float bands = sin(sp.y * 14.0 + fbm(sp * 2.0) * 2.5) * 0.5 + 0.5;
-      float turbulence = fbm(sp * 3.0 + vec3(uTime * 0.05));
-      surfaceCol = mix(uShadow, uBase, bands);
-      surfaceCol = mix(surfaceCol, uAccent, smoothstep(0.6, 1.0, bands + turbulence * 0.3));
+      // GAS GIANT — latitude bands + storm
+      col = mix(uShadow, uBase, h);
+      float turb = fbm2(sp * 3.0 + vec3(uTime * 0.04));
+      col = mix(col, uAccent, smoothstep(0.62, 1.0, h + turb * 0.25));
+      spec = 0.12;
     } else {
       // ROCKY — cratered matte
-      float rock = fbm(sp * 5.0);
-      float crater = fbm(sp * 12.0);
-      surfaceCol = mix(uShadow, uBase, rock * 0.5 + 0.5);
-      surfaceCol = mix(surfaceCol, vec3(0.1), smoothstep(0.5, 0.55, crater) * 0.5);
+      col = mix(uShadow, uBase, h * 0.5 + 0.5);
+      float craters = smoothstep(0.5, 0.55, fbm(sp * 11.0));
+      col = mix(col, vec3(0.08), craters * 0.5);
     }
+    return col;
+  }
 
-    // Lighting from sun
-    float diff = max(0.0, dot(n, uLightDir));
-    float ambient = 0.18;
-    vec3 lit = surfaceCol * (ambient + diff * 1.2);
+  void main() {
+    vec3 sp = normalize(vObjPos);
+    float spec, emissive;
+    float h = heightAt(sp);
+    vec3 surfaceCol = biomeColor(sp, h, spec, emissive);
 
-    // Rim/atmosphere glow
-    float rim = 1.0 - max(0.0, dot(n, vec3(0.0, 0.0, 1.0)));
-    rim = pow(rim, 2.5);
-    lit += uBase * rim * 0.4;
+    // ---- object-space normal-from-noise bump (stable, no screen-space shimmer) ----
+    vec3 up = abs(sp.y) < 0.99 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
+    vec3 t1 = normalize(cross(sp, up));
+    vec3 t2 = normalize(cross(sp, t1));
+    float eps = 0.04;
+    float hX = heightAt(normalize(sp + t1 * eps));
+    float hY = heightAt(normalize(sp + t2 * eps));
+    float bumpStrength = uSurface == 4 ? 0.18 : uSurface == 1 ? 0.15 : uSurface == 2 ? 0.12 : 0.06;
+    vec3 grad = ((hX - h) * t1 + (hY - h) * t2) / eps;
+    vec3 perturbedObj = normalize(sp - grad * bumpStrength);
+    vec3 N = normalize(vWorldNormal + (perturbedObj - sp));
 
-    // Selected: boost
-    if (uSelected > 0.5) {
-      lit += uAccent * 0.25;
-    }
+    // ---- sun lighting with day/night terminator ----
+    vec3 L = normalize(uLightDir);
+    float ndl = dot(N, L);
+    float lambert = max(0.0, ndl);
+    float dayFactor = smoothstep(-0.12, 0.30, ndl);
+    vec3 nightCol = surfaceCol * vec3(0.10, 0.12, 0.18); // cool, not black
+    vec3 dayCol = surfaceCol * (0.12 + 1.05 * lambert);
+    vec3 lit = mix(nightCol, dayCol, dayFactor);
+
+    // warm terminator rim band (where light grazes)
+    float term = exp(-pow(ndl / 0.14, 2.0));
+    lit += uAccent * term * 0.16 * dayFactor;
+
+    // emissive (plasma glow / lava cracks) — drives bloom, visible day & night
+    lit += mix(surfaceCol, uAccent, 0.5) * emissive * 0.7;
+
+    // ---- specular highlight on lit side ----
+    vec3 V = normalize(uCamPos - vWorldPos);
+    vec3 Hh = normalize(L + V);
+    lit += vec3(1.0) * pow(max(0.0, dot(N, Hh)), 32.0) * spec * dayFactor;
+
+    // ---- fresnel atmosphere, brightest on the lit limb ----
+    float fres = pow(1.0 - max(0.0, dot(N, V)), 3.0);
+    lit += uBase * fres * (0.22 + 0.5 * dayFactor);
+
+    // selected boost
+    if (uSelected > 0.5) lit += uAccent * 0.22;
 
     gl_FragColor = vec4(lit, 1.0);
   }
@@ -413,6 +464,7 @@ function Planet({
   paused,
   speedMul,
   dimmed,
+  onActivate,
 }: {
   category: Category;
   tech: string;
@@ -422,12 +474,16 @@ function Planet({
   paused: boolean;
   speedMul: number;
   dimmed: boolean;
+  onActivate: () => void;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
   const matRef = useRef<THREE.ShaderMaterial>(null);
   const angleRef = useRef((index / category.techs.length) * Math.PI * 2);
+  const [hover, setHover] = useState(false);
   const isSelected = selected?.category.name === category.name && selected.tech === tech;
+
+  const logoTex = useMemo(() => getIconTexture(tech), [tech]);
 
   const uniforms = useMemo(
     () => ({
@@ -437,6 +493,7 @@ function Planet({
       uShadow: { value: new THREE.Color(category.brand).multiplyScalar(0.1) },
       uSurface: { value: surfaceTypeIndex(category.surface) },
       uLightDir: { value: new THREE.Vector3(0, 0, 0) },
+      uCamPos: { value: new THREE.Vector3() },
       uSelected: { value: 0 },
     }),
     [category]
@@ -453,32 +510,39 @@ function Planet({
     groupRef.current.position.set(x, 0, z);
     if (meshRef.current) meshRef.current.rotation.y += 0.003;
     if (matRef.current) {
-      (matRef.current.uniforms.uTime as { value: number }).value = state.clock.elapsedTime;
-      const ld = new THREE.Vector3(-x, 0, -z).normalize();
-      (matRef.current.uniforms.uLightDir as { value: THREE.Vector3 }).value = ld;
-      (matRef.current.uniforms.uSelected as { value: number }).value = isSelected ? 1 : 0;
+      const u = matRef.current.uniforms;
+      (u.uTime as { value: number }).value = state.clock.elapsedTime;
+      // light dir = from planet world pos toward the sun (origin)
+      (u.uLightDir as { value: THREE.Vector3 }).value.set(-x, 0, -z).normalize();
+      (u.uCamPos as { value: THREE.Vector3 }).value.copy(state.camera.position);
+      (u.uSelected as { value: number }).value = isSelected ? 1 : 0;
     }
   });
 
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
+    onActivate();
     setSelected({ category, tech });
   };
 
   const handlePointerOver = () => {
     document.body.style.cursor = "pointer";
+    setHover(true);
   };
   const handlePointerOut = () => {
     document.body.style.cursor = "auto";
+    setHover(false);
   };
 
   const hasRing = RINGED_TECHS.has(tech);
   const planetSize = PLANET_RADIUS * (isSelected ? 1.35 : 1);
+  const showName = (hover || isSelected) && !dimmed;
+  const logoOpacity = dimmed ? 0.18 : isSelected ? 1 : 0.92;
 
   return (
     <group ref={groupRef} scale={dimmed ? 0.6 : 1} visible>
       <mesh ref={meshRef} onClick={handleClick} onPointerOver={handlePointerOver} onPointerOut={handlePointerOut}>
-        <sphereGeometry args={[planetSize, 48, 48]} />
+        <sphereGeometry args={[planetSize, isSelected ? 64 : 48, isSelected ? 64 : 48]} />
         <shaderMaterial
           ref={matRef}
           uniforms={uniforms}
@@ -486,6 +550,7 @@ function Planet({
           fragmentShader={planetFrag}
         />
       </mesh>
+
       {hasRing && (
         <mesh rotation={[Math.PI / 2 - 0.4, 0, 0]}>
           <ringGeometry args={[planetSize * 1.45, planetSize * 2.1, 64]} />
@@ -499,24 +564,44 @@ function Planet({
           />
         </mesh>
       )}
-      <Html center distanceFactor={14} position={[0, planetSize + 0.55, 0]} style={{ pointerEvents: "none" }} zIndexRange={[0, 0]}>
-        <div
-          className="whitespace-nowrap font-mono uppercase select-none"
-          style={{
-            fontSize: isSelected ? "12px" : "9px",
-            letterSpacing: isSelected ? "0.2em" : "0.15em",
-            padding: isSelected ? "3px 8px" : "2px 6px",
-            background: isSelected ? "rgba(8,8,8,0.9)" : "rgba(8,8,8,0.55)",
-            border: `1px solid ${category.brand}${isSelected ? "" : "55"}`,
-            color: category.brand,
-            opacity: dimmed ? 0.15 : isSelected ? 1 : 0.85,
-            textShadow: `0 0 6px ${category.brand}88`,
-            transition: "all 0.25s ease",
-          }}
-        >
-          {tech}
-        </div>
-      </Html>
+
+      {/* Brand logo / monogram — always camera-facing, in front of the planet */}
+      <Billboard>
+        <mesh position={[0, 0, planetSize * 1.05]} raycast={() => null}>
+          <planeGeometry args={[planetSize * 1.25, planetSize * 1.25]} />
+          <meshBasicMaterial
+            map={logoTex}
+            transparent
+            depthWrite={false}
+            toneMapped={false}
+            opacity={logoOpacity}
+          />
+        </mesh>
+      </Billboard>
+
+      {/* Name — high-contrast, only on hover/selection to avoid clutter */}
+      {showName && (
+        <Html center distanceFactor={12} position={[0, planetSize + 0.7, 0]} style={{ pointerEvents: "none" }} zIndexRange={[0, 0]}>
+          <div
+            className="whitespace-nowrap font-mono uppercase select-none flex items-center gap-1.5"
+            style={{
+              fontSize: isSelected ? "13px" : "11px",
+              letterSpacing: "0.12em",
+              padding: "4px 9px",
+              background: "rgba(8,8,8,0.92)",
+              borderLeft: `2px solid ${category.brand}`,
+              color: "#ffffff",
+              boxShadow: `0 2px 14px rgba(0,0,0,0.6), 0 0 12px ${category.brand}44`,
+            }}
+          >
+            <span
+              className="inline-block w-1.5 h-1.5 rounded-full"
+              style={{ background: category.brand, boxShadow: `0 0 6px ${category.brand}` }}
+            />
+            {tech}
+          </div>
+        </Html>
+      )}
     </group>
   );
 }
@@ -744,6 +829,10 @@ function Scene({
   filterCategory,
   manualPause,
   speedMul,
+  live,
+  reduceMotion,
+  onActivate,
+  controlsRef,
 }: {
   selected: SelectedState;
   setSelected: (s: SelectedState) => void;
@@ -751,29 +840,41 @@ function Scene({
   filterCategory: string | null;
   manualPause: boolean;
   speedMul: number;
+  live: boolean;
+  reduceMotion: boolean;
+  onActivate: () => void;
+  controlsRef: React.MutableRefObject<React.ComponentRef<typeof OrbitControls> | null>;
 }) {
-  const paused = manualPause || selected !== null;
+  // Under reduced motion the system is paused by default (static diagram).
+  const paused = manualPause || selected !== null || reduceMotion;
 
   return (
     <>
       <ambientLight intensity={0.15} />
       <PaintedNebulae />
-      <Stars radius={100} depth={50} count={5500} factor={3.5} saturation={0} fade speed={0.5} />
+      <Stars radius={100} depth={50} count={5500} factor={3.5} saturation={0} fade speed={reduceMotion ? 0 : 0.5} />
       <ColoredStars />
       <SunMesh />
 
       <OrbitControls
+        ref={controlsRef}
+        makeDefault
         enableDamping
         dampingFactor={0.08}
-        enableZoom
+        enableZoom={live}
+        enableRotate={live}
         enablePan={false}
+        autoRotate={!live && !reduceMotion}
+        autoRotateSpeed={0.25}
         minDistance={14}
         maxDistance={42}
         minPolarAngle={Math.PI * 0.18}
         maxPolarAngle={Math.PI * 0.62}
-        rotateSpeed={0.6}
+        rotateSpeed={0.55}
         zoomSpeed={0.8}
+        touches={{ ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_ROTATE }}
       />
+      <TouchActionManager live={live} />
 
       {CATEGORIES.map((c) => {
         const active = selected?.category.name === c.name || hoveredCategory === c.name;
@@ -792,6 +893,7 @@ function Scene({
                 paused={paused}
                 speedMul={speedMul}
                 dimmed={dimmed}
+                onActivate={onActivate}
               />
             ))}
           </group>
@@ -799,6 +901,18 @@ function Scene({
       })}
     </>
   );
+}
+
+// ─── TOUCH-ACTION MANAGER ───────────────────────────────────────────────────
+// drei OrbitControls forces gl.domElement.style.touchAction = 'none' on connect,
+// which would block vertical page scroll over the canvas in AMBIENT. Re-assert the
+// correct value from React state: pan-y (page scrolls) in AMBIENT, none in LIVE.
+function TouchActionManager({ live }: { live: boolean }) {
+  const { gl } = useThree();
+  useEffect(() => {
+    gl.domElement.style.touchAction = live ? "none" : "pan-y";
+  }, [live, gl]);
+  return null;
 }
 
 // ─── SUN PROXIMITY TRACKER ─────────────────────────────────────────────────
@@ -883,6 +997,9 @@ function ShootingStars() {
 
 // ─── PUBLIC COMPONENT ──────────────────────────────────────────────────────
 
+const POLAR_MIN = Math.PI * 0.18;
+const POLAR_MAX = Math.PI * 0.62;
+
 export default function TechGalaxyScene() {
   const [selected, setSelected] = useState<SelectedState>(null);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
@@ -890,13 +1007,149 @@ export default function TechGalaxyScene() {
   const [manualPause, setManualPause] = useState(false);
   const [speedMul, setSpeedMul] = useState<0.5 | 1 | 2>(1);
   const [sunDistance, setSunDistance] = useState(27);
+  const [live, setLive] = useState(false);
+  const [coarse, setCoarse] = useState(false);
+  const [status, setStatus] = useState("");
+  const reduceMotion = useReducedMotion() ?? false;
+
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const controlsRef = useRef<React.ComponentRef<typeof OrbitControls> | null>(null);
+  const tapRef = useRef<{ x: number; y: number; t: number } | null>(null);
 
   // Closer to sun (14) → brighter glow; far (28+) → none
   const glowIntensity = Math.max(0, Math.min(1, (28 - sunDistance) / 14));
 
+  useEffect(() => {
+    const mq = window.matchMedia("(pointer: coarse)");
+    const update = () => setCoarse(mq.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    return () => mq.removeEventListener?.("change", update);
+  }, []);
+
+  const activate = useCallback(() => {
+    setLive((prev) => {
+      if (!prev) setStatus("Modo exploración activado. Arrastra para rotar, rueda o teclas + / − para zoom, flechas para girar, Escape para salir.");
+      return true;
+    });
+  }, []);
+
+  const deactivate = useCallback(() => {
+    setLive((prev) => {
+      if (prev) setStatus("Modo exploración desactivado. La página vuelve a desplazarse con normalidad.");
+      return false;
+    });
+  }, []);
+
+  // ── Imperative camera helpers (keyboard + on-screen buttons) ──
+  type Ctl = {
+    object: THREE.PerspectiveCamera;
+    target: THREE.Vector3;
+    getAzimuthalAngle: () => number;
+    getPolarAngle: () => number;
+    setAzimuthalAngle: (a: number) => void;
+    setPolarAngle: (a: number) => void;
+    update: () => void;
+  };
+  const rotateAzimuth = useCallback((delta: number) => {
+    const c = controlsRef.current as unknown as Ctl | null;
+    if (!c) return;
+    c.setAzimuthalAngle(c.getAzimuthalAngle() + delta);
+    c.update();
+  }, []);
+  const rotatePolar = useCallback((delta: number) => {
+    const c = controlsRef.current as unknown as Ctl | null;
+    if (!c) return;
+    c.setPolarAngle(THREE.MathUtils.clamp(c.getPolarAngle() + delta, POLAR_MIN, POLAR_MAX));
+    c.update();
+  }, []);
+  const dolly = useCallback((factor: number) => {
+    const c = controlsRef.current as unknown as Ctl | null;
+    if (!c) return;
+    const dir = new THREE.Vector3().subVectors(c.object.position, c.target);
+    const dist = THREE.MathUtils.clamp(dir.length() * factor, 14, 42);
+    dir.setLength(dist);
+    c.object.position.copy(c.target).add(dir);
+    c.update();
+    setStatus(`Zoom ${Math.round(((42 - dist) / (42 - 14)) * 100)}%`);
+  }, []);
+
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      switch (e.key) {
+        case "Enter":
+        case " ":
+          e.preventDefault();
+          activate();
+          break;
+        case "Escape":
+          deactivate();
+          break;
+        case "ArrowLeft":
+          e.preventDefault(); activate(); rotateAzimuth(-0.2); break;
+        case "ArrowRight":
+          e.preventDefault(); activate(); rotateAzimuth(0.2); break;
+        case "ArrowUp":
+          e.preventDefault(); activate(); rotatePolar(-0.12); break;
+        case "ArrowDown":
+          e.preventDefault(); activate(); rotatePolar(0.12); break;
+        case "+":
+        case "=":
+          e.preventDefault(); activate(); dolly(0.85); break;
+        case "-":
+        case "_":
+          e.preventDefault(); activate(); dolly(1.18); break;
+      }
+    },
+    [activate, deactivate, rotateAzimuth, rotatePolar, dolly]
+  );
+
+  // Exit LIVE on outside pointerdown / window blur / global Esc
+  useEffect(() => {
+    if (!live) return;
+    const onDown = (e: PointerEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) deactivate();
+    };
+    const onBlur = () => deactivate();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") deactivate();
+    };
+    window.addEventListener("pointerdown", onDown);
+    window.addEventListener("blur", onBlur);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("blur", onBlur);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [live, deactivate]);
+
+  // Auto-exit when the canvas scrolls mostly out of view (failsafe)
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.intersectionRatio < 0.4) deactivate();
+      },
+      { threshold: [0, 0.4, 1] }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [deactivate]);
+
   return (
     <div className="w-full relative">
-      {/* Global illumination — extends beyond canvas to bathe the page when zoomed in */}
+      {/* Visually-hidden live region for screen readers */}
+      <p
+        aria-live="polite"
+        className="sr-only"
+        style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}
+      >
+        {status}
+      </p>
+
+      {/* Global illumination — bathes the page warm when zoomed toward the sun */}
       <div
         aria-hidden
         className="absolute pointer-events-none"
@@ -911,11 +1164,29 @@ export default function TechGalaxyScene() {
         }}
       />
 
-      {/* Canvas escapes the .container padding to full viewport width.
-          Left/right edges sit at viewport edges (off-screen-ish) so the 'box'
-          is far less visible. */}
+      {/* Canvas band — full viewport width. role=application + tabIndex makes it a
+          focusable, keyboard-operable region. data-galaxy-canvas only while LIVE so
+          Lenis lets the page scroll in AMBIENT and hands wheel/touch to the scene in LIVE. */}
       <div
-        className="relative"
+        ref={wrapperRef}
+        data-galaxy-canvas={live ? "" : undefined}
+        role="application"
+        tabIndex={0}
+        aria-label="Sistema solar interactivo de mi stack tecnológico. Pulsa Entrar para explorar; usa las flechas para rotar, las teclas más y menos para zoom y Escape para salir. La lista de tecnologías está disponible más abajo."
+        onPointerDown={(e) => {
+          // Record start; only a genuine TAP (small move, short time) activates —
+          // so a vertical scroll-swipe over the canvas still scrolls the page.
+          tapRef.current = { x: e.clientX, y: e.clientY, t: Date.now() };
+        }}
+        onPointerUp={(e) => {
+          const d = tapRef.current;
+          tapRef.current = null;
+          if (live || !d) return;
+          const moved = Math.hypot(e.clientX - d.x, e.clientY - d.y);
+          if (moved < 10 && Date.now() - d.t < 300) activate();
+        }}
+        onKeyDown={onKeyDown}
+        className="relative outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)]/60"
         style={{
           width: "100vw",
           marginLeft: "calc(50% - 50vw)",
@@ -923,9 +1194,11 @@ export default function TechGalaxyScene() {
           aspectRatio: "21 / 9",
           maxHeight: "80vh",
           zIndex: 2,
+          touchAction: live ? "none" : "pan-y",
+          cursor: live ? "grab" : "pointer",
         }}
       >
-        {/* Edge fade — radial mask softens canvas content into project bg */}
+        {/* Edge fade — softens canvas content into project bg */}
         <div
           aria-hidden
           className="absolute inset-0 pointer-events-none"
@@ -937,7 +1210,7 @@ export default function TechGalaxyScene() {
         />
         <Canvas
           camera={{ position: [0, 3.2, 27], fov: 52, near: 0.1, far: 200 }}
-          dpr={[1, 2]}
+          dpr={coarse ? [1, 1.75] : [1, 2]}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         >
           <Suspense fallback={null}>
@@ -949,6 +1222,10 @@ export default function TechGalaxyScene() {
               filterCategory={filterCategory}
               manualPause={manualPause}
               speedMul={speedMul}
+              live={live}
+              reduceMotion={reduceMotion}
+              onActivate={activate}
+              controlsRef={controlsRef}
             />
             <EffectComposer>
               <Bloom
@@ -961,7 +1238,59 @@ export default function TechGalaxyScene() {
             </EffectComposer>
           </Suspense>
         </Canvas>
-        <ShootingStars />
+        {!reduceMotion && <ShootingStars />}
+
+        {/* AMBIENT affordance */}
+        {!live && (
+          <div
+            aria-hidden
+            className="absolute left-1/2 -translate-x-1/2 bottom-[8%] px-4 py-2 text-[10px] font-mono uppercase tracking-[0.25em] pointer-events-none"
+            style={{
+              zIndex: 6,
+              color: "var(--text)",
+              background: "rgba(8,8,8,0.6)",
+              backdropFilter: "blur(6px)",
+              border: "1px solid var(--line)",
+            }}
+          >
+            {coarse ? "Toca para explorar" : "Clic para explorar · arrastra rota · scroll zoom"}
+          </div>
+        )}
+
+        {/* LIVE chrome: exit + accessible camera controls */}
+        {live && (
+          <>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                deactivate();
+              }}
+              className="absolute top-3 right-3 px-3 py-2 text-[10px] font-mono uppercase tracking-widest"
+              style={{
+                zIndex: 6,
+                color: "var(--text)",
+                background: "rgba(8,8,8,0.75)",
+                backdropFilter: "blur(6px)",
+                border: "1px solid var(--accent)",
+              }}
+            >
+              Salir · Esc
+            </button>
+
+            <div
+              className="absolute bottom-3 right-3 grid grid-cols-3 gap-1"
+              style={{ zIndex: 6 }}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              <CamBtn label="Rotar arriba" onClick={() => rotatePolar(-0.12)} className="col-start-2">▲</CamBtn>
+              <CamBtn label="Rotar izquierda" onClick={() => rotateAzimuth(-0.2)} className="col-start-1 row-start-2">◀</CamBtn>
+              <CamBtn label="Acercar" onClick={() => dolly(0.85)} className="col-start-2 row-start-2">＋</CamBtn>
+              <CamBtn label="Rotar derecha" onClick={() => rotateAzimuth(0.2)} className="col-start-3 row-start-2">▶</CamBtn>
+              <CamBtn label="Rotar abajo" onClick={() => rotatePolar(0.12)} className="col-start-2 row-start-3">▼</CamBtn>
+              <CamBtn label="Alejar" onClick={() => dolly(1.18)} className="col-start-3 row-start-3">－</CamBtn>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="mt-8 max-w-2xl mx-auto relative" style={{ zIndex: 10 }}>
@@ -995,7 +1324,7 @@ export default function TechGalaxyScene() {
                 onClick={() => setSelected(null)}
                 className="mt-4 text-[10px] font-mono uppercase tracking-widest text-[var(--text-dim)] hover:text-[var(--text)] transition-colors"
               >
-                × Cerrar · Reanudar órbitas
+                × Cerrar
               </button>
             </motion.div>
           ) : (
@@ -1006,7 +1335,7 @@ export default function TechGalaxyScene() {
               exit={{ opacity: 0 }}
               className="text-center text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--text-dim)]"
             >
-              ◆ Arrastra para rotar · Scroll para zoom · Pulsa un planeta
+              ◆ {coarse ? "Toca para explorar · pellizca para zoom" : "Clic para explorar · arrastra rota · rueda zoom"}
             </motion.p>
           )}
         </AnimatePresence>
@@ -1072,18 +1401,89 @@ export default function TechGalaxyScene() {
               >
                 <span
                   className="w-1.5 h-1.5 rounded-full"
-                  style={{
-                    background: c.brand,
-                    boxShadow: `0 0 8px ${c.brand}`,
-                  }}
+                  style={{ background: c.brand, boxShadow: `0 0 8px ${c.brand}` }}
                 />
                 {c.name}
               </button>
             );
           })}
         </div>
+
+        {/* Accessible parallel control surface — every tech reachable by keyboard,
+            wired to the same selection used by planet clicks. */}
+        <div className="mt-8 border-t border-[var(--line)] pt-6">
+          <h3 className="text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--text-dim)] text-center mb-4">
+            Explora por tecnología
+          </h3>
+          <div className="space-y-4">
+            {CATEGORIES.map((c) => (
+              <div key={c.name} role="group" aria-label={c.name}>
+                <p
+                  className="text-[10px] font-mono uppercase tracking-widest mb-2"
+                  style={{ color: c.brand }}
+                >
+                  {c.name}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {c.techs.map((tech) => {
+                    const sel = selected?.tech === tech && selected?.category.name === c.name;
+                    return (
+                      <button
+                        key={tech}
+                        onClick={() => setSelected({ category: c, tech })}
+                        onFocus={() => setHoveredCategory(c.name)}
+                        onBlur={() => setHoveredCategory(null)}
+                        aria-pressed={sel}
+                        className="px-2.5 py-1 text-[11px] font-medium border transition-all focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
+                        style={{
+                          color: sel ? "#0a0a0a" : "var(--text-dim)",
+                          background: sel ? c.brand : "transparent",
+                          borderColor: sel ? c.brand : "var(--line)",
+                        }}
+                      >
+                        {tech}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
+  );
+}
+
+// Small square camera-control button used in the LIVE on-canvas pad.
+function CamBtn({
+  children,
+  label,
+  onClick,
+  className,
+}: {
+  children: React.ReactNode;
+  label: string;
+  onClick: () => void;
+  className?: string;
+}) {
+  return (
+    <button
+      aria-label={label}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      className={`w-9 h-9 flex items-center justify-center text-sm leading-none transition-all ${className ?? ""}`}
+      style={{
+        color: "var(--text)",
+        background: "rgba(8,8,8,0.72)",
+        backdropFilter: "blur(6px)",
+        border: "1px solid var(--line)",
+      }}
+    >
+      {children}
+    </button>
   );
 }
 
