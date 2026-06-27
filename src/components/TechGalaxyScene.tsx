@@ -911,14 +911,30 @@ export default function TechGalaxyScene() {
         }}
       />
 
+      {/* Canvas escapes the .container padding to full viewport width.
+          Left/right edges sit at viewport edges (off-screen-ish) so the 'box'
+          is far less visible. */}
       <div
-        className="relative w-full"
+        className="relative"
         style={{
-          aspectRatio: "16 / 10",
+          width: "100vw",
+          marginLeft: "calc(50% - 50vw)",
+          marginRight: "calc(50% - 50vw)",
+          aspectRatio: "21 / 9",
           maxHeight: "80vh",
           zIndex: 2,
         }}
       >
+        {/* Edge fade — radial mask softens canvas content into project bg */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, transparent 50%, rgba(8,8,8,0.55) 80%, var(--bg) 100%)",
+            zIndex: 4,
+          }}
+        />
         <Canvas
           camera={{ position: [0, 3.2, 27], fov: 52, near: 0.1, far: 200 }}
           dpr={[1, 2]}
