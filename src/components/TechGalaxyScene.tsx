@@ -1562,8 +1562,11 @@ export default function TechGalaxyScene() {
           </button>
         </div>
 
-        {/* Category filter legend — click to isolate */}
-        <div className="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-2">
+        {/* Explore by category — the legend chips filter/highlight a category */}
+        <h3 className="mt-8 text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--text-dim)] text-center mb-4">
+          Explora por categoría
+        </h3>
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
           {CATEGORIES.map((c) => {
             const active = filterCategory === c.name;
             const otherActive = filterCategory !== null && filterCategory !== c.name;
@@ -1592,46 +1595,28 @@ export default function TechGalaxyScene() {
           })}
         </div>
 
-        {/* Accessible parallel control surface — every tech reachable by keyboard,
-            wired to the same selection used by planet clicks. */}
-        <div className="mt-8 border-t border-[var(--line)] pt-6">
-          <h3 className="text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--text-dim)] text-center mb-4">
-            Explora por tecnología
-          </h3>
-          <div className="space-y-4">
-            {CATEGORIES.map((c) => (
-              <div key={c.name} role="group" aria-label={c.name}>
-                <p
-                  className="text-[10px] font-mono uppercase tracking-widest mb-2"
-                  style={{ color: c.brand }}
-                >
-                  {c.name}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {c.techs.map((tech) => {
-                    const sel = selected?.tech === tech && selected?.category.name === c.name;
-                    return (
-                      <button
-                        key={tech}
-                        onClick={() => setSelected({ category: c, tech })}
-                        onFocus={() => setHoveredCategory(c.name)}
-                        onBlur={() => setHoveredCategory(null)}
-                        aria-pressed={sel}
-                        className="px-2.5 py-1 text-[11px] font-medium border transition-all focus-visible:ring-1 focus-visible:ring-[var(--accent)]"
-                        style={{
-                          color: sel ? "#0a0a0a" : "var(--text-dim)",
-                          background: sel ? c.brand : "transparent",
-                          borderColor: sel ? c.brand : "var(--line)",
-                        }}
-                      >
-                        {tech}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* Screen-reader / keyboard parallel control surface — visually hidden so it
+            doesn't duplicate the always-on planet labels, but every tech stays
+            reachable by assistive tech (selects the same as clicking a planet). */}
+        <div className="sr-only">
+          <h3>Explora por tecnología</h3>
+          {CATEGORIES.map((c) => (
+            <div key={c.name} role="group" aria-label={c.name}>
+              <p>{c.name}</p>
+              {c.techs.map((tech) => {
+                const sel = selected?.tech === tech && selected?.category.name === c.name;
+                return (
+                  <button
+                    key={tech}
+                    onClick={() => setSelected({ category: c, tech })}
+                    aria-pressed={sel}
+                  >
+                    {tech}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
         </div>
       </div>
     </div>
