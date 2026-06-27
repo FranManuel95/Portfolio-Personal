@@ -871,14 +871,15 @@ function Scene({
         enableZoom={live}
         enableRotate={live}
         enablePan={false}
+        zoomToCursor
         autoRotate={!live && !reduceMotion}
         autoRotateSpeed={0.25}
-        minDistance={14}
-        maxDistance={42}
-        minPolarAngle={Math.PI * 0.18}
-        maxPolarAngle={Math.PI * 0.62}
+        minDistance={5}
+        maxDistance={70}
+        minPolarAngle={Math.PI * 0.12}
+        maxPolarAngle={Math.PI * 0.72}
         rotateSpeed={0.55}
-        zoomSpeed={0.8}
+        zoomSpeed={1.1}
         touches={{ ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_ROTATE }}
       />
       <TouchActionManager live={live} />
@@ -916,6 +917,14 @@ function Scene({
 
 const ORIGIN = new THREE.Vector3(0, 0, 0);
 
+type RigControls = {
+  object: THREE.PerspectiveCamera;
+  target: THREE.Vector3;
+  minDistance: number;
+  maxDistance: number;
+  update: () => void;
+};
+
 function CameraRig({
   focusRef,
   hasSelection,
@@ -924,45 +933,48 @@ function CameraRig({
   hasSelection: boolean;
 }) {
   // `makeDefault` on OrbitControls publishes the instance here.
-  const controls = useThree((s) => s.controls) as unknown as {
-    object: THREE.PerspectiveCamera;
-    target: THREE.Vector3;
-    minDistance: number;
-    update: () => void;
-  } | null;
+  const controls = useThree((s) => s.controls) as unknown as RigControls | null;
   const lastKey = useRef<string | null>(null);
-  const framing = useRef(1); // 0..1 dolly animation progress
-  const fromDist = useRef(27);
+  const anim = useRef<{
+    from: THREE.Vector3;
+    to: THREE.Vector3;
+    fromD: number;
+    toD: number;
+    t: number;
+  } | null>(null);
 
   useFrame((_, delta) => {
     if (!controls) return;
     const key = hasSelection ? focusRef.current.key : null;
 
-    // New selection (or deselection) → start a fresh dolly animation.
+    // On selection change, kick off a ONE-SHOT fly-to animation, then release
+    // control entirely so free zoom-to-cursor / orbit work between selections.
     if (key !== lastKey.current) {
       lastKey.current = key;
-      framing.current = 0;
-      fromDist.current = controls.object.position.distanceTo(controls.target);
+      const active = !!key;
+      controls.minDistance = active ? 1.4 : 5;
+      anim.current = {
+        from: controls.target.clone(),
+        to: active ? focusRef.current.pos.clone() : ORIGIN.clone(),
+        fromD: controls.object.position.distanceTo(controls.target),
+        toD: active ? Math.max(2.2, focusRef.current.radius * 5) : 24,
+        t: 0,
+      };
     }
 
-    const active = !!key;
-    const targetPos = active ? focusRef.current.pos : ORIGIN;
-    // Smoothly recenter the orbit pivot on the planet (or back on the sun).
-    controls.target.lerp(targetPos, Math.min(1, delta * 4));
-    // Allow getting much closer to a planet than to the sun.
-    controls.minDistance = active ? 1.8 : 14;
+    const a = anim.current;
+    if (!a) return; // released → user has full free control
 
-    if (framing.current < 1) {
-      framing.current = Math.min(1, framing.current + delta / 0.9);
-      const e = 1 - Math.pow(1 - framing.current, 3); // easeOutCubic
-      const targetDist = active ? Math.max(2.4, focusRef.current.radius * 6) : 26;
-      const d = THREE.MathUtils.lerp(fromDist.current, targetDist, e);
-      const dir = new THREE.Vector3()
-        .subVectors(controls.object.position, controls.target)
-        .setLength(d);
-      controls.object.position.copy(controls.target).add(dir);
-    }
+    a.t = Math.min(1, a.t + delta / 0.9);
+    const e = 1 - Math.pow(1 - a.t, 3); // easeOutCubic
+    controls.target.lerpVectors(a.from, a.to, e);
+    const d = THREE.MathUtils.lerp(a.fromD, a.toD, e);
+    const dir = new THREE.Vector3()
+      .subVectors(controls.object.position, controls.target)
+      .setLength(d);
+    controls.object.position.copy(controls.target).add(dir);
     controls.update();
+    if (a.t >= 1) anim.current = null; // release
   });
 
   return null;
@@ -1062,8 +1074,8 @@ function ShootingStars() {
 
 // ─── PUBLIC COMPONENT ──────────────────────────────────────────────────────
 
-const POLAR_MIN = Math.PI * 0.18;
-const POLAR_MAX = Math.PI * 0.62;
+const POLAR_MIN = Math.PI * 0.12;
+const POLAR_MAX = Math.PI * 0.72;
 
 export default function TechGalaxyScene() {
   const [selected, setSelected] = useState<SelectedState>(null);
@@ -1111,6 +1123,8 @@ export default function TechGalaxyScene() {
   type Ctl = {
     object: THREE.PerspectiveCamera;
     target: THREE.Vector3;
+    minDistance: number;
+    maxDistance: number;
     getAzimuthalAngle: () => number;
     getPolarAngle: () => number;
     setAzimuthalAngle: (a: number) => void;
@@ -1132,12 +1146,14 @@ export default function TechGalaxyScene() {
   const dolly = useCallback((factor: number) => {
     const c = controlsRef.current as unknown as Ctl | null;
     if (!c) return;
+    const minD = c.minDistance ?? 5;
+    const maxD = c.maxDistance ?? 70;
     const dir = new THREE.Vector3().subVectors(c.object.position, c.target);
-    const dist = THREE.MathUtils.clamp(dir.length() * factor, 14, 42);
+    const dist = THREE.MathUtils.clamp(dir.length() * factor, minD, maxD);
     dir.setLength(dist);
     c.object.position.copy(c.target).add(dir);
     c.update();
-    setStatus(`Zoom ${Math.round(((42 - dist) / (42 - 14)) * 100)}%`);
+    setStatus(`Zoom ${Math.round(((maxD - dist) / (maxD - minD)) * 100)}%`);
   }, []);
 
   const onKeyDown = useCallback(
