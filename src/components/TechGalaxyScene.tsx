@@ -871,8 +871,10 @@ function Scene({
         dampingFactor={0.08}
         enableZoom={live}
         enableRotate={live}
-        enablePan={false}
+        enablePan={live}
         zoomToCursor
+        screenSpacePanning
+        panSpeed={0.9}
         autoRotate={!live && !reduceMotion}
         autoRotateSpeed={0.25}
         minDistance={5}
@@ -881,7 +883,7 @@ function Scene({
         maxPolarAngle={Math.PI * 0.72}
         rotateSpeed={0.55}
         zoomSpeed={1.1}
-        touches={{ ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_ROTATE }}
+        touches={{ ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN }}
       />
       <TouchActionManager live={live} />
       <CameraRig focusRef={focusRef} hasSelection={selected !== null} />
@@ -1483,7 +1485,7 @@ export default function TechGalaxyScene() {
               exit={{ opacity: 0 }}
               className="text-center text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--text-dim)]"
             >
-              ◆ {coarse ? "Toca para explorar · pellizca para zoom" : "Clic para explorar · arrastra rota · rueda zoom"}
+              ◆ {coarse ? "Toca para explorar · pellizca zoom · 2 dedos mueven" : "Clic para explorar · arrastra rota · rueda zoom"}
             </motion.p>
           )}
         </AnimatePresence>
