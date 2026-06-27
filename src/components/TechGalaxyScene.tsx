@@ -167,31 +167,45 @@ const sunFrag = `
   }
 
   void main() {
-    vec3 p = vec3(vUv * 8.0, uTime * 0.08);
+    vec3 p = vec3(vUv * 6.0, uTime * 0.07);
     float n = fbm(p);
-    float n2 = fbm(p * 2.0 + vec3(uTime * 0.15));
-    float surface = n * 0.6 + n2 * 0.4;
+    float n2 = fbm(p * 2.2 + vec3(uTime * 0.13));
+    float fine = fbm(p * 5.0 - vec3(uTime * 0.05));
+    float surface = n * 0.55 + n2 * 0.30 + fine * 0.15;
 
-    // Color ramp: deep red → orange → yellow → white-hot
-    vec3 c1 = vec3(0.42, 0.06, 0.02); // dark red
-    vec3 c2 = vec3(0.92, 0.30, 0.05); // red-orange
-    vec3 c3 = vec3(1.00, 0.65, 0.20); // orange
-    vec3 c4 = vec3(1.00, 0.93, 0.70); // yellow-white
-    vec3 c5 = vec3(1.00, 1.00, 0.98); // white-hot
+    // Color ramp — predominantly orange/amber with deep red hollows and warm-yellow peaks
+    vec3 c1 = vec3(0.18, 0.02, 0.00); // deep hollow (almost black-red)
+    vec3 c2 = vec3(0.65, 0.14, 0.03); // dark orange-red
+    vec3 c3 = vec3(0.98, 0.40, 0.06); // bright orange
+    vec3 c4 = vec3(1.00, 0.72, 0.20); // warm yellow
+    vec3 c5 = vec3(1.00, 0.92, 0.55); // bright yellow (no pure white — keep it 'amarillo')
 
     float t = surface * 0.5 + 0.5;
+    // Stretch midtones (more orange visible)
+    t = pow(t, 0.85);
     vec3 col;
-    if (t < 0.25)      col = mix(c1, c2, t * 4.0);
-    else if (t < 0.5)  col = mix(c2, c3, (t - 0.25) * 4.0);
-    else if (t < 0.75) col = mix(c3, c4, (t - 0.5) * 4.0);
-    else               col = mix(c4, c5, (t - 0.75) * 4.0);
+    if (t < 0.22)      col = mix(c1, c2, t / 0.22);
+    else if (t < 0.5)  col = mix(c2, c3, (t - 0.22) / 0.28);
+    else if (t < 0.78) col = mix(c3, c4, (t - 0.5) / 0.28);
+    else               col = mix(c4, c5, (t - 0.78) / 0.22);
 
-    // Limb darkening (edge fade for sphere look)
-    float rim = pow(max(0.0, dot(vNormal, vec3(0.0, 0.0, 1.0))), 0.55);
-    col = mix(col * 0.55, col, rim);
+    // Sunspot/granulation patches — large-scale low-frequency noise carves dark depressions
+    float spots = fbm(vec3(vUv * 2.5, uTime * 0.04));
+    float spotMask = smoothstep(0.35, 0.55, spots);   // where spots can form
+    float spotInner = smoothstep(0.45, 0.7, spots);    // deeper centers
+    col = mix(col, col * 0.35, spotMask * 0.55);
+    col = mix(col, col * 0.20, spotInner * 0.4);
 
-    // Boost emission for bloom
-    col *= 1.6;
+    // Hot bright filaments along surface granulation
+    float hot = smoothstep(0.55, 0.85, fine);
+    col += vec3(1.0, 0.85, 0.45) * hot * 0.25;
+
+    // Limb darkening (edge fade for sphere look) — strong, gives 3D ball feel
+    float rim = pow(max(0.0, dot(vNormal, vec3(0.0, 0.0, 1.0))), 0.5);
+    col = mix(col * 0.4, col, rim);
+
+    // Boost emission for bloom (the white-yellow peaks bloom most)
+    col *= 1.55;
 
     gl_FragColor = vec4(col, 1.0);
   }
@@ -224,15 +238,15 @@ function SunMesh() {
           fragmentShader={sunFrag}
         />
       </mesh>
-      {/* Inner glow — tight & subtle so it doesn't tint the void */}
+      {/* Inner glow — warm amber halo */}
       <mesh>
         <sphereGeometry args={[2.35, 32, 32]} />
-        <meshBasicMaterial color="#ff7020" transparent opacity={0.05} blending={THREE.AdditiveBlending} depthWrite={false} />
+        <meshBasicMaterial color="#ffa040" transparent opacity={0.06} blending={THREE.AdditiveBlending} depthWrite={false} />
       </mesh>
-      {/* Outer corona — even tighter */}
+      {/* Outer corona — deeper orange */}
       <mesh>
         <sphereGeometry args={[2.65, 32, 32]} />
-        <meshBasicMaterial color="#ff4010" transparent opacity={0.025} blending={THREE.AdditiveBlending} depthWrite={false} />
+        <meshBasicMaterial color="#ff6020" transparent opacity={0.03} blending={THREE.AdditiveBlending} depthWrite={false} />
       </mesh>
       {/* Point light from sun — keeps planets lit but won't wash the void */}
       <pointLight color="#ffb060" intensity={3.0} distance={40} decay={1.8} />
@@ -867,8 +881,18 @@ export default function TechGalaxyScene() {
         className="relative w-full aspect-square max-w-[820px] mx-auto"
         style={{ background: "#000000" }}
       >
+        {/* Soft vignette — fades canvas edges into project background so the box is invisible */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, transparent 55%, rgba(8,8,8,0.7) 85%, var(--bg) 100%)",
+            zIndex: 5,
+          }}
+        />
         <Canvas
-          camera={{ position: [0, 5, 26], fov: 55, near: 0.1, far: 200 }}
+          camera={{ position: [0, 3.2, 27], fov: 52, near: 0.1, far: 200 }}
           dpr={[1, 2]}
           gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
         >
