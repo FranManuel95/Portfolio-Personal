@@ -21,9 +21,19 @@ import {
 } from "react-icons/si";
 import { BrainCircuit, Search, Calendar, MessageCircle, Sparkles, Server, Wand2, ShieldCheck } from "lucide-react";
 
+type CategoryName =
+  | "IA & Agentes"
+  | "Automatización"
+  | "Frontend"
+  | "Backend & BD"
+  | "Infra & DevOps";
+
 type Category = {
-  name: string;
-  color: string;
+  name: CategoryName;
+  color: string;       // brand/accent color (glow & ring)
+  surface: string;     // surface tone for planet (more realistic)
+  highlight: string;   // light side
+  shadow: string;      // dark side
   radiusFactor: number;
   direction: 1 | -1;
   duration: number;
@@ -34,7 +44,10 @@ const CATEGORIES: Category[] = [
   {
     name: "IA & Agentes",
     color: "#00ff87",
-    radiusFactor: 0.14,
+    surface: "#1eb874",
+    highlight: "#e8fff4",
+    shadow: "#022d1c",
+    radiusFactor: 0.135,
     direction: 1,
     duration: 70,
     techs: ["Claude", "OpenAI", "Gemini", "DeepSeek", "MCP", "Skills", "OpenClaw", "RAG", "Pinecone", "File Search"],
@@ -42,7 +55,10 @@ const CATEGORIES: Category[] = [
   {
     name: "Automatización",
     color: "#fb923c",
-    radiusFactor: 0.225,
+    surface: "#c2410c",
+    highlight: "#fff1de",
+    shadow: "#2d0a00",
+    radiusFactor: 0.22,
     direction: -1,
     duration: 95,
     techs: ["n8n", "Airtable", "Trello", "Calendly", "UltraMsg", "API"],
@@ -50,7 +66,10 @@ const CATEGORIES: Category[] = [
   {
     name: "Frontend",
     color: "#60a5fa",
-    radiusFactor: 0.31,
+    surface: "#3b82f6",
+    highlight: "#ddeeff",
+    shadow: "#061a3d",
+    radiusFactor: 0.305,
     direction: 1,
     duration: 130,
     techs: ["Next.js", "React", "TypeScript", "Tailwind", "HTML/CSS", "SCSS", "Vite"],
@@ -58,7 +77,10 @@ const CATEGORIES: Category[] = [
   {
     name: "Backend & BD",
     color: "#a78bfa",
-    radiusFactor: 0.395,
+    surface: "#7c3aed",
+    highlight: "#eddfff",
+    shadow: "#1c0d3d",
+    radiusFactor: 0.39,
     direction: -1,
     duration: 165,
     techs: ["Node.js", "Express", "Python", "PHP", "Symfony", "Django", "Supabase", "MySQL", "Postgres"],
@@ -66,14 +88,18 @@ const CATEGORIES: Category[] = [
   {
     name: "Infra & DevOps",
     color: "#fbbf24",
-    radiusFactor: 0.48,
+    surface: "#b45309",
+    highlight: "#fff3c0",
+    shadow: "#2a1500",
+    radiusFactor: 0.475,
     direction: 1,
     duration: 200,
     techs: ["Linux", "Docker", "Vercel", "Netlify", "Cloudflare", "Azure", "Stripe", "Teachable", "Git"],
   },
 ];
 
-const TILT_DEG = 25;
+const TILT_DEG = 38;
+const RINGED_TECHS = new Set(["Pinecone", "Postgres", "Docker", "n8n"]);
 
 const TECH_ICONS: Record<string, React.ReactNode> = {
   Claude:      <Sparkles strokeWidth={2.2} />,
@@ -129,7 +155,7 @@ function StarLayer({
   count: number;
   sizeRange: [number, number];
   opacityRange: [number, number];
-  depth: number; // parallax strength
+  depth: number;
   mx: MotionValue<number>;
   my: MotionValue<number>;
 }) {
@@ -179,26 +205,30 @@ function StarLayer({
 }
 
 function Comets() {
-  const [comets, setComets] = useState<{ id: number; from: { x: number; y: number }; to: { x: number; y: number } }[]>([]);
+  const [comets, setComets] = useState<
+    { id: number; from: { x: number; y: number }; to: { x: number; y: number }; thickness: number }[]
+  >([]);
 
   useEffect(() => {
     let id = 0;
     const spawn = () => {
       const fromSide = Math.floor(Math.random() * 4);
       const startEdge = (e: number) => {
-        if (e === 0) return { x: Math.random() * 100, y: -5 };       // top
-        if (e === 1) return { x: 105, y: Math.random() * 100 };       // right
-        if (e === 2) return { x: Math.random() * 100, y: 105 };       // bottom
-        return { x: -5, y: Math.random() * 100 };                      // left
+        if (e === 0) return { x: Math.random() * 100, y: -5 };
+        if (e === 1) return { x: 105, y: Math.random() * 100 };
+        if (e === 2) return { x: Math.random() * 100, y: 105 };
+        return { x: -5, y: Math.random() * 100 };
       };
       const from = startEdge(fromSide);
-      const to = { x: 100 - from.x + (Math.random() - 0.5) * 30, y: 100 - from.y + (Math.random() - 0.5) * 30 };
+      const to = { x: 100 - from.x + (Math.random() - 0.5) * 40, y: 100 - from.y + (Math.random() - 0.5) * 40 };
       const newId = ++id;
-      setComets((c) => [...c, { id: newId, from, to }]);
+      const thickness = 1.5 + Math.random() * 1.5;
+      setComets((c) => [...c, { id: newId, from, to, thickness }]);
       setTimeout(() => setComets((c) => c.filter((x) => x.id !== newId)), 2500);
     };
-    const interval = setInterval(spawn, 6000 + Math.random() * 5000);
-    setTimeout(spawn, 2500);
+    const tick = () => spawn();
+    const interval = setInterval(tick, 3500 + Math.random() * 3500);
+    setTimeout(spawn, 1500);
     return () => clearInterval(interval);
   }, []);
 
@@ -218,10 +248,10 @@ function Comets() {
             >
               <div
                 style={{
-                  width: 120,
-                  height: 2,
-                  background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.9))",
-                  boxShadow: "0 0 12px rgba(255,255,255,0.8), 0 0 24px rgba(0,255,135,0.4)",
+                  width: 160,
+                  height: c.thickness,
+                  background: "linear-gradient(90deg, transparent, rgba(255,235,200,0.95))",
+                  boxShadow: "0 0 14px rgba(255,200,150,0.9), 0 0 28px rgba(255,150,80,0.6)",
                   borderRadius: 2,
                   transform: "translateX(-100%)",
                 }}
@@ -235,29 +265,38 @@ function Comets() {
 }
 
 function Nebulae() {
+  // Warm, dramatic nebula clouds inspired by deep-space photography
+  const blobs = [
+    { x: 8, y: 18, color: "rgba(255,80,40,0.18)", size: "55%" },
+    { x: 70, y: 12, color: "rgba(120,40,180,0.16)", size: "45%" },
+    { x: 78, y: 75, color: "rgba(255,140,60,0.14)", size: "50%" },
+    { x: 18, y: 78, color: "rgba(60,200,180,0.10)", size: "40%" },
+    { x: 50, y: 50, color: "rgba(180,40,80,0.10)", size: "70%" },
+  ];
+
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {CATEGORIES.map((c, i) => (
+      {blobs.map((b, i) => (
         <motion.div
-          key={c.name}
+          key={i}
           className="absolute rounded-full"
           style={{
-            width: "45%",
-            height: "45%",
-            left: `${15 + (i * 17) % 70}%`,
-            top: `${10 + (i * 23) % 70}%`,
-            background: `radial-gradient(circle, ${c.color}18 0%, ${c.color}05 30%, transparent 60%)`,
-            filter: "blur(40px)",
+            width: b.size,
+            height: b.size,
+            left: `${b.x}%`,
+            top: `${b.y}%`,
+            background: `radial-gradient(circle, ${b.color} 0%, transparent 60%)`,
+            filter: "blur(50px)",
           }}
           animate={{
-            scale: [1, 1.15, 1],
-            opacity: [0.4, 0.7, 0.4],
+            scale: [1, 1.18, 1],
+            opacity: [0.7, 1, 0.7],
           }}
           transition={{
-            duration: 12 + i * 2,
+            duration: 14 + i * 3,
             repeat: Infinity,
             ease: "easeInOut",
-            delay: i * 1.5,
+            delay: i * 2,
           }}
         />
       ))}
@@ -265,60 +304,65 @@ function Nebulae() {
   );
 }
 
-// ─── SUN ─────────────────────────────────────────────────────────────────────
+// ─── SUN (plasma, animated) ─────────────────────────────────────────────────
 
 function Sun({ size, onClick }: { size: number; onClick: () => void }) {
+  const total = size * 3.6;
   return (
     <button
       onClick={onClick}
       className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 focus-visible:outline-none"
-      style={{ width: size * 3, height: size * 3, zIndex: 25 }}
+      style={{ width: total, height: total, zIndex: 25 }}
       aria-label="Reanudar órbitas"
     >
-      {/* Outer corona ring (pulsing) */}
+      {/* Outer halo (volumetric glow) */}
+      <div
+        className="absolute top-1/2 left-1/2 rounded-full pointer-events-none"
+        style={{
+          width: total,
+          height: total,
+          marginLeft: -total / 2,
+          marginTop: -total / 2,
+          background:
+            "radial-gradient(circle, rgba(255,140,40,0.22) 0%, rgba(255,80,30,0.12) 25%, rgba(200,40,20,0.06) 45%, transparent 70%)",
+          filter: "blur(8px)",
+        }}
+      />
+
+      {/* Pulsing inner corona */}
       <motion.div
         className="absolute top-1/2 left-1/2 rounded-full pointer-events-none"
+        style={{
+          width: size * 2,
+          height: size * 2,
+          marginLeft: -size,
+          marginTop: -size,
+          background:
+            "radial-gradient(circle, rgba(255,180,80,0.55) 0%, rgba(255,100,40,0.2) 45%, transparent 75%)",
+        }}
+        animate={{ scale: [1, 1.12, 1], opacity: [0.85, 0.55, 0.85] }}
+        transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      {/* Rotating ray spokes */}
+      <motion.svg
+        className="absolute top-1/2 left-1/2 pointer-events-none"
         style={{
           width: size * 2.6,
           height: size * 2.6,
           marginLeft: -size * 1.3,
           marginTop: -size * 1.3,
-          background: "radial-gradient(circle, rgba(0,255,135,0.18) 0%, rgba(0,255,135,0.06) 40%, transparent 70%)",
-        }}
-        animate={{ scale: [1, 1.2, 1], opacity: [0.7, 0.4, 0.7] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      />
-      {/* Inner corona */}
-      <motion.div
-        className="absolute top-1/2 left-1/2 rounded-full pointer-events-none"
-        style={{
-          width: size * 1.8,
-          height: size * 1.8,
-          marginLeft: -size * 0.9,
-          marginTop: -size * 0.9,
-          background: "radial-gradient(circle, rgba(0,255,135,0.35) 0%, rgba(0,255,135,0.1) 50%, transparent 80%)",
-        }}
-        animate={{ scale: [1, 1.1, 1], opacity: [0.9, 0.6, 0.9] }}
-        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-      />
-      {/* Rotating rays */}
-      <motion.svg
-        className="absolute top-1/2 left-1/2 pointer-events-none"
-        style={{
-          width: size * 2.4,
-          height: size * 2.4,
-          marginLeft: -size * 1.2,
-          marginTop: -size * 1.2,
         }}
         animate={{ rotate: 360 }}
-        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+        transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
       >
-        {Array.from({ length: 12 }).map((_, i) => {
-          const a = (i / 12) * 360;
+        {Array.from({ length: 18 }).map((_, i) => {
+          const a = (i / 18) * 360;
+          const len = i % 2 === 0 ? 18 : 10;
           const x1 = 50 + Math.cos(a * Math.PI / 180) * 32;
           const y1 = 50 + Math.sin(a * Math.PI / 180) * 32;
-          const x2 = 50 + Math.cos(a * Math.PI / 180) * 48;
-          const y2 = 50 + Math.sin(a * Math.PI / 180) * 48;
+          const x2 = 50 + Math.cos(a * Math.PI / 180) * (32 + len);
+          const y2 = 50 + Math.sin(a * Math.PI / 180) * (32 + len);
           return (
             <line
               key={i}
@@ -326,32 +370,59 @@ function Sun({ size, onClick }: { size: number; onClick: () => void }) {
               y1={`${y1}%`}
               x2={`${x2}%`}
               y2={`${y2}%`}
-              stroke="rgba(0,255,135,0.5)"
+              stroke={i % 2 === 0 ? "rgba(255,180,80,0.55)" : "rgba(255,100,40,0.35)"}
               strokeWidth="1.5"
               strokeLinecap="round"
             />
           );
         })}
       </motion.svg>
-      {/* Sun core */}
+
+      {/* The sun body with animated plasma surface (SVG turbulence) */}
       <div
-        className="absolute top-1/2 left-1/2 rounded-full flex items-center justify-center"
+        className="absolute top-1/2 left-1/2 rounded-full overflow-hidden flex items-center justify-center"
         style={{
           width: size,
           height: size,
           marginLeft: -size / 2,
           marginTop: -size / 2,
-          background: "radial-gradient(circle at 35% 35%, #d6ffea 0%, #00ff87 35%, #00a85a 80%, #006b3a 100%)",
-          boxShadow: "0 0 30px rgba(0,255,135,0.9), 0 0 60px rgba(0,255,135,0.5), inset -8px -8px 20px rgba(0,107,58,0.6)",
+          background:
+            "radial-gradient(circle at 35% 32%, #fff7d1 0%, #ffd070 15%, #ff8a2b 40%, #d94e1f 70%, #6f1a0a 100%)",
+          boxShadow:
+            "0 0 50px rgba(255,140,40,0.95), 0 0 100px rgba(255,80,30,0.7), inset -10px -10px 24px rgba(120,20,0,0.65), inset 6px 6px 16px rgba(255,210,140,0.3)",
           cursor: "pointer",
         }}
       >
-        <span
-          className="font-black uppercase tracking-tighter"
+        <svg width="100%" height="100%" style={{ position: "absolute", inset: 0, mixBlendMode: "overlay", opacity: 0.55 }}>
+          <defs>
+            <filter id="plasma-noise">
+              <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="3" seed="3">
+                <animate attributeName="baseFrequency" dur="22s" values="0.018;0.03;0.018" repeatCount="indefinite" />
+              </feTurbulence>
+              <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 0.55  0 0 0 0 0.05  0 0 0 0.95 0" />
+            </filter>
+          </defs>
+          <rect width="100%" height="100%" filter="url(#plasma-noise)" />
+        </svg>
+        {/* Specular */}
+        <div
+          className="absolute rounded-full pointer-events-none"
           style={{
-            color: "#003622",
-            fontSize: size * 0.21,
-            textShadow: "0 1px 0 rgba(255,255,255,0.3)",
+            top: "10%",
+            left: "18%",
+            width: "30%",
+            height: "22%",
+            background: "radial-gradient(ellipse, rgba(255,250,220,0.65) 0%, transparent 70%)",
+            filter: "blur(3px)",
+          }}
+        />
+        <span
+          className="relative font-black uppercase tracking-tighter"
+          style={{
+            color: "rgba(255,250,220,0.95)",
+            fontSize: size * 0.2,
+            textShadow: "0 1px 4px rgba(120,20,0,0.9), 0 0 12px rgba(255,180,80,0.6)",
+            zIndex: 2,
           }}
         >
           STACK
@@ -363,23 +434,79 @@ function Sun({ size, onClick }: { size: number; onClick: () => void }) {
 
 // ─── PLANET ──────────────────────────────────────────────────────────────────
 
+function planetSurface(c: Category, tech: string, size: number) {
+  // Per-category visual identity: each gets a distinct surface style
+  switch (c.name) {
+    case "IA & Agentes":
+      // Plasma/ionized — glowing brand color with depth
+      return {
+        background: `radial-gradient(circle at 32% 28%, ${c.highlight} 0%, ${c.color} 30%, ${c.surface} 65%, ${c.shadow} 100%)`,
+        ringColor: c.color,
+        extra: null,
+      };
+    case "Automatización":
+      // Lava — hot, cracked
+      return {
+        background: `
+          radial-gradient(circle at 65% 70%, rgba(255,255,180,0.3) 0%, transparent 25%),
+          radial-gradient(circle at 32% 28%, ${c.highlight} 0%, ${c.color} 25%, ${c.surface} 60%, ${c.shadow} 100%)
+        `,
+        ringColor: c.color,
+        extra: null,
+      };
+    case "Frontend":
+      // Earth-like — blue with cloud swirls
+      return {
+        background: `
+          radial-gradient(ellipse 70% 30% at 60% 40%, rgba(255,255,255,0.18) 0%, transparent 60%),
+          radial-gradient(ellipse 40% 25% at 25% 65%, rgba(255,255,255,0.15) 0%, transparent 70%),
+          radial-gradient(circle at 32% 28%, ${c.highlight} 0%, ${c.color} 35%, ${c.surface} 70%, ${c.shadow} 100%)
+        `,
+        ringColor: c.color,
+        extra: null,
+      };
+    case "Backend & BD":
+      // Gas giant — horizontal bands
+      return {
+        background: `
+          repeating-linear-gradient(0deg, transparent 0%, rgba(0,0,0,0.15) 8%, transparent 16%, rgba(255,255,255,0.06) 22%, transparent 30%),
+          radial-gradient(circle at 32% 28%, ${c.highlight} 0%, ${c.color} 35%, ${c.surface} 70%, ${c.shadow} 100%)
+        `,
+        ringColor: c.color,
+        extra: null,
+      };
+    case "Infra & DevOps":
+      // Rocky — matte with subtle craters
+      return {
+        background: `
+          radial-gradient(circle at 70% 35%, rgba(0,0,0,0.18) 0%, transparent 8%),
+          radial-gradient(circle at 30% 65%, rgba(0,0,0,0.15) 0%, transparent 7%),
+          radial-gradient(circle at 60% 75%, rgba(0,0,0,0.18) 0%, transparent 6%),
+          radial-gradient(circle at 32% 28%, ${c.highlight} 0%, ${c.color} 35%, ${c.surface} 75%, ${c.shadow} 100%)
+        `,
+        ringColor: c.color,
+        extra: null,
+      };
+  }
+}
+
 function Planet({
   tech,
+  category,
   orbitAngle,
   offsetAngle,
   radius,
   size,
-  color,
   isSelected,
   onClick,
   onHover,
 }: {
   tech: string;
+  category: Category;
   orbitAngle: MotionValue<number>;
   offsetAngle: number;
   radius: number;
   size: number;
-  color: string;
   isSelected: boolean;
   onClick: () => void;
   onHover: (h: boolean) => void;
@@ -393,19 +520,21 @@ function Planet({
     (a) => Math.sin(((a + offsetAngle) * Math.PI) / 180) * radius
   );
 
-  // Depth cue: planets behind the sun (in 3D space) are smaller-feeling — simulate via opacity
-  // Since we tilt with rotateX, lower Y in screen space = farther back
-  const depthOpacity = useTransform(y, (v) => 0.7 + (v + radius) / (radius * 2) * 0.3);
+  // Foreground planets bigger & brighter, background ones smaller & dimmer
+  const depthOpacity = useTransform(y, (v) => 0.55 + (v + radius) / (radius * 2) * 0.45);
+  const depthScale = useTransform(y, (v) => 0.72 + (v + radius) / (radius * 2) * 0.45);
 
+  const surface = planetSurface(category, tech, size);
   const icon = TECH_ICONS[tech];
-  const iconSize = size * 0.42;
+  const iconSize = size * 0.4;
+  const hasRing = RINGED_TECHS.has(tech);
 
   return (
     <motion.button
       onClick={onClick}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
-      className="absolute top-1/2 left-1/2 rounded-full focus-visible:outline-none"
+      className="absolute top-1/2 left-1/2 focus-visible:outline-none"
       style={{
         x,
         y,
@@ -413,50 +542,84 @@ function Planet({
         height: size,
         marginLeft: -size / 2,
         marginTop: -size / 2,
-        // Counter-rotate so planet faces camera even though parent is tilted
         transform: `rotateX(-${TILT_DEG}deg)`,
         transformStyle: "preserve-3d",
         zIndex: isSelected ? 50 : 10,
         cursor: "pointer",
         opacity: depthOpacity,
+        scale: depthScale,
       }}
-      whileHover={{ scale: 1.35 }}
+      whileHover={{ scale: 1.4 }}
       transition={{ type: "spring", stiffness: 300, damping: 18 }}
       aria-label={tech}
     >
+      {/* Ring (Saturn-like) */}
+      {hasRing && (
+        <div
+          className="absolute top-1/2 left-1/2 pointer-events-none"
+          style={{
+            width: size * 1.9,
+            height: size * 0.4,
+            marginLeft: -size * 0.95,
+            marginTop: -size * 0.2,
+            background: `linear-gradient(180deg, transparent 0%, ${surface.ringColor}55 30%, ${surface.ringColor}cc 50%, ${surface.ringColor}55 70%, transparent 100%)`,
+            borderRadius: "50%",
+            transform: "rotateZ(-20deg)",
+            boxShadow: `0 0 8px ${surface.ringColor}40`,
+            zIndex: -1,
+          }}
+        />
+      )}
+
       <div
-        className="w-full h-full rounded-full flex items-center justify-center"
+        className="w-full h-full rounded-full flex items-center justify-center relative overflow-hidden"
         style={{
-          background: `radial-gradient(circle at 32% 28%, ${color}f5, ${color}aa 35%, ${color}55 65%, ${color}22 90%)`,
+          background: surface.background,
           boxShadow: isSelected
-            ? `inset -${size * 0.18}px -${size * 0.18}px ${size * 0.25}px rgba(0,0,0,0.55), 0 0 ${size * 0.8}px ${color}, 0 0 ${size * 1.6}px ${color}80`
-            : `inset -${size * 0.18}px -${size * 0.18}px ${size * 0.25}px rgba(0,0,0,0.55), 0 0 ${size * 0.4}px ${color}aa`,
-          border: `1px solid ${color}`,
-          color: "#0c0c0c",
+            ? `inset -${size * 0.22}px -${size * 0.22}px ${size * 0.3}px rgba(0,0,0,0.7), 0 0 ${size * 0.8}px ${surface.ringColor}, 0 0 ${size * 1.8}px ${surface.ringColor}80`
+            : `inset -${size * 0.22}px -${size * 0.22}px ${size * 0.3}px rgba(0,0,0,0.7), 0 0 ${size * 0.35}px ${surface.ringColor}88`,
+          border: `1px solid ${surface.ringColor}88`,
+          color: "rgba(0,0,0,0.7)",
           fontSize: iconSize,
         }}
       >
-        <div style={{ width: iconSize, height: iconSize, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {icon}
-        </div>
         {/* Specular highlight */}
         <div
           className="absolute rounded-full pointer-events-none"
           style={{
-            top: `${size * 0.12}px`,
-            left: `${size * 0.18}px`,
-            width: size * 0.22,
-            height: size * 0.18,
-            background: "radial-gradient(ellipse, rgba(255,255,255,0.6) 0%, transparent 65%)",
-            filter: "blur(1.5px)",
+            top: `${size * 0.1}px`,
+            left: `${size * 0.16}px`,
+            width: size * 0.28,
+            height: size * 0.2,
+            background: "radial-gradient(ellipse, rgba(255,255,255,0.55) 0%, transparent 70%)",
+            filter: "blur(2px)",
           }}
         />
+        {/* Icon — slightly recessed, becomes vivid when selected */}
+        <div
+          style={{
+            width: iconSize,
+            height: iconSize,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: isSelected ? "#ffffff" : "rgba(255,255,255,0.85)",
+            opacity: isSelected ? 1 : 0.78,
+            filter: isSelected
+              ? `drop-shadow(0 0 6px ${surface.ringColor}) drop-shadow(0 1px 1px rgba(0,0,0,0.6))`
+              : "drop-shadow(0 1px 2px rgba(0,0,0,0.5))",
+            transition: "color 0.3s, opacity 0.3s, filter 0.3s",
+            zIndex: 2,
+          }}
+        >
+          {icon}
+        </div>
       </div>
     </motion.button>
   );
 }
 
-// ─── ORBIT (driver) ──────────────────────────────────────────────────────────
+// ─── ORBIT ──────────────────────────────────────────────────────────────────
 
 function Orbit({
   category,
@@ -503,11 +666,11 @@ function Orbit({
         <Planet
           key={tech}
           tech={tech}
+          category={category}
           orbitAngle={angle}
           offsetAngle={(i / category.techs.length) * 360}
           radius={radius}
           size={planetSize}
-          color={category.color}
           isSelected={isCategorySelected && selected?.tech === tech}
           onClick={() => setSelected({ category, tech })}
           onHover={(h) => onPlanetHover(h ? category.name : null)}
@@ -525,7 +688,6 @@ export default function TechGalaxy() {
   const [selected, setSelected] = useState<SelectedState>(null);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
 
-  // Parallax for stars
   const mxRaw = useMotionValue(0);
   const myRaw = useMotionValue(0);
   const mx = useSpring(mxRaw, { stiffness: 60, damping: 20 });
@@ -541,14 +703,14 @@ export default function TechGalaxy() {
   }, []);
 
   const paused = selected !== null;
-  const planetSize = Math.max(34, containerSize * 0.07);
-  const sunSize = Math.max(70, containerSize * 0.12);
+  const planetSize = Math.max(34, containerSize * 0.072);
+  const sunSize = Math.max(80, containerSize * 0.13);
 
   return (
     <div className="w-full">
       <div
         ref={containerRef}
-        className="relative w-full aspect-square max-w-[760px] mx-auto"
+        className="relative w-full aspect-square max-w-[780px] mx-auto"
         onMouseMove={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
           mxRaw.set(((e.clientX - rect.left) / rect.width - 0.5) * 30);
@@ -562,18 +724,18 @@ export default function TechGalaxy() {
           if (e.target === e.currentTarget) setSelected(null);
         }}
       >
-        {/* Background layers */}
+        {/* Deep-space background */}
         <Nebulae />
-        <StarLayer count={45} sizeRange={[0.4, 1.0]} opacityRange={[0.2, 0.5]} depth={0.4} mx={mx} my={my} />
-        <StarLayer count={30} sizeRange={[0.8, 1.6]} opacityRange={[0.35, 0.75]} depth={1.0} mx={mx} my={my} />
-        <StarLayer count={12} sizeRange={[1.4, 2.4]} opacityRange={[0.55, 0.95]} depth={1.8} mx={mx} my={my} />
+        <StarLayer count={50} sizeRange={[0.4, 1.0]} opacityRange={[0.2, 0.5]} depth={0.4} mx={mx} my={my} />
+        <StarLayer count={32} sizeRange={[0.8, 1.6]} opacityRange={[0.35, 0.75]} depth={1.0} mx={mx} my={my} />
+        <StarLayer count={14} sizeRange={[1.4, 2.4]} opacityRange={[0.55, 0.95]} depth={1.8} mx={mx} my={my} />
         <Comets />
 
         {/* 3D-tilted orbital plane */}
         <div
           className="absolute inset-0"
           style={{
-            perspective: 1400,
+            perspective: 1500,
             transformStyle: "preserve-3d",
           }}
         >
@@ -584,17 +746,8 @@ export default function TechGalaxy() {
               transformStyle: "preserve-3d",
             }}
           >
-            {/* Orbit ring ellipses (the tilt turns them into ellipses visually) */}
+            {/* Orbit rings — naturally render as ellipses due to 3D rotation */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none">
-              <defs>
-                {CATEGORIES.map((c) => (
-                  <radialGradient key={`grad-${c.name}`} id={`orbit-grad-${c.name.replace(/[^a-z]/gi, "")}`} cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor={c.color} stopOpacity="0" />
-                    <stop offset="90%" stopColor={c.color} stopOpacity="0.5" />
-                    <stop offset="100%" stopColor={c.color} stopOpacity="0" />
-                  </radialGradient>
-                ))}
-              </defs>
               {CATEGORIES.map((c) => {
                 const r = containerSize * c.radiusFactor;
                 const active =
@@ -606,17 +759,16 @@ export default function TechGalaxy() {
                     cy="50%"
                     r={r}
                     fill="none"
-                    stroke={active ? c.color : "rgba(255,255,255,0.18)"}
+                    stroke={active ? c.color : "rgba(255,255,255,0.22)"}
                     strokeWidth={active ? 1.5 : 1}
-                    opacity={active ? 0.7 : 0.35}
-                    strokeDasharray={active ? "0" : "2 8"}
+                    opacity={active ? 0.7 : 0.4}
+                    strokeDasharray={active ? "0" : "1 6"}
                     style={{ transition: "stroke 0.4s, opacity 0.4s, stroke-dasharray 0.4s, stroke-width 0.4s" }}
                   />
                 );
               })}
             </svg>
 
-            {/* Planets */}
             {CATEGORIES.map((c) => (
               <Orbit
                 key={c.name}
@@ -632,7 +784,7 @@ export default function TechGalaxy() {
           </div>
         </div>
 
-        {/* Sun (outside the tilted plane so it always faces camera) */}
+        {/* Sun (faces camera, outside tilted plane) */}
         <Sun size={sunSize} onClick={() => setSelected(null)} />
       </div>
 
@@ -684,7 +836,6 @@ export default function TechGalaxy() {
           )}
         </AnimatePresence>
 
-        {/* Legend */}
         <div className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2">
           {CATEGORIES.map((c) => (
             <button
