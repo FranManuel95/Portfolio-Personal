@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useMemo, useEffect, useCallback, Suspense } from "react";
 import { Canvas, useFrame, useLoader, extend, ThreeEvent, useThree } from "@react-three/fiber";
-import { Stars, Html, OrbitControls, Billboard } from "@react-three/drei";
+import { Stars, OrbitControls, Billboard, Text } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { KernelSize } from "postprocessing";
 import * as THREE from "three";
@@ -86,6 +86,9 @@ const CATEGORIES: Category[] = [
 
 const RINGED_TECHS = new Set(["Pinecone", "Postgres", "Docker", "n8n"]);
 const PLANET_RADIUS = 0.55;
+
+// Shared focus target the camera rig flies to when a planet is selected.
+type FocusState = { pos: THREE.Vector3; radius: number; key: string };
 
 type SelectedState = { category: Category; tech: string } | null;
 
@@ -465,6 +468,7 @@ function Planet({
   speedMul,
   dimmed,
   onActivate,
+  focusRef,
 }: {
   category: Category;
   tech: string;
@@ -475,6 +479,7 @@ function Planet({
   speedMul: number;
   dimmed: boolean;
   onActivate: () => void;
+  focusRef: React.MutableRefObject<FocusState>;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
@@ -517,6 +522,12 @@ function Planet({
       (u.uCamPos as { value: THREE.Vector3 }).value.copy(state.camera.position);
       (u.uSelected as { value: number }).value = isSelected ? 1 : 0;
     }
+    // Selected planet reports its world position so the camera rig can fly to it.
+    if (isSelected) {
+      focusRef.current.pos.set(x, 0, z);
+      focusRef.current.key = category.name + "/" + tech;
+      focusRef.current.radius = PLANET_RADIUS * 1.35;
+    }
   });
 
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
@@ -536,8 +547,7 @@ function Planet({
 
   const hasRing = RINGED_TECHS.has(tech);
   const planetSize = PLANET_RADIUS * (isSelected ? 1.35 : 1);
-  const showName = (hover || isSelected) && !dimmed;
-  const logoOpacity = dimmed ? 0.18 : isSelected ? 1 : 0.92;
+  const logoOpacity = dimmed ? 0.18 : isSelected ? 1 : 0.95;
 
   return (
     <group ref={groupRef} scale={dimmed ? 0.6 : 1} visible>
@@ -565,43 +575,38 @@ function Planet({
         </mesh>
       )}
 
-      {/* Brand logo / monogram — always camera-facing, in front of the planet */}
+      {/* Symbol badge — camera-facing, centered on the planet face, clearly inside.
+          A soft dark plate sits just behind the glyph so it reads on any surface
+          without hiding the planet texture around it. */}
       <Billboard>
-        <mesh position={[0, 0, planetSize * 1.05]} raycast={() => null}>
-          <planeGeometry args={[planetSize * 1.25, planetSize * 1.25]} />
-          <meshBasicMaterial
-            map={logoTex}
-            transparent
-            depthWrite={false}
-            toneMapped={false}
-            opacity={logoOpacity}
-          />
+        <mesh position={[0, 0, planetSize * 0.9]} raycast={() => null}>
+          <circleGeometry args={[planetSize * 0.52, 40]} />
+          <meshBasicMaterial color="#050505" transparent opacity={dimmed ? 0.1 : 0.34} depthWrite={false} toneMapped={false} />
+        </mesh>
+        <mesh position={[0, 0, planetSize * 0.92]} raycast={() => null}>
+          <planeGeometry args={[planetSize * 0.8, planetSize * 0.8]} />
+          <meshBasicMaterial map={logoTex} transparent depthWrite={false} toneMapped={false} opacity={logoOpacity} />
         </mesh>
       </Billboard>
 
-      {/* Name — high-contrast, only on hover/selection to avoid clutter */}
-      {showName && (
-        <Html center distanceFactor={12} position={[0, planetSize + 0.7, 0]} style={{ pointerEvents: "none" }} zIndexRange={[0, 0]}>
-          <div
-            className="whitespace-nowrap font-mono uppercase select-none flex items-center gap-1.5"
-            style={{
-              fontSize: isSelected ? "13px" : "11px",
-              letterSpacing: "0.12em",
-              padding: "4px 9px",
-              background: "rgba(8,8,8,0.92)",
-              borderLeft: `2px solid ${category.brand}`,
-              color: "#ffffff",
-              boxShadow: `0 2px 14px rgba(0,0,0,0.6), 0 0 12px ${category.brand}44`,
-            }}
-          >
-            <span
-              className="inline-block w-1.5 h-1.5 rounded-full"
-              style={{ background: category.brand, boxShadow: `0 0 6px ${category.brand}` }}
-            />
-            {tech}
-          </div>
-        </Html>
-      )}
+      {/* Name — ALWAYS visible: crisp outlined 3D text, brighter on hover/selection. */}
+      <Billboard position={[0, -(planetSize + 0.42), 0]}>
+        <Text
+          fontSize={isSelected ? 0.5 : hover ? 0.42 : 0.32}
+          color="#ffffff"
+          anchorX="center"
+          anchorY="middle"
+          outlineWidth={0.02}
+          outlineColor="#000000"
+          outlineOpacity={0.95}
+          fillOpacity={dimmed ? 0.2 : isSelected || hover ? 1 : 0.9}
+          material-toneMapped={false}
+          material-depthWrite={false}
+          renderOrder={3}
+        >
+          {tech}
+        </Text>
+      </Billboard>
     </group>
   );
 }
@@ -833,6 +838,7 @@ function Scene({
   reduceMotion,
   onActivate,
   controlsRef,
+  focusRef,
 }: {
   selected: SelectedState;
   setSelected: (s: SelectedState) => void;
@@ -844,6 +850,7 @@ function Scene({
   reduceMotion: boolean;
   onActivate: () => void;
   controlsRef: React.MutableRefObject<React.ComponentRef<typeof OrbitControls> | null>;
+  focusRef: React.MutableRefObject<FocusState>;
 }) {
   // Under reduced motion the system is paused by default (static diagram).
   const paused = manualPause || selected !== null || reduceMotion;
@@ -875,6 +882,7 @@ function Scene({
         touches={{ ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_ROTATE }}
       />
       <TouchActionManager live={live} />
+      <CameraRig focusRef={focusRef} hasSelection={selected !== null} />
 
       {CATEGORIES.map((c) => {
         const active = selected?.category.name === c.name || hoveredCategory === c.name;
@@ -894,6 +902,7 @@ function Scene({
                 speedMul={speedMul}
                 dimmed={dimmed}
                 onActivate={onActivate}
+                focusRef={focusRef}
               />
             ))}
           </group>
@@ -901,6 +910,62 @@ function Scene({
       })}
     </>
   );
+}
+
+// ─── CAMERA RIG — fly-to / zoom any selected planet ─────────────────────────
+
+const ORIGIN = new THREE.Vector3(0, 0, 0);
+
+function CameraRig({
+  focusRef,
+  hasSelection,
+}: {
+  focusRef: React.MutableRefObject<FocusState>;
+  hasSelection: boolean;
+}) {
+  // `makeDefault` on OrbitControls publishes the instance here.
+  const controls = useThree((s) => s.controls) as unknown as {
+    object: THREE.PerspectiveCamera;
+    target: THREE.Vector3;
+    minDistance: number;
+    update: () => void;
+  } | null;
+  const lastKey = useRef<string | null>(null);
+  const framing = useRef(1); // 0..1 dolly animation progress
+  const fromDist = useRef(27);
+
+  useFrame((_, delta) => {
+    if (!controls) return;
+    const key = hasSelection ? focusRef.current.key : null;
+
+    // New selection (or deselection) → start a fresh dolly animation.
+    if (key !== lastKey.current) {
+      lastKey.current = key;
+      framing.current = 0;
+      fromDist.current = controls.object.position.distanceTo(controls.target);
+    }
+
+    const active = !!key;
+    const targetPos = active ? focusRef.current.pos : ORIGIN;
+    // Smoothly recenter the orbit pivot on the planet (or back on the sun).
+    controls.target.lerp(targetPos, Math.min(1, delta * 4));
+    // Allow getting much closer to a planet than to the sun.
+    controls.minDistance = active ? 1.8 : 14;
+
+    if (framing.current < 1) {
+      framing.current = Math.min(1, framing.current + delta / 0.9);
+      const e = 1 - Math.pow(1 - framing.current, 3); // easeOutCubic
+      const targetDist = active ? Math.max(2.4, focusRef.current.radius * 6) : 26;
+      const d = THREE.MathUtils.lerp(fromDist.current, targetDist, e);
+      const dir = new THREE.Vector3()
+        .subVectors(controls.object.position, controls.target)
+        .setLength(d);
+      controls.object.position.copy(controls.target).add(dir);
+    }
+    controls.update();
+  });
+
+  return null;
 }
 
 // ─── TOUCH-ACTION MANAGER ───────────────────────────────────────────────────
@@ -1015,6 +1080,7 @@ export default function TechGalaxyScene() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<React.ComponentRef<typeof OrbitControls> | null>(null);
   const tapRef = useRef<{ x: number; y: number; t: number } | null>(null);
+  const focusRef = useRef<FocusState>({ pos: new THREE.Vector3(), radius: PLANET_RADIUS, key: "" });
 
   // Closer to sun (14) → brighter glow; far (28+) → none
   const glowIntensity = Math.max(0, Math.min(1, (28 - sunDistance) / 14));
@@ -1226,6 +1292,7 @@ export default function TechGalaxyScene() {
               reduceMotion={reduceMotion}
               onActivate={activate}
               controlsRef={controlsRef}
+              focusRef={focusRef}
             />
             <EffectComposer>
               <Bloom
