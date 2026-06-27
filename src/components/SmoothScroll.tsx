@@ -9,6 +9,12 @@ export default function SmoothScroll() {
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       touchMultiplier: 2,
+      // Skip Lenis for any node that has data-lenis-prevent OR is inside one.
+      // This lets WebGL canvases (OrbitControls scroll-zoom, etc.) receive
+      // native wheel events instead of being hijacked for page scroll.
+      prevent: (node) =>
+        node.hasAttribute?.("data-lenis-prevent") ||
+        !!node.closest?.("[data-lenis-prevent]"),
     });
 
     function raf(time: number) {
