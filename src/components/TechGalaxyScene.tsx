@@ -224,18 +224,18 @@ function SunMesh() {
           fragmentShader={sunFrag}
         />
       </mesh>
-      {/* Inner glow */}
+      {/* Inner glow — tight & subtle so it doesn't tint the void */}
       <mesh>
-        <sphereGeometry args={[2.5, 32, 32]} />
-        <meshBasicMaterial color="#ff7020" transparent opacity={0.12} blending={THREE.AdditiveBlending} depthWrite={false} />
+        <sphereGeometry args={[2.35, 32, 32]} />
+        <meshBasicMaterial color="#ff7020" transparent opacity={0.05} blending={THREE.AdditiveBlending} depthWrite={false} />
       </mesh>
-      {/* Outer corona */}
+      {/* Outer corona — even tighter */}
       <mesh>
-        <sphereGeometry args={[3.4, 32, 32]} />
-        <meshBasicMaterial color="#ff4010" transparent opacity={0.06} blending={THREE.AdditiveBlending} depthWrite={false} />
+        <sphereGeometry args={[2.65, 32, 32]} />
+        <meshBasicMaterial color="#ff4010" transparent opacity={0.025} blending={THREE.AdditiveBlending} depthWrite={false} />
       </mesh>
-      {/* Point light from sun */}
-      <pointLight color="#ffb060" intensity={4.5} distance={60} decay={1.4} />
+      {/* Point light from sun — keeps planets lit but won't wash the void */}
+      <pointLight color="#ffb060" intensity={3.0} distance={40} decay={1.8} />
     </group>
   );
 }
@@ -535,13 +535,13 @@ function OrbitRing({ radius, color, active }: { radius: number; color: string; a
 function PaintedNebulae() {
   const CLOUDS = useMemo(
     () => [
-      { pos: [-28, 6, -25] as [number, number, number], color: "#c53030", scale: 14 },
-      { pos: [22, -8, -30] as [number, number, number], color: "#7c3aed", scale: 16 },
-      { pos: [30, 14, -22] as [number, number, number], color: "#ea580c", scale: 11 },
-      { pos: [-32, -4, -18] as [number, number, number], color: "#0891b2", scale: 12 },
-      { pos: [-10, 18, -28] as [number, number, number], color: "#be185d", scale: 10 },
-      { pos: [18, 22, -24] as [number, number, number], color: "#4f46e5", scale: 13 },
-      { pos: [-22, -16, -20] as [number, number, number], color: "#dc2626", scale: 9 },
+      { pos: [-30, 8, -28] as [number, number, number], color: "#3b1d6b", scale: 14 },
+      { pos: [26, -10, -32] as [number, number, number], color: "#1e3a8a", scale: 16 },
+      { pos: [32, 16, -26] as [number, number, number], color: "#5b21b6", scale: 11 },
+      { pos: [-34, -6, -22] as [number, number, number], color: "#0e7490", scale: 12 },
+      { pos: [-12, 22, -30] as [number, number, number], color: "#831843", scale: 10 },
+      { pos: [20, 24, -28] as [number, number, number], color: "#4338ca", scale: 13 },
+      { pos: [-24, -18, -24] as [number, number, number], color: "#7e22ce", scale: 9 },
     ],
     []
   );
@@ -851,10 +851,10 @@ export default function TechGalaxyScene() {
             <Scene selected={selected} setSelected={setSelected} hoveredCategory={hoveredCategory} />
             <EffectComposer>
               <Bloom
-                intensity={1.4}
-                luminanceThreshold={0.4}
-                luminanceSmoothing={0.3}
-                kernelSize={KernelSize.LARGE}
+                intensity={0.55}
+                luminanceThreshold={0.75}
+                luminanceSmoothing={0.15}
+                kernelSize={KernelSize.MEDIUM}
                 mipmapBlur
               />
             </EffectComposer>
