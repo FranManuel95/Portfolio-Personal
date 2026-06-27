@@ -7,86 +7,10 @@ import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { KernelSize } from "postprocessing";
 import * as THREE from "three";
 import { AnimatePresence, motion } from "framer-motion";
-
-// ─── DATA ────────────────────────────────────────────────────────────────────
-
-type CategoryName =
-  | "IA & Agentes"
-  | "Automatización"
-  | "Frontend"
-  | "Backend & BD"
-  | "Infra & DevOps";
-
-type SurfaceType = "plasma" | "lava" | "earth" | "gas" | "rocky";
-
-type Category = {
-  name: CategoryName;
-  brand: string;
-  baseColor: string;
-  accentColor: string;
-  surface: SurfaceType;
-  radius: number;
-  speed: number; // angular speed (rad/sec)
-  techs: string[];
-};
-
-const CATEGORIES: Category[] = [
-  {
-    name: "IA & Agentes",
-    brand: "#00ff87",
-    baseColor: "#1eb874",
-    accentColor: "#a8ffd0",
-    surface: "plasma",
-    radius: 4.5,
-    speed: 0.09,
-    techs: ["Claude", "OpenAI", "Gemini", "DeepSeek", "MCP", "Skills", "OpenClaw", "RAG", "Pinecone", "File Search"],
-  },
-  {
-    name: "Automatización",
-    brand: "#fb923c",
-    baseColor: "#c2410c",
-    accentColor: "#ffb976",
-    surface: "lava",
-    radius: 7,
-    speed: 0.066,
-    techs: ["n8n", "Airtable", "Trello", "Calendly", "UltraMsg", "API"],
-  },
-  {
-    name: "Frontend",
-    brand: "#60a5fa",
-    baseColor: "#1e40af",
-    accentColor: "#7dd3fc",
-    surface: "earth",
-    radius: 9.7,
-    speed: 0.046,
-    techs: ["Next.js", "React", "TypeScript", "Tailwind", "HTML/CSS", "SCSS", "Vite"],
-  },
-  {
-    name: "Backend & BD",
-    brand: "#a78bfa",
-    baseColor: "#6d28d9",
-    accentColor: "#ddd6fe",
-    surface: "gas",
-    radius: 12.6,
-    speed: 0.034,
-    techs: ["Node.js", "Express", "Python", "PHP", "Symfony", "Django", "Supabase", "MySQL", "Postgres"],
-  },
-  {
-    name: "Infra & DevOps",
-    brand: "#fbbf24",
-    baseColor: "#92400e",
-    accentColor: "#fde68a",
-    surface: "rocky",
-    radius: 15.5,
-    speed: 0.025,
-    techs: ["Linux", "Docker", "Vercel", "Netlify", "Cloudflare", "Azure", "Stripe", "Teachable", "Git"],
-  },
-];
+import { CATEGORIES, Category, SelectedState, SurfaceType, useTechGalaxy } from "./TechGalaxyContext";
 
 const RINGED_TECHS = new Set(["Pinecone", "Postgres", "Docker", "n8n"]);
 const PLANET_RADIUS = 0.55;
-
-type SelectedState = { category: Category; tech: string } | null;
 
 // ─── SHADERS ────────────────────────────────────────────────────────────────
 
@@ -883,193 +807,68 @@ function ShootingStars() {
 
 // ─── PUBLIC COMPONENT ──────────────────────────────────────────────────────
 
-export default function TechGalaxyScene() {
-  const [selected, setSelected] = useState<SelectedState>(null);
-  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
-  const [filterCategory, setFilterCategory] = useState<string | null>(null);
-  const [manualPause, setManualPause] = useState(false);
-  const [speedMul, setSpeedMul] = useState<0.5 | 1 | 2>(1);
+// ─── BACKGROUND LAYER (canvas fills its absolute parent) ───────────────────
+
+export function TechGalaxyBackgroundLayer() {
+  const {
+    selected,
+    setSelected,
+    hoveredCategory,
+    filterCategory,
+    manualPause,
+    speedMul,
+  } = useTechGalaxy();
   const [sunDistance, setSunDistance] = useState(27);
 
   // Closer to sun (14) → brighter glow; far (28+) → none
   const glowIntensity = Math.max(0, Math.min(1, (28 - sunDistance) / 14));
 
   return (
-    <div className="w-full relative">
-      {/* Global illumination — extends beyond canvas to bathe the page when zoomed in */}
+    <div className="absolute inset-0">
+      {/* Canvas fills the absolute parent — no defined box, no aspect ratio */}
+      <Canvas
+        camera={{ position: [0, 3.2, 27], fov: 52, near: 0.1, far: 200 }}
+        dpr={[1, 2]}
+        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+      >
+        <Suspense fallback={null}>
+          <SunProximityTracker onChange={setSunDistance} />
+          <Scene
+            selected={selected}
+            setSelected={setSelected}
+            hoveredCategory={hoveredCategory}
+            filterCategory={filterCategory}
+            manualPause={manualPause}
+            speedMul={speedMul}
+          />
+          <EffectComposer>
+            <Bloom
+              intensity={0.55}
+              luminanceThreshold={0.75}
+              luminanceSmoothing={0.15}
+              kernelSize={KernelSize.MEDIUM}
+              mipmapBlur
+            />
+          </EffectComposer>
+        </Suspense>
+      </Canvas>
+      <ShootingStars />
+      {/* Global illumination — covers the entire section because it sits at section bg level */}
       <div
         aria-hidden
-        className="absolute pointer-events-none"
+        className="absolute inset-0 pointer-events-none"
         style={{
-          inset: "-25% -8%",
           background: `radial-gradient(ellipse at center, rgba(255, 160, 60, ${
-            glowIntensity * 0.32
-          }) 0%, rgba(255, 100, 30, ${glowIntensity * 0.14}) 25%, transparent 60%)`,
-          zIndex: 3,
+            glowIntensity * 0.30
+          }) 0%, rgba(255, 100, 30, ${glowIntensity * 0.14}) 30%, transparent 65%)`,
           mixBlendMode: "screen",
           transition: "background 0.2s",
         }}
       />
-
-      <div
-        className="relative w-full"
-        style={{
-          aspectRatio: "16 / 10",
-          maxHeight: "80vh",
-          zIndex: 2,
-        }}
-      >
-        <Canvas
-          camera={{ position: [0, 3.2, 27], fov: 52, near: 0.1, far: 200 }}
-          dpr={[1, 2]}
-          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-        >
-          <Suspense fallback={null}>
-            <SunProximityTracker onChange={setSunDistance} />
-            <Scene
-              selected={selected}
-              setSelected={setSelected}
-              hoveredCategory={hoveredCategory}
-              filterCategory={filterCategory}
-              manualPause={manualPause}
-              speedMul={speedMul}
-            />
-            <EffectComposer>
-              <Bloom
-                intensity={0.55}
-                luminanceThreshold={0.75}
-                luminanceSmoothing={0.15}
-                kernelSize={KernelSize.MEDIUM}
-                mipmapBlur
-              />
-            </EffectComposer>
-          </Suspense>
-        </Canvas>
-        <ShootingStars />
-      </div>
-
-      <div className="mt-8 max-w-2xl mx-auto relative" style={{ zIndex: 10 }}>
-        <AnimatePresence mode="wait">
-          {selected ? (
-            <motion.div
-              key={`${selected.category.name}-${selected.tech}`}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.25 }}
-              className="flex flex-col items-center text-center"
-            >
-              <p
-                className="text-[10px] font-mono uppercase tracking-[0.3em] mb-2"
-                style={{ color: selected.category.brand }}
-              >
-                {selected.category.name}
-              </p>
-              <h4
-                className="font-black uppercase tracking-tight"
-                style={{
-                  fontSize: "clamp(1.5rem, 4vw, 2.25rem)",
-                  letterSpacing: "-0.03em",
-                  color: "var(--text)",
-                }}
-              >
-                {selected.tech}
-              </h4>
-              <button
-                onClick={() => setSelected(null)}
-                className="mt-4 text-[10px] font-mono uppercase tracking-widest text-[var(--text-dim)] hover:text-[var(--text)] transition-colors"
-              >
-                × Cerrar · Reanudar órbitas
-              </button>
-            </motion.div>
-          ) : (
-            <motion.p
-              key="hint"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-center text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--text-dim)]"
-            >
-              ◆ Arrastra para rotar · Scroll para zoom · Pulsa un planeta
-            </motion.p>
-          )}
-        </AnimatePresence>
-
-        {/* Action bar */}
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-          <button
-            onClick={() => setManualPause((p) => !p)}
-            className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest border border-[var(--line)] text-[var(--text-dim)] hover:text-[var(--text)] hover:border-[var(--accent)]/40 transition-all"
-          >
-            {manualPause ? "▶ Reanudar" : "❚❚ Pausar"}
-          </button>
-          {[
-            { label: "0.5×", value: 0.5 as const },
-            { label: "1×", value: 1 as const },
-            { label: "2×", value: 2 as const },
-          ].map((s) => (
-            <button
-              key={s.label}
-              onClick={() => setSpeedMul(s.value)}
-              className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest border transition-all"
-              style={{
-                borderColor: speedMul === s.value ? "var(--accent)" : "var(--line)",
-                color: speedMul === s.value ? "var(--accent)" : "var(--text-dim)",
-                background: speedMul === s.value ? "rgba(0,255,135,0.06)" : "transparent",
-              }}
-            >
-              {s.label}
-            </button>
-          ))}
-          <button
-            onClick={() => {
-              setSelected(null);
-              setFilterCategory(null);
-              setManualPause(false);
-              setSpeedMul(1);
-            }}
-            className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest border border-[var(--line)] text-[var(--text-dim)] hover:text-[var(--accent-2)] hover:border-[var(--accent-2)]/40 transition-all"
-          >
-            ↺ Reset
-          </button>
-        </div>
-
-        {/* Category filter legend — click to isolate */}
-        <div className="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-2">
-          {CATEGORIES.map((c) => {
-            const active = filterCategory === c.name;
-            const otherActive = filterCategory !== null && filterCategory !== c.name;
-            return (
-              <button
-                key={c.name}
-                onMouseEnter={() => setHoveredCategory(c.name)}
-                onMouseLeave={() => setHoveredCategory(null)}
-                onClick={() => setFilterCategory(active ? null : c.name)}
-                className="flex items-center gap-2 px-2 py-1 text-[10px] font-mono uppercase tracking-widest transition-all border"
-                style={{
-                  color: c.brand,
-                  borderColor: active ? c.brand : "transparent",
-                  background: active ? `${c.brand}10` : "transparent",
-                  opacity: otherActive ? 0.3 : 1,
-                }}
-                title={active ? "Mostrar todas" : "Aislar esta categoría"}
-              >
-                <span
-                  className="w-1.5 h-1.5 rounded-full"
-                  style={{
-                    background: c.brand,
-                    boxShadow: `0 0 8px ${c.brand}`,
-                  }}
-                />
-                {c.name}
-              </button>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 }
+
 
 // Suppress unused import warning for `extend` (kept for future fiber primitives)
 void extend;

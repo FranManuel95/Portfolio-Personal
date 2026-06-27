@@ -11,6 +11,7 @@ import ProjectsShowcase from "../components/ProjectsShowCase";
 import FabContact from "../components/FabContact";
 import ContactForm from "../components/ContactForm";
 import Services from "../components/Services";
+import { TechGalaxyProvider, TechGalaxyBackground } from "../components/TechGalaxy";
 
 /* Reusable scroll-reveal title — words split, stagger in */
 function RevealTitle({ children }: { children: React.ReactNode }) {
@@ -105,20 +106,28 @@ export default function Home() {
       </section>
 
       {/* ── 03 SOBRE MÍ ──────────────────────────────────────── */}
-      <section id="sobremi" className="relative">
-        <SectionLine />
-        <div className="container py-16 lg:py-24">
-          <div className="flex items-end justify-between mb-14">
-            <RevealTitle>
-              <span className="outline-word">Sobre</span>
-              <br />
-              <span className="accent-word">mí</span>
-            </RevealTitle>
-            <SectionNum n="03" />
+      <TechGalaxyProvider>
+        <section
+          id="sobremi"
+          className="relative overflow-hidden"
+          style={{ minHeight: "100vh" }}
+        >
+          <SectionLine />
+          {/* Galaxy fills the entire section as background — bio and controls float over it */}
+          <TechGalaxyBackground />
+          <div className="container relative py-16 lg:py-24" style={{ zIndex: 10 }}>
+            <div className="flex items-end justify-between mb-14">
+              <RevealTitle>
+                <span className="outline-word">Sobre</span>
+                <br />
+                <span className="accent-word">mí</span>
+              </RevealTitle>
+              <SectionNum n="03" />
+            </div>
+            <About />
           </div>
-          <About />
-        </div>
-      </section>
+        </section>
+      </TechGalaxyProvider>
 
       {/* ── 04 PROYECTOS ─────────────────────────────────────── */}
       <section id="proyectos" className="relative">

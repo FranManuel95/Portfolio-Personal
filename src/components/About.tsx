@@ -2,7 +2,7 @@
 
 import React from "react";
 import Reveal from "./Reveal";
-import TechGalaxy from "./TechGalaxy";
+import { TechGalaxyControls } from "./TechGalaxy";
 
 const About = () => {
   return (
@@ -31,9 +31,10 @@ const About = () => {
         </div>
       </Reveal>
 
-      {/* Tech Galaxy */}
+      {/* Controls panel — the canvas itself is rendered as section background, so we
+          only render the interactive panel here (info, action bar, legend). */}
       <Reveal replay delayMs={120}>
-        <TechGalaxy />
+        <TechGalaxyControls />
       </Reveal>
     </div>
   );
