@@ -531,20 +531,48 @@ function OrbitRing({ radius, color, active }: { radius: number; color: string; a
 
 // ─── BACKGROUND ─────────────────────────────────────────────────────────────
 
-function Nebula() {
-  const meshRef = useRef<THREE.Mesh>(null);
+// Small painted-cloud nebulae — soft fuzzy blobs at fixed positions
+function PaintedNebulae() {
+  const CLOUDS = useMemo(
+    () => [
+      { pos: [-28, 6, -25] as [number, number, number], color: "#c53030", scale: 14 },
+      { pos: [22, -8, -30] as [number, number, number], color: "#7c3aed", scale: 16 },
+      { pos: [30, 14, -22] as [number, number, number], color: "#ea580c", scale: 11 },
+      { pos: [-32, -4, -18] as [number, number, number], color: "#0891b2", scale: 12 },
+      { pos: [-10, 18, -28] as [number, number, number], color: "#be185d", scale: 10 },
+      { pos: [18, 22, -24] as [number, number, number], color: "#4f46e5", scale: 13 },
+      { pos: [-22, -16, -20] as [number, number, number], color: "#dc2626", scale: 9 },
+    ],
+    []
+  );
+
+  return (
+    <group>
+      {CLOUDS.map((c, i) => (
+        <Cloud key={i} position={c.pos} color={c.color} scale={c.scale} seed={i * 17.3} />
+      ))}
+    </group>
+  );
+}
+
+function Cloud({ position, color, scale, seed }: { position: [number, number, number]; color: string; scale: number; seed: number }) {
+  const matRef = useRef<THREE.ShaderMaterial>(null);
   useFrame(({ clock }) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.z = clock.elapsedTime * 0.003;
+    if (matRef.current) {
+      (matRef.current.uniforms.uTime as { value: number }).value = clock.elapsedTime;
     }
   });
 
-  // Build a procedural nebula texture in a shader on a big plane behind everything
   return (
-    <mesh ref={meshRef} position={[0, 0, -40]} scale={[120, 120, 1]}>
+    <mesh position={position} scale={[scale, scale, 1]} renderOrder={-1}>
       <planeGeometry args={[1, 1]} />
       <shaderMaterial
-        uniforms={{ uTime: { value: 0 } }}
+        ref={matRef}
+        uniforms={{
+          uTime: { value: 0 },
+          uColor: { value: new THREE.Color(color) },
+          uSeed: { value: seed },
+        }}
         vertexShader={`
           varying vec2 vUv;
           void main() {
@@ -554,7 +582,9 @@ function Nebula() {
         `}
         fragmentShader={`
           varying vec2 vUv;
-          // simplex noise
+          uniform float uTime;
+          uniform vec3 uColor;
+          uniform float uSeed;
           vec3 mod289(vec3 x) { return x - floor(x * (1.0/289.0)) * 289.0; }
           vec2 mod289(vec2 x) { return x - floor(x * (1.0/289.0)) * 289.0; }
           vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
@@ -563,53 +593,37 @@ function Nebula() {
             vec2 i = floor(v + dot(v, C.yy));
             vec2 x0 = v - i + dot(i, C.xx);
             vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-            vec4 x12 = x0.xyxy + C.xxzz;
-            x12.xy -= i1;
+            vec4 x12 = x0.xyxy + C.xxzz; x12.xy -= i1;
             i = mod289(i);
             vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
-            vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
-            m = m*m; m = m*m;
+            vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0); m=m*m; m=m*m;
             vec3 x = 2.0 * fract(p * C.www) - 1.0;
-            vec3 h = abs(x) - 0.5;
-            vec3 ox = floor(x + 0.5);
-            vec3 a0 = x - ox;
+            vec3 h = abs(x) - 0.5; vec3 ox = floor(x + 0.5); vec3 a0 = x - ox;
             m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
-            vec3 g;
-            g.x = a0.x * x0.x + h.x * x0.y;
-            g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+            vec3 g; g.x = a0.x * x0.x + h.x * x0.y; g.yz = a0.yz * x12.xz + h.yz * x12.yw;
             return 130.0 * dot(m, g);
           }
           float fbm(vec2 p) {
-            float v = 0.0;
-            float a = 0.5;
-            for (int i = 0; i < 6; i++) {
-              v += a * snoise(p);
-              p *= 2.0;
-              a *= 0.5;
-            }
+            float v = 0.0; float a = 0.5;
+            for (int i = 0; i < 5; i++) { v += a * snoise(p); p *= 2.0; a *= 0.5; }
             return v;
           }
           void main() {
-            vec2 uv = vUv * 2.0 - 1.0;
+            vec2 uv = vUv - 0.5;
             float d = length(uv);
-            float n1 = fbm(vUv * 3.5 + vec2(11.0, 7.0));
-            float n2 = fbm(vUv * 6.0 - vec2(5.0));
-            // Subtle deep-space clouds — barely there wisps
-            vec3 red    = vec3(0.7, 0.15, 0.08) * smoothstep(0.15, 0.75, n1);
-            vec3 purple = vec3(0.45, 0.08, 0.55) * smoothstep(0.2, 0.6, n2);
-            vec3 orange = vec3(0.85, 0.35, 0.08) * smoothstep(0.25, 0.7, fbm(vUv * 4.0 - vec2(20.0)));
-            vec3 teal   = vec3(0.08, 0.45, 0.55) * smoothstep(0.3, 0.65, fbm(vUv * 5.0 + vec2(30.0)));
-            // Much dimmer — black sky with hints of color
-            vec3 col = red * 0.18 + purple * 0.14 + orange * 0.12 + teal * 0.08;
-            // Strong vignette
-            float vign = 1.0 - smoothstep(0.3, 1.1, d);
-            col *= vign * 0.5;
-            // Hold dim near center (sun area)
-            col *= smoothstep(0.0, 0.55, d);
-            gl_FragColor = vec4(col, 1.0);
+            // soft fuzzy circular falloff
+            float falloff = smoothstep(0.5, 0.05, d);
+            // noise warps the edge to make it cloud-like (irregular)
+            float n = fbm(vUv * 3.0 + vec2(uSeed) + uTime * 0.02);
+            float n2 = fbm(vUv * 6.0 - vec2(uSeed * 0.7));
+            float cloud = falloff * (0.55 + n * 0.55) * (0.7 + n2 * 0.3);
+            cloud = max(0.0, cloud - 0.08);
+            gl_FragColor = vec4(uColor, cloud * 0.45);
           }
         `}
+        transparent
         depthWrite={false}
+        blending={THREE.AdditiveBlending}
       />
     </mesh>
   );
@@ -719,7 +733,7 @@ function Scene({
   return (
     <>
       <ambientLight intensity={0.15} />
-      <Nebula />
+      <PaintedNebulae />
       <Stars radius={100} depth={50} count={5500} factor={3.5} saturation={0} fade speed={0.5} />
       <ColoredStars />
       <SunMesh />
@@ -747,6 +761,71 @@ function Scene({
   );
 }
 
+// ─── SHOOTING STARS (2D overlay) ───────────────────────────────────────────
+
+function ShootingStars() {
+  const [stars, setStars] = useState<
+    { id: number; from: { x: number; y: number }; angle: number; length: number; thickness: number }[]
+  >([]);
+
+  React.useEffect(() => {
+    let id = 0;
+    const spawn = () => {
+      const fromTop = Math.random() < 0.7;
+      const from = fromTop
+        ? { x: 10 + Math.random() * 80, y: -10 }
+        : { x: -10, y: 5 + Math.random() * 50 };
+      const angle = fromTop ? 35 + Math.random() * 30 : 15 + Math.random() * 25;
+      const length = 180 + Math.random() * 140;
+      const thickness = 1 + Math.random() * 1.5;
+      const newId = ++id;
+      setStars((s) => [...s, { id: newId, from, angle, length, thickness }]);
+      setTimeout(() => setStars((s) => s.filter((x) => x.id !== newId)), 1800);
+    };
+    const interval = setInterval(spawn, 2500 + Math.random() * 3500);
+    setTimeout(spawn, 1200);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <AnimatePresence>
+        {stars.map((s) => {
+          const dx = Math.cos((s.angle * Math.PI) / 180) * 140;
+          const dy = Math.sin((s.angle * Math.PI) / 180) * 140;
+          return (
+            <motion.div
+              key={s.id}
+              className="absolute"
+              initial={{ left: `${s.from.x}%`, top: `${s.from.y}%`, opacity: 0 }}
+              animate={{
+                left: `${s.from.x + dx}%`,
+                top: `${s.from.y + dy}%`,
+                opacity: [0, 1, 1, 0],
+              }}
+              transition={{ duration: 1.6, ease: "easeOut", times: [0, 0.1, 0.8, 1] }}
+              style={{ transform: `rotate(${s.angle}deg)` }}
+            >
+              <div
+                style={{
+                  width: s.length,
+                  height: s.thickness,
+                  background:
+                    "linear-gradient(90deg, transparent 0%, rgba(255,240,210,0.4) 30%, rgba(255,255,255,1) 100%)",
+                  borderRadius: 999,
+                  boxShadow:
+                    "0 0 6px rgba(255,255,255,0.8), 0 0 14px rgba(255,220,150,0.5)",
+                  transform: "translateX(-100%)",
+                }}
+              />
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 // ─── PUBLIC COMPONENT ──────────────────────────────────────────────────────
 
 export default function TechGalaxyScene() {
@@ -757,7 +836,7 @@ export default function TechGalaxyScene() {
     <div className="w-full">
       <div
         className="relative w-full aspect-square max-w-[820px] mx-auto"
-        style={{ background: "radial-gradient(ellipse at center, #060818 0%, #020308 70%, #000 100%)" }}
+        style={{ background: "#000000" }}
         onClick={(e) => {
           if (e.target === e.currentTarget) setSelected(null);
         }}
@@ -767,7 +846,7 @@ export default function TechGalaxyScene() {
           dpr={[1, 2]}
           gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
         >
-          <color attach="background" args={["#020308"]} />
+          <color attach="background" args={["#000000"]} />
           <Suspense fallback={null}>
             <Scene selected={selected} setSelected={setSelected} hoveredCategory={hoveredCategory} />
             <EffectComposer>
@@ -781,6 +860,7 @@ export default function TechGalaxyScene() {
             </EffectComposer>
           </Suspense>
         </Canvas>
+        <ShootingStars />
       </div>
 
       <div className="mt-8 max-w-2xl mx-auto">
