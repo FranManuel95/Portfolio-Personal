@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useMemo, Suspense } from "react";
 import { Canvas, useFrame, useLoader, extend, ThreeEvent } from "@react-three/fiber";
-import { Stars, Html } from "@react-three/drei";
+import { Stars, Html, OrbitControls } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { KernelSize } from "postprocessing";
 import * as THREE from "three";
@@ -397,6 +397,8 @@ function Planet({
   selected,
   setSelected,
   paused,
+  speedMul,
+  dimmed,
 }: {
   category: Category;
   tech: string;
@@ -404,6 +406,8 @@ function Planet({
   selected: SelectedState;
   setSelected: (s: SelectedState) => void;
   paused: boolean;
+  speedMul: number;
+  dimmed: boolean;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
@@ -428,7 +432,7 @@ function Planet({
     if (!groupRef.current) return;
     if (!paused) {
       const dir = category.name === "Automatización" || category.name === "Backend & BD" ? -1 : 1;
-      angleRef.current += state.clock.getDelta() * 0 + category.speed * 0.016 * dir;
+      angleRef.current += category.speed * 0.016 * dir * speedMul;
     }
     const x = Math.cos(angleRef.current) * category.radius;
     const z = Math.sin(angleRef.current) * category.radius;
@@ -458,7 +462,7 @@ function Planet({
   const planetSize = PLANET_RADIUS * (isSelected ? 1.35 : 1);
 
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} scale={dimmed ? 0.6 : 1} visible>
       <mesh ref={meshRef} onClick={handleClick} onPointerOver={handlePointerOver} onPointerOut={handlePointerOut}>
         <sphereGeometry args={[planetSize, 48, 48]} />
         <shaderMaterial
@@ -491,7 +495,7 @@ function Planet({
             background: isSelected ? "rgba(8,8,8,0.9)" : "rgba(8,8,8,0.55)",
             border: `1px solid ${category.brand}${isSelected ? "" : "55"}`,
             color: category.brand,
-            opacity: isSelected ? 1 : 0.85,
+            opacity: dimmed ? 0.15 : isSelected ? 1 : 0.85,
             textShadow: `0 0 6px ${category.brand}88`,
             transition: "all 0.25s ease",
           }}
@@ -723,12 +727,18 @@ function Scene({
   selected,
   setSelected,
   hoveredCategory,
+  filterCategory,
+  manualPause,
+  speedMul,
 }: {
   selected: SelectedState;
   setSelected: (s: SelectedState) => void;
   hoveredCategory: string | null;
+  filterCategory: string | null;
+  manualPause: boolean;
+  speedMul: number;
 }) {
-  const paused = selected !== null;
+  const paused = manualPause || selected !== null;
 
   return (
     <>
@@ -738,8 +748,22 @@ function Scene({
       <ColoredStars />
       <SunMesh />
 
+      <OrbitControls
+        enableDamping
+        dampingFactor={0.08}
+        enableZoom
+        enablePan={false}
+        minDistance={14}
+        maxDistance={42}
+        minPolarAngle={Math.PI * 0.18}
+        maxPolarAngle={Math.PI * 0.62}
+        rotateSpeed={0.6}
+        zoomSpeed={0.8}
+      />
+
       {CATEGORIES.map((c) => {
         const active = selected?.category.name === c.name || hoveredCategory === c.name;
+        const dimmed = filterCategory !== null && filterCategory !== c.name;
         return (
           <group key={c.name}>
             <OrbitRing radius={c.radius} color={c.brand} active={active} />
@@ -752,6 +776,8 @@ function Scene({
                 selected={selected}
                 setSelected={setSelected}
                 paused={paused}
+                speedMul={speedMul}
+                dimmed={dimmed}
               />
             ))}
           </group>
@@ -831,24 +857,31 @@ function ShootingStars() {
 export default function TechGalaxyScene() {
   const [selected, setSelected] = useState<SelectedState>(null);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  const [filterCategory, setFilterCategory] = useState<string | null>(null);
+  const [manualPause, setManualPause] = useState(false);
+  const [speedMul, setSpeedMul] = useState<0.5 | 1 | 2>(1);
 
   return (
     <div className="w-full">
       <div
         className="relative w-full aspect-square max-w-[820px] mx-auto"
         style={{ background: "#000000" }}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) setSelected(null);
-        }}
       >
         <Canvas
-          camera={{ position: [0, 9, 22], fov: 55, near: 0.1, far: 200 }}
+          camera={{ position: [0, 5, 26], fov: 55, near: 0.1, far: 200 }}
           dpr={[1, 2]}
           gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
         >
           <color attach="background" args={["#000000"]} />
           <Suspense fallback={null}>
-            <Scene selected={selected} setSelected={setSelected} hoveredCategory={hoveredCategory} />
+            <Scene
+              selected={selected}
+              setSelected={setSelected}
+              hoveredCategory={hoveredCategory}
+              filterCategory={filterCategory}
+              manualPause={manualPause}
+              speedMul={speedMul}
+            />
             <EffectComposer>
               <Bloom
                 intensity={0.55}
@@ -905,34 +938,81 @@ export default function TechGalaxyScene() {
               exit={{ opacity: 0 }}
               className="text-center text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--text-dim)]"
             >
-              ◆ Pulsa un planeta para explorar mi stack
+              ◆ Arrastra para rotar · Scroll para zoom · Pulsa un planeta
             </motion.p>
           )}
         </AnimatePresence>
 
-        <div className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2">
-          {CATEGORIES.map((c) => (
+        {/* Action bar */}
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+          <button
+            onClick={() => setManualPause((p) => !p)}
+            className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest border border-[var(--line)] text-[var(--text-dim)] hover:text-[var(--text)] hover:border-[var(--accent)]/40 transition-all"
+          >
+            {manualPause ? "▶ Reanudar" : "❚❚ Pausar"}
+          </button>
+          {[
+            { label: "0.5×", value: 0.5 as const },
+            { label: "1×", value: 1 as const },
+            { label: "2×", value: 2 as const },
+          ].map((s) => (
             <button
-              key={c.name}
-              onMouseEnter={() => setHoveredCategory(c.name)}
-              onMouseLeave={() => setHoveredCategory(null)}
-              className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest transition-opacity"
+              key={s.label}
+              onClick={() => setSpeedMul(s.value)}
+              className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest border transition-all"
               style={{
-                color: c.brand,
-                opacity:
-                  hoveredCategory && hoveredCategory !== c.name ? 0.35 : 1,
+                borderColor: speedMul === s.value ? "var(--accent)" : "var(--line)",
+                color: speedMul === s.value ? "var(--accent)" : "var(--text-dim)",
+                background: speedMul === s.value ? "rgba(0,255,135,0.06)" : "transparent",
               }}
             >
-              <span
-                className="w-1.5 h-1.5 rounded-full"
-                style={{
-                  background: c.brand,
-                  boxShadow: `0 0 8px ${c.brand}`,
-                }}
-              />
-              {c.name}
+              {s.label}
             </button>
           ))}
+          <button
+            onClick={() => {
+              setSelected(null);
+              setFilterCategory(null);
+              setManualPause(false);
+              setSpeedMul(1);
+            }}
+            className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest border border-[var(--line)] text-[var(--text-dim)] hover:text-[var(--accent-2)] hover:border-[var(--accent-2)]/40 transition-all"
+          >
+            ↺ Reset
+          </button>
+        </div>
+
+        {/* Category filter legend — click to isolate */}
+        <div className="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-2">
+          {CATEGORIES.map((c) => {
+            const active = filterCategory === c.name;
+            const otherActive = filterCategory !== null && filterCategory !== c.name;
+            return (
+              <button
+                key={c.name}
+                onMouseEnter={() => setHoveredCategory(c.name)}
+                onMouseLeave={() => setHoveredCategory(null)}
+                onClick={() => setFilterCategory(active ? null : c.name)}
+                className="flex items-center gap-2 px-2 py-1 text-[10px] font-mono uppercase tracking-widest transition-all border"
+                style={{
+                  color: c.brand,
+                  borderColor: active ? c.brand : "transparent",
+                  background: active ? `${c.brand}10` : "transparent",
+                  opacity: otherActive ? 0.3 : 1,
+                }}
+                title={active ? "Mostrar todas" : "Aislar esta categoría"}
+              >
+                <span
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{
+                    background: c.brand,
+                    boxShadow: `0 0 8px ${c.brand}`,
+                  }}
+                />
+                {c.name}
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
