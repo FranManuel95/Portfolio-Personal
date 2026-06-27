@@ -434,7 +434,7 @@ function Sun({ size, onClick }: { size: number; onClick: () => void }) {
 
 // ─── PLANET ──────────────────────────────────────────────────────────────────
 
-function planetSurface(c: Category, tech: string, size: number) {
+function planetSurface(c: Category) {
   // Per-category visual identity: each gets a distinct surface style
   switch (c.name) {
     case "IA & Agentes":
@@ -524,7 +524,7 @@ function Planet({
   const depthOpacity = useTransform(y, (v) => 0.55 + (v + radius) / (radius * 2) * 0.45);
   const depthScale = useTransform(y, (v) => 0.72 + (v + radius) / (radius * 2) * 0.45);
 
-  const surface = planetSurface(category, tech, size);
+  const surface = planetSurface(category);
   const icon = TECH_ICONS[tech];
   const iconSize = size * 0.4;
   const hasRing = RINGED_TECHS.has(tech);
