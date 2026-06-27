@@ -112,7 +112,7 @@ export default function TypewriterText({
   });
 
   // Usamos Tag como React.ElementType (válido). El sentinel es un <span/> 0x0.
-  const Component = Tag as React.ElementType;
+  const Component = Tag as React.ElementType<React.HTMLAttributes<HTMLElement> & { children?: React.ReactNode }>;
 
   return (
     <Component className={className} aria-live="polite" aria-busy={count < total}>
