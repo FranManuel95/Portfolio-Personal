@@ -1016,9 +1016,11 @@ type MeteorData = {
   id: number;
   start: THREE.Vector3;
   dir: THREE.Vector3;
+  accel: THREE.Vector3;
   speed: number;
   life: number;
-  color: THREE.Color;
+  headColor: THREE.Color;
+  trailColor: THREE.Color;
   size: number;
   width: number;
   length: number;
@@ -1026,55 +1028,74 @@ type MeteorData = {
 
 function makeMeteor(id: number): MeteorData {
   const fireball = Math.random() < 0.16;
-  // Enter from the upper/background region, streak down and across the view.
+  // Enter from the upper/background region, drift down and across the view.
   const start = new THREE.Vector3(
     THREE.MathUtils.randFloatSpread(52),
-    THREE.MathUtils.randFloat(9, 26),
-    THREE.MathUtils.randFloat(-20, 12)
+    THREE.MathUtils.randFloat(10, 28),
+    THREE.MathUtils.randFloat(-22, 12)
   );
   const dir = new THREE.Vector3(
-    THREE.MathUtils.randFloat(-0.65, 0.65),
-    THREE.MathUtils.randFloat(-1.0, -0.5),
+    THREE.MathUtils.randFloat(-0.6, 0.6),
+    THREE.MathUtils.randFloat(-1.0, -0.55),
     THREE.MathUtils.randFloat(-0.3, 0.35)
   ).normalize();
-  const color = fireball
-    ? new THREE.Color("#ffcf9a")
+  // gentle downward "gravity" + sideways drift → natural arc rather than a straight line
+  const accel = new THREE.Vector3(
+    THREE.MathUtils.randFloat(-0.4, 0.4),
+    THREE.MathUtils.randFloat(-1.6, -0.7),
+    THREE.MathUtils.randFloat(-0.3, 0.3)
+  );
+  const headColor = fireball ? new THREE.Color("#fff0d8") : new THREE.Color("#eaf3ff");
+  const trailColor = fireball
+    ? new THREE.Color("#ff9d52") // warm ionized tail
     : Math.random() < 0.5
-    ? new THREE.Color("#dbeaff")
-    : new THREE.Color("#ffffff");
+    ? new THREE.Color("#9fc3ff")
+    : new THREE.Color("#cfe0ff");
   return {
     id,
     start,
     dir,
-    speed: THREE.MathUtils.randFloat(16, 30),
-    life: THREE.MathUtils.randFloat(0.9, 1.7),
-    color,
-    size: fireball ? 0.24 : THREE.MathUtils.randFloat(0.06, 0.13),
-    width: fireball ? 1.0 : THREE.MathUtils.randFloat(0.22, 0.5),
-    length: fireball ? 16 : Math.round(THREE.MathUtils.randFloat(8, 13)),
+    accel,
+    speed: fireball ? THREE.MathUtils.randFloat(5, 9) : THREE.MathUtils.randFloat(6, 13),
+    life: THREE.MathUtils.randFloat(2.2, 4.0),
+    headColor,
+    trailColor,
+    size: fireball ? 0.26 : THREE.MathUtils.randFloat(0.07, 0.14),
+    width: fireball ? 0.8 : THREE.MathUtils.randFloat(0.16, 0.34),
+    length: fireball ? 26 : Math.round(THREE.MathUtils.randFloat(14, 22)),
   };
 }
 
 function Meteor({ data, onDone }: { data: MeteorData; onDone: () => void }) {
   const ref = useRef<THREE.Mesh>(null);
+  const haloRef = useRef<THREE.Mesh>(null);
   const t = useRef(0);
   const done = useRef(false);
 
   useFrame((_, delta) => {
     t.current += Math.min(delta, 0.05);
+    const tt = t.current;
     const m = ref.current;
     if (m) {
-      m.position.copy(data.start).addScaledVector(data.dir, t.current * data.speed);
-      // head brightness: quick fade-in, long fade-out near end of life
-      const k = t.current / data.life;
-      const fadeIn = Math.min(1, k * 7);
-      const fadeOut = 1 - THREE.MathUtils.smoothstep(k, 0.65, 1.0);
-      const flicker = 0.85 + 0.15 * Math.sin(t.current * 55);
+      // position with a slight gravitational arc: p = start + dir*v*t + ½·a·t²
+      m.position
+        .copy(data.start)
+        .addScaledVector(data.dir, tt * data.speed)
+        .addScaledVector(data.accel, 0.5 * tt * tt);
+      // head brightness: quick ignition, long natural fade-out, subtle slow flicker
+      const k = tt / data.life;
+      const fadeIn = Math.min(1, k * 6);
+      const fadeOut = 1 - THREE.MathUtils.smoothstep(k, 0.6, 1.0);
+      const flicker = 0.9 + 0.1 * Math.sin(tt * 18);
+      const head = fadeIn * fadeOut * flicker;
       const mat = m.material as THREE.MeshBasicMaterial;
-      mat.opacity = fadeIn * fadeOut * flicker;
-      m.scale.setScalar(data.size * (0.9 + 0.1 * Math.sin(t.current * 30)));
+      mat.opacity = head;
+      m.scale.setScalar(data.size * (0.92 + 0.08 * Math.sin(tt * 12)));
+      if (haloRef.current) {
+        (haloRef.current.material as THREE.MeshBasicMaterial).opacity = head * 0.28;
+      }
     }
-    if (!done.current && t.current >= data.life) {
+    if (!done.current && tt >= data.life) {
       done.current = true;
       onDone();
     }
@@ -1084,19 +1105,31 @@ function Meteor({ data, onDone }: { data: MeteorData; onDone: () => void }) {
     <Trail
       width={data.width}
       length={data.length}
-      color={data.color}
-      attenuation={(w) => w * w * w}
-      decay={1.3}
+      color={data.trailColor}
+      attenuation={(w) => w * w}
+      decay={1.0}
     >
       <mesh ref={ref} position={data.start}>
         <sphereGeometry args={[0.5, 10, 10]} />
         <meshBasicMaterial
-          color={data.color}
+          color={data.headColor}
           transparent
           toneMapped={false}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
         />
+        {/* soft atmospheric glow halo around the head */}
+        <mesh ref={haloRef} scale={3.4}>
+          <sphereGeometry args={[0.5, 8, 8]} />
+          <meshBasicMaterial
+            color={data.trailColor}
+            transparent
+            opacity={0.25}
+            toneMapped={false}
+            blending={THREE.AdditiveBlending}
+            depthWrite={false}
+          />
+        </mesh>
       </mesh>
     </Trail>
   );
