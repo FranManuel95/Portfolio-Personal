@@ -617,8 +617,8 @@ function Cloud({ position, color, scale, seed }: { position: [number, number, nu
             float n = fbm(vUv * 3.0 + vec2(uSeed) + uTime * 0.02);
             float n2 = fbm(vUv * 6.0 - vec2(uSeed * 0.7));
             float cloud = falloff * (0.55 + n * 0.55) * (0.7 + n2 * 0.3);
-            cloud = max(0.0, cloud - 0.08);
-            gl_FragColor = vec4(uColor, cloud * 0.45);
+            cloud = max(0.0, cloud - 0.15);
+            gl_FragColor = vec4(uColor, cloud * 0.28);
           }
         `}
         transparent
@@ -780,10 +780,10 @@ function ShootingStars() {
       const thickness = 1 + Math.random() * 1.5;
       const newId = ++id;
       setStars((s) => [...s, { id: newId, from, angle, length, thickness }]);
-      setTimeout(() => setStars((s) => s.filter((x) => x.id !== newId)), 1800);
+      setTimeout(() => setStars((s) => s.filter((x) => x.id !== newId)), 3800);
     };
-    const interval = setInterval(spawn, 2500 + Math.random() * 3500);
-    setTimeout(spawn, 1200);
+    const interval = setInterval(spawn, 4500 + Math.random() * 5000);
+    setTimeout(spawn, 1500);
     return () => clearInterval(interval);
   }, []);
 
@@ -803,7 +803,7 @@ function ShootingStars() {
                 top: `${s.from.y + dy}%`,
                 opacity: [0, 1, 1, 0],
               }}
-              transition={{ duration: 1.6, ease: "easeOut", times: [0, 0.1, 0.8, 1] }}
+              transition={{ duration: 3.4, ease: "easeOut", times: [0, 0.08, 0.85, 1] }}
               style={{ transform: `rotate(${s.angle}deg)` }}
             >
               <div
