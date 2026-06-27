@@ -684,7 +684,6 @@ function Scene({
       <PaintedNebulae />
       <Stars radius={100} depth={50} count={5500} factor={3.5} saturation={0} fade speed={0.5} />
       <ColoredStars />
-      <SunMesh />
 
       <OrbitControls
         enableDamping
@@ -697,30 +696,37 @@ function Scene({
         maxPolarAngle={Math.PI * 0.62}
         rotateSpeed={0.6}
         zoomSpeed={0.8}
+        target={[0, -4, 0]}
       />
 
-      {CATEGORIES.map((c) => {
-        const active = selected?.category.name === c.name || hoveredCategory === c.name;
-        const dimmed = filterCategory !== null && filterCategory !== c.name;
-        return (
-          <group key={c.name}>
-            <OrbitRing radius={c.radius} color={c.brand} active={active} />
-            {c.techs.map((tech, i) => (
-              <Planet
-                key={tech}
-                category={c}
-                tech={tech}
-                index={i}
-                selected={selected}
-                setSelected={setSelected}
-                paused={paused}
-                speedMul={speedMul}
-                dimmed={dimmed}
-              />
-            ))}
-          </group>
-        );
-      })}
+      {/* Offset the entire solar system downward in world space so it sits in the
+          lower portion of the section, leaving the title/bio at the top with only
+          stars and nebulae behind them (no planet collisions with text). */}
+      <group position={[0, -4, 0]}>
+        <SunMesh />
+        {CATEGORIES.map((c) => {
+          const active = selected?.category.name === c.name || hoveredCategory === c.name;
+          const dimmed = filterCategory !== null && filterCategory !== c.name;
+          return (
+            <group key={c.name}>
+              <OrbitRing radius={c.radius} color={c.brand} active={active} />
+              {c.techs.map((tech, i) => (
+                <Planet
+                  key={tech}
+                  category={c}
+                  tech={tech}
+                  index={i}
+                  selected={selected}
+                  setSelected={setSelected}
+                  paused={paused}
+                  speedMul={speedMul}
+                  dimmed={dimmed}
+                />
+              ))}
+            </group>
+          );
+        })}
+      </group>
     </>
   );
 }

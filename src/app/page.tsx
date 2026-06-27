@@ -115,14 +115,23 @@ export default function Home() {
           <SectionLine />
           {/* Galaxy fills the entire section as background — bio and controls float over it */}
           <TechGalaxyBackground />
-          <div className="container relative py-16 lg:py-24" style={{ zIndex: 10 }}>
+          {/* pointer-events:none on the container so clicks/drag/scroll fall through to the canvas;
+              specific text/control children re-enable pointer-events themselves */}
+          <div
+            className="container relative py-16 lg:py-24 pointer-events-none"
+            style={{ zIndex: 10 }}
+          >
             <div className="flex items-end justify-between mb-14">
-              <RevealTitle>
-                <span className="outline-word">Sobre</span>
-                <br />
-                <span className="accent-word">mí</span>
-              </RevealTitle>
-              <SectionNum n="03" />
+              <div className="pointer-events-auto">
+                <RevealTitle>
+                  <span className="outline-word">Sobre</span>
+                  <br />
+                  <span className="accent-word">mí</span>
+                </RevealTitle>
+              </div>
+              <div className="pointer-events-auto">
+                <SectionNum n="03" />
+              </div>
             </div>
             <About />
           </div>

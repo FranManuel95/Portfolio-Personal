@@ -7,9 +7,11 @@ import { TechGalaxyControls } from "./TechGalaxy";
 const About = () => {
   return (
     <div>
-      {/* Bio — centered, single column for breathing room */}
+      {/* Bio — centered, single column for breathing room.
+          pointer-events:auto only on the centered text block so the wide empty sides
+          let drag/zoom fall through to the canvas underneath. */}
       <Reveal replay>
-        <div className="max-w-2xl mx-auto text-center mb-16">
+        <div className="max-w-2xl mx-auto text-center mb-16 pointer-events-auto">
           <p className="text-[var(--text)] text-lg leading-relaxed mb-6">
             Construyo{" "}
             <span className="text-[var(--accent-2)] font-medium">sistemas de IA aplicada</span>{" "}
@@ -31,8 +33,7 @@ const About = () => {
         </div>
       </Reveal>
 
-      {/* Controls panel — the canvas itself is rendered as section background, so we
-          only render the interactive panel here (info, action bar, legend). */}
+      {/* Controls panel — re-enables pointer-events on its own centered max-w-2xl wrapper */}
       <Reveal replay delayMs={120}>
         <TechGalaxyControls />
       </Reveal>

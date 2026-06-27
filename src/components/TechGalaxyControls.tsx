@@ -18,7 +18,7 @@ export default function TechGalaxyControls() {
   } = useTechGalaxy();
 
   return (
-    <div className="mt-8 max-w-2xl mx-auto relative" style={{ zIndex: 10 }}>
+    <div className="mt-8 max-w-2xl mx-auto relative pointer-events-auto" style={{ zIndex: 10 }}>
       <AnimatePresence mode="wait">
         {selected ? (
           <motion.div
