@@ -696,7 +696,7 @@ function Scene({
         maxPolarAngle={Math.PI * 0.62}
         rotateSpeed={0.6}
         zoomSpeed={0.8}
-        target={[0, -4, 0]}
+        target={[0, 0, 0]}
       />
 
       {/* Offset the entire solar system downward in world space so it sits in the
@@ -830,8 +830,10 @@ export function TechGalaxyBackgroundLayer() {
   const glowIntensity = Math.max(0, Math.min(1, (28 - sunDistance) / 14));
 
   return (
-    <div className="absolute inset-0">
-      {/* Canvas fills the absolute parent — no defined box, no aspect ratio */}
+    <div className="absolute inset-0" data-lenis-prevent>
+      {/* Canvas fills the absolute parent — no defined box, no aspect ratio.
+          data-lenis-prevent tells the Lenis smooth-scroll wrapper to ignore wheel
+          events inside this region, so mouse-wheel zoom on OrbitControls works. */}
       <Canvas
         camera={{ position: [0, 3.2, 27], fov: 52, near: 0.1, far: 200 }}
         dpr={[1, 2]}
