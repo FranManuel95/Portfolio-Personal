@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useMemo, Suspense } from "react";
-import { Canvas, useFrame, useLoader, extend, ThreeEvent } from "@react-three/fiber";
+import { Canvas, useFrame, useLoader, extend, ThreeEvent, useThree } from "@react-three/fiber";
 import { Stars, Html, OrbitControls } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { KernelSize } from "postprocessing";
@@ -801,6 +801,21 @@ function Scene({
   );
 }
 
+// ─── SUN PROXIMITY TRACKER ─────────────────────────────────────────────────
+
+function SunProximityTracker({ onChange }: { onChange: (d: number) => void }) {
+  const { camera } = useThree();
+  const lastReported = useRef(0);
+  useFrame(() => {
+    const d = camera.position.length();
+    if (Math.abs(d - lastReported.current) > 0.25) {
+      lastReported.current = d;
+      onChange(d);
+    }
+  });
+  return null;
+}
+
 // ─── SHOOTING STARS (2D overlay) ───────────────────────────────────────────
 
 function ShootingStars() {
@@ -874,30 +889,43 @@ export default function TechGalaxyScene() {
   const [filterCategory, setFilterCategory] = useState<string | null>(null);
   const [manualPause, setManualPause] = useState(false);
   const [speedMul, setSpeedMul] = useState<0.5 | 1 | 2>(1);
+  const [sunDistance, setSunDistance] = useState(27);
+
+  // Closer to sun (14) → brighter glow; far (28+) → none
+  const glowIntensity = Math.max(0, Math.min(1, (28 - sunDistance) / 14));
 
   return (
-    <div className="w-full">
+    <div className="w-full relative">
+      {/* Global illumination — extends beyond canvas to bathe the page when zoomed in */}
       <div
-        className="relative w-full aspect-square max-w-[820px] mx-auto"
-        style={{ background: "var(--bg)" }}
+        aria-hidden
+        className="absolute pointer-events-none"
+        style={{
+          inset: "-25% -8%",
+          background: `radial-gradient(ellipse at center, rgba(255, 160, 60, ${
+            glowIntensity * 0.32
+          }) 0%, rgba(255, 100, 30, ${glowIntensity * 0.14}) 25%, transparent 60%)`,
+          zIndex: 3,
+          mixBlendMode: "screen",
+          transition: "background 0.2s",
+        }}
+      />
+
+      <div
+        className="relative w-full"
+        style={{
+          aspectRatio: "16 / 10",
+          maxHeight: "80vh",
+          zIndex: 2,
+        }}
       >
-        {/* Soft vignette — fades canvas edges into project background so the box is invisible */}
-        <div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse at center, transparent 55%, rgba(8,8,8,0.5) 85%, var(--bg) 100%)",
-            zIndex: 5,
-          }}
-        />
         <Canvas
           camera={{ position: [0, 3.2, 27], fov: 52, near: 0.1, far: 200 }}
           dpr={[1, 2]}
-          gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         >
-          <color attach="background" args={["#080808"]} />
           <Suspense fallback={null}>
+            <SunProximityTracker onChange={setSunDistance} />
             <Scene
               selected={selected}
               setSelected={setSelected}
@@ -920,7 +948,7 @@ export default function TechGalaxyScene() {
         <ShootingStars />
       </div>
 
-      <div className="mt-8 max-w-2xl mx-auto">
+      <div className="mt-8 max-w-2xl mx-auto relative" style={{ zIndex: 10 }}>
         <AnimatePresence mode="wait">
           {selected ? (
             <motion.div
