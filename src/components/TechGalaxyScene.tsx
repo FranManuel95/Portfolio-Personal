@@ -481,22 +481,24 @@ function Planet({
           />
         </mesh>
       )}
-      {isSelected && (
-        <Html center distanceFactor={10} position={[0, planetSize + 0.6, 0]} style={{ pointerEvents: "none" }}>
-          <div
-            className="px-2.5 py-1 whitespace-nowrap text-[10px] font-mono uppercase tracking-widest"
-            style={{
-              background: "rgba(8,8,8,0.85)",
-              border: `1px solid ${category.brand}`,
-              color: category.brand,
-              borderRadius: 2,
-              boxShadow: `0 0 12px ${category.brand}66`,
-            }}
-          >
-            {tech}
-          </div>
-        </Html>
-      )}
+      <Html center distanceFactor={14} position={[0, planetSize + 0.55, 0]} style={{ pointerEvents: "none" }} zIndexRange={[0, 0]}>
+        <div
+          className="whitespace-nowrap font-mono uppercase select-none"
+          style={{
+            fontSize: isSelected ? "12px" : "9px",
+            letterSpacing: isSelected ? "0.2em" : "0.15em",
+            padding: isSelected ? "3px 8px" : "2px 6px",
+            background: isSelected ? "rgba(8,8,8,0.9)" : "rgba(8,8,8,0.55)",
+            border: `1px solid ${category.brand}${isSelected ? "" : "55"}`,
+            color: category.brand,
+            opacity: isSelected ? 1 : 0.85,
+            textShadow: `0 0 6px ${category.brand}88`,
+            transition: "all 0.25s ease",
+          }}
+        >
+          {tech}
+        </div>
+      </Html>
     </group>
   );
 }
@@ -592,23 +594,112 @@ function Nebula() {
             float d = length(uv);
             float n1 = fbm(vUv * 3.5 + vec2(11.0, 7.0));
             float n2 = fbm(vUv * 6.0 - vec2(5.0));
-            // Color clouds: red/orange/purple/teal
-            vec3 red    = vec3(0.85, 0.18, 0.10) * smoothstep(-0.2, 0.7, n1);
-            vec3 purple = vec3(0.55, 0.10, 0.65) * smoothstep(-0.1, 0.5, n2);
-            vec3 orange = vec3(0.95, 0.42, 0.10) * smoothstep(0.1, 0.6, fbm(vUv * 4.0 - vec2(20.0)));
-            vec3 teal   = vec3(0.10, 0.55, 0.65) * smoothstep(0.2, 0.6, fbm(vUv * 5.0 + vec2(30.0)));
-            vec3 col = red * 0.55 + purple * 0.4 + orange * 0.35 + teal * 0.2;
-            // Darken edges (vignette) + center dim so sun doesn't get washed out
-            float vign = 1.0 - smoothstep(0.4, 1.4, d);
-            col *= vign * 0.7;
+            // Subtle deep-space clouds — barely there wisps
+            vec3 red    = vec3(0.7, 0.15, 0.08) * smoothstep(0.15, 0.75, n1);
+            vec3 purple = vec3(0.45, 0.08, 0.55) * smoothstep(0.2, 0.6, n2);
+            vec3 orange = vec3(0.85, 0.35, 0.08) * smoothstep(0.25, 0.7, fbm(vUv * 4.0 - vec2(20.0)));
+            vec3 teal   = vec3(0.08, 0.45, 0.55) * smoothstep(0.3, 0.65, fbm(vUv * 5.0 + vec2(30.0)));
+            // Much dimmer — black sky with hints of color
+            vec3 col = red * 0.18 + purple * 0.14 + orange * 0.12 + teal * 0.08;
+            // Strong vignette
+            float vign = 1.0 - smoothstep(0.3, 1.1, d);
+            col *= vign * 0.5;
             // Hold dim near center (sun area)
-            col *= smoothstep(0.0, 0.4, d);
+            col *= smoothstep(0.0, 0.55, d);
             gl_FragColor = vec4(col, 1.0);
           }
         `}
         depthWrite={false}
       />
     </mesh>
+  );
+}
+
+// ─── COLORED STARS ─────────────────────────────────────────────────────────
+
+function ColoredStars() {
+  // A handful of bright "named" stars in the field — red giants, blue giants, yellow stars
+  const { positions, colors, sizes } = useMemo(() => {
+    const N = 110;
+    const positions = new Float32Array(N * 3);
+    const colors = new Float32Array(N * 3);
+    const sizes = new Float32Array(N);
+    const palettes = [
+      new THREE.Color("#ff4d3a"), // red giant
+      new THREE.Color("#ff8c42"), // orange
+      new THREE.Color("#fbbf24"), // yellow
+      new THREE.Color("#7dd3fc"), // blue
+      new THREE.Color("#a78bfa"), // violet
+      new THREE.Color("#86efac"), // green
+    ];
+    for (let i = 0; i < N; i++) {
+      // Spread on a sphere outside the orbits (radius 35-65)
+      const r = 35 + Math.random() * 30;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      positions[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = r * Math.cos(phi) * 0.7;
+      positions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+
+      const c = palettes[Math.floor(Math.random() * palettes.length)];
+      colors[i * 3]     = c.r;
+      colors[i * 3 + 1] = c.g;
+      colors[i * 3 + 2] = c.b;
+
+      sizes[i] = 0.5 + Math.random() * 1.3;
+    }
+    return { positions, colors, sizes };
+  }, []);
+
+  const matRef = useRef<THREE.ShaderMaterial>(null);
+
+  useFrame(({ clock }) => {
+    if (matRef.current) {
+      (matRef.current.uniforms.uTime as { value: number }).value = clock.elapsedTime;
+    }
+  });
+
+  return (
+    <points>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} count={positions.length / 3} />
+        <bufferAttribute attach="attributes-color" args={[colors, 3]} count={colors.length / 3} />
+        <bufferAttribute attach="attributes-size" args={[sizes, 1]} count={sizes.length} />
+      </bufferGeometry>
+      <shaderMaterial
+        ref={matRef}
+        uniforms={{ uTime: { value: 0 } }}
+        vertexShader={`
+          attribute float size;
+          varying vec3 vColor;
+          uniform float uTime;
+          void main() {
+            vColor = color;
+            vec4 mv = modelViewMatrix * vec4(position, 1.0);
+            float twinkle = 0.6 + 0.4 * sin(uTime * 2.0 + position.x * 10.0);
+            gl_PointSize = size * twinkle * (160.0 / -mv.z);
+            gl_Position = projectionMatrix * mv;
+          }
+        `}
+        fragmentShader={`
+          varying vec3 vColor;
+          void main() {
+            // soft round point with glow falloff
+            vec2 c = gl_PointCoord - 0.5;
+            float d = length(c);
+            float core = smoothstep(0.5, 0.0, d);
+            float glow = smoothstep(0.5, 0.15, d) * 0.6;
+            float a = core + glow;
+            if (a < 0.01) discard;
+            gl_FragColor = vec4(vColor * (core + glow * 0.5), a);
+          }
+        `}
+        vertexColors
+        transparent
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
   );
 }
 
@@ -629,7 +720,8 @@ function Scene({
     <>
       <ambientLight intensity={0.15} />
       <Nebula />
-      <Stars radius={100} depth={50} count={4500} factor={3.5} saturation={0} fade speed={0.5} />
+      <Stars radius={100} depth={50} count={5500} factor={3.5} saturation={0} fade speed={0.5} />
+      <ColoredStars />
       <SunMesh />
 
       {CATEGORIES.map((c) => {
