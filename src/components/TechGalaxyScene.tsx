@@ -20,6 +20,8 @@ type CategoryName =
 
 type SurfaceType = "plasma" | "lava" | "earth" | "gas" | "rocky";
 
+type Service = { headline: string; summary: string; bullets: string[] };
+
 type Category = {
   name: CategoryName;
   brand: string;
@@ -29,6 +31,7 @@ type Category = {
   radius: number;
   speed: number; // angular speed (rad/sec)
   techs: string[];
+  service: Service;
 };
 
 const CATEGORIES: Category[] = [
@@ -41,6 +44,17 @@ const CATEGORIES: Category[] = [
     radius: 4.5,
     speed: 0.09,
     techs: ["Claude", "OpenAI", "Gemini", "DeepSeek", "MCP", "Skills", "OpenClaw", "RAG", "Pinecone", "File Search"],
+    service: {
+      headline: "Agentes de IA y RAG en producción",
+      summary:
+        "Diseño ecosistemas de agentes y sistemas RAG que resuelven tareas reales de negocio — no demos.",
+      bullets: [
+        "Agentes conversacionales y comerciales (WhatsApp, academia, soporte interno)",
+        "RAG sobre documentación especializada (Pinecone, Supabase, Google File Search)",
+        "MCP Servers y Skills propios que conectan Claude con tus herramientas y datos",
+        "Routing multi-modelo (Claude · OpenAI · Gemini · DeepSeek) optimizando coste",
+      ],
+    },
   },
   {
     name: "Automatización",
@@ -51,6 +65,16 @@ const CATEGORIES: Category[] = [
     radius: 7,
     speed: 0.066,
     techs: ["n8n", "Airtable", "Trello", "Calendly", "UltraMsg", "API"],
+    service: {
+      headline: "Automatización de procesos con n8n",
+      summary:
+        "Sustituyo procesos manuales por flujos fiables que corren solos en producción.",
+      bullets: [
+        "Flujos end-to-end con n8n y Airtable",
+        "Integraciones vía API, MCP o Skills (Teachable, Trello, Calendly, WhatsApp)",
+        "Onboarding, facturación, avisos y seguimientos sin errores",
+      ],
+    },
   },
   {
     name: "Frontend",
@@ -61,6 +85,16 @@ const CATEGORIES: Category[] = [
     radius: 9.7,
     speed: 0.046,
     techs: ["Next.js", "React", "TypeScript", "Tailwind", "HTML/CSS", "SCSS", "Vite"],
+    service: {
+      headline: "Interfaces web modernas",
+      summary:
+        "Aplicaciones rápidas y cuidadas con Next.js y React, listas para producción.",
+      bullets: [
+        "Apps con Next.js, React y TypeScript",
+        "Sistemas de test, flashcards, estadísticas y formularios",
+        "Rendimiento, accesibilidad y diseño a medida",
+      ],
+    },
   },
   {
     name: "Backend & BD",
@@ -71,6 +105,15 @@ const CATEGORIES: Category[] = [
     radius: 12.6,
     speed: 0.034,
     techs: ["Node.js", "Express", "Python", "PHP", "Symfony", "Django", "Supabase", "MySQL", "Postgres"],
+    service: {
+      headline: "Backend y datos",
+      summary: "APIs y bases de datos sólidas que sostienen el producto.",
+      bullets: [
+        "Node.js, Express y Python; también PHP/Symfony y Django",
+        "Supabase, MySQL y PostgreSQL",
+        "Arquitectura mantenible, sin deuda técnica innecesaria",
+      ],
+    },
   },
   {
     name: "Infra & DevOps",
@@ -81,6 +124,15 @@ const CATEGORIES: Category[] = [
     radius: 15.5,
     speed: 0.025,
     techs: ["Linux", "Docker", "Vercel", "Netlify", "Cloudflare", "Azure", "Stripe", "Teachable", "Git"],
+    service: {
+      headline: "Infraestructura y despliegue",
+      summary: "Despliego y opero soluciones estables, de la VPS al edge.",
+      bullets: [
+        "Docker, VPS Linux, Vercel, Netlify, Cloudflare y Azure",
+        "Operación en producción con cientos de usuarios activos",
+        "Pagos con Stripe e integraciones cloud",
+      ],
+    },
   },
 ];
 
@@ -1321,6 +1373,10 @@ export default function TechGalaxyScene() {
     return () => io.disconnect();
   }, [deactivate]);
 
+  const activeCat = filterCategory
+    ? CATEGORIES.find((c) => c.name === filterCategory) ?? null
+    : null;
+
   return (
     <div className="w-full relative">
       {/* Visually-hidden live region for screen readers */}
@@ -1479,8 +1535,9 @@ export default function TechGalaxyScene() {
       <div className="mt-8 max-w-2xl mx-auto relative" style={{ zIndex: 10 }}>
         <AnimatePresence mode="wait">
           {selected ? (
+            /* ── TECH detail ── */
             <motion.div
-              key={`${selected.category.name}-${selected.tech}`}
+              key={`tech-${selected.category.name}-${selected.tech}`}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
@@ -1503,23 +1560,104 @@ export default function TechGalaxyScene() {
               >
                 {selected.tech}
               </h4>
-              <button
-                onClick={() => setSelected(null)}
-                className="mt-4 text-[10px] font-mono uppercase tracking-widest text-[var(--text-dim)] hover:text-[var(--text)] transition-colors"
+              <div className="mt-4 flex items-center gap-4">
+                <button
+                  onClick={() => setSelected(null)}
+                  className="text-[10px] font-mono uppercase tracking-widest text-[var(--text-dim)] hover:text-[var(--text)] transition-colors"
+                >
+                  ← {selected.category.name}
+                </button>
+              </div>
+            </motion.div>
+          ) : activeCat ? (
+            /* ── CATEGORY service detail ── */
+            <motion.div
+              key={`cat-${activeCat.name}`}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.25 }}
+              className="text-center"
+            >
+              <p
+                className="text-[10px] font-mono uppercase tracking-[0.3em] mb-2"
+                style={{ color: activeCat.brand }}
               >
-                × Cerrar
+                {activeCat.name}
+              </p>
+              <h4
+                className="font-black uppercase tracking-tight"
+                style={{ fontSize: "clamp(1.3rem, 3.5vw, 2rem)", letterSpacing: "-0.02em", color: "var(--text)" }}
+              >
+                {activeCat.service.headline}
+              </h4>
+              <p className="mt-3 text-sm text-[var(--text-dim)] leading-relaxed max-w-xl mx-auto">
+                {activeCat.service.summary}
+              </p>
+              <ul className="mt-4 space-y-1.5 text-left max-w-md mx-auto">
+                {activeCat.service.bullets.map((b) => (
+                  <li key={b} className="text-sm text-[var(--text-dim)] leading-relaxed flex items-start gap-2">
+                    <span className="mt-1.5 w-1 h-1 rounded-full flex-shrink-0" style={{ background: activeCat.brand }} />
+                    {b}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-5 flex flex-wrap justify-center gap-1.5">
+                {activeCat.techs.map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setSelected({ category: activeCat, tech: t })}
+                    className="px-2.5 py-1 text-[11px] font-medium border border-[var(--line)] text-[var(--text-dim)] hover:text-[var(--text)] hover:border-[var(--accent)]/40 transition-all"
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setFilterCategory(null)}
+                className="mt-5 text-[10px] font-mono uppercase tracking-widest text-[var(--text-dim)] hover:text-[var(--text)] transition-colors"
+              >
+                ← Volver al resumen
               </button>
             </motion.div>
           ) : (
-            <motion.p
-              key="hint"
+            /* ── OVERVIEW (always-visible summary + nav) ── */
+            <motion.div
+              key="overview"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="text-center text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--text-dim)]"
+              transition={{ duration: 0.25 }}
             >
-              ◆ {coarse ? "Toca para explorar · pellizca zoom · 2 dedos mueven" : "Clic para explorar · arrastra rota · rueda zoom"}
-            </motion.p>
+              <p className="text-center text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--text-dim)] mb-4">
+                Lo que hago · pulsa un área para ver más
+              </p>
+              <ul className="space-y-2 max-w-lg mx-auto">
+                {CATEGORIES.map((c) => (
+                  <li key={c.name}>
+                    <button
+                      onClick={() => setFilterCategory(c.name)}
+                      onMouseEnter={() => setHoveredCategory(c.name)}
+                      onMouseLeave={() => setHoveredCategory(null)}
+                      className="group w-full flex items-center gap-3 px-3.5 py-2.5 border border-[var(--line)] hover:border-[var(--text-dim)]/50 transition-all text-left"
+                      style={{ background: "rgba(255,255,255,0.012)" }}
+                    >
+                      <span
+                        className="w-2 h-2 rounded-full flex-shrink-0"
+                        style={{ background: c.brand, boxShadow: `0 0 8px ${c.brand}` }}
+                      />
+                      <span className="text-sm text-[var(--text)]">{c.service.headline}</span>
+                      <span
+                        className="ml-auto text-[var(--text-dim)] group-hover:translate-x-0.5 transition-transform"
+                        style={{ color: c.brand }}
+                      >
+                        →
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
           )}
         </AnimatePresence>
 
@@ -1560,39 +1698,6 @@ export default function TechGalaxyScene() {
           >
             ↺ Reset
           </button>
-        </div>
-
-        {/* Explore by category — the legend chips filter/highlight a category */}
-        <h3 className="mt-8 text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--text-dim)] text-center mb-4">
-          Explora por categoría
-        </h3>
-        <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
-          {CATEGORIES.map((c) => {
-            const active = filterCategory === c.name;
-            const otherActive = filterCategory !== null && filterCategory !== c.name;
-            return (
-              <button
-                key={c.name}
-                onMouseEnter={() => setHoveredCategory(c.name)}
-                onMouseLeave={() => setHoveredCategory(null)}
-                onClick={() => setFilterCategory(active ? null : c.name)}
-                className="flex items-center gap-2 px-2 py-1 text-[10px] font-mono uppercase tracking-widest transition-all border"
-                style={{
-                  color: c.brand,
-                  borderColor: active ? c.brand : "transparent",
-                  background: active ? `${c.brand}10` : "transparent",
-                  opacity: otherActive ? 0.3 : 1,
-                }}
-                title={active ? "Mostrar todas" : "Aislar esta categoría"}
-              >
-                <span
-                  className="w-1.5 h-1.5 rounded-full"
-                  style={{ background: c.brand, boxShadow: `0 0 8px ${c.brand}` }}
-                />
-                {c.name}
-              </button>
-            );
-          })}
         </div>
 
         {/* Screen-reader / keyboard parallel control surface — visually hidden so it

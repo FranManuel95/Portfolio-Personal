@@ -7,9 +7,8 @@ type NavItem = { label: string; id: string };
 
 const NAV: NavItem[] = [
   { label: "Perfil", id: "hero" },
-  { label: "Servicios", id: "servicios" },
-  { label: "Experiencia", id: "experiencia" },
   { label: "Sobre mí", id: "sobremi" },
+  { label: "Experiencia", id: "experiencia" },
   { label: "Proyectos", id: "proyectos" },
   { label: "Contacto", id: "contacto" },
 ];

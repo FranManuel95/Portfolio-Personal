@@ -10,7 +10,6 @@ import Experience from "../components/Experience";
 import ProjectsShowcase from "../components/ProjectsShowCase";
 import FabContact from "../components/FabContact";
 import ContactForm from "../components/ContactForm";
-import Services from "../components/Services";
 
 /* Reusable scroll-reveal title — words split, stagger in */
 function RevealTitle({ children }: { children: React.ReactNode }) {
@@ -72,19 +71,19 @@ export default function Home() {
 
       <Hero isMenuOpen={isMenuOpen} />
 
-      {/* ── 01 QUÉ HAGO ──────────────────────────────────────── */}
-      <section id="servicios" className="relative">
+      {/* ── 01 SOBRE MÍ + QUÉ HAGO (hub) ─────────────────────── */}
+      <section id="sobremi" className="relative">
         <SectionLine />
         <div className="container py-16 lg:py-24">
           <div className="flex items-end justify-between mb-14">
             <RevealTitle>
-              <span className="outline-word">Qué</span>
+              <span className="outline-word">Sobre</span>
               <br />
-              <span className="accent-word">hago</span>
+              <span className="accent-word">mí</span>
             </RevealTitle>
             <SectionNum n="01" />
           </div>
-          <Services />
+          <About />
         </div>
       </section>
 
@@ -104,23 +103,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 03 SOBRE MÍ ──────────────────────────────────────── */}
-      <section id="sobremi" className="relative">
-        <SectionLine />
-        <div className="container py-16 lg:py-24">
-          <div className="flex items-end justify-between mb-14">
-            <RevealTitle>
-              <span className="outline-word">Sobre</span>
-              <br />
-              <span className="accent-word">mí</span>
-            </RevealTitle>
-            <SectionNum n="03" />
-          </div>
-          <About />
-        </div>
-      </section>
-
-      {/* ── 04 PROYECTOS ─────────────────────────────────────── */}
+      {/* ── 03 PROYECTOS ─────────────────────────────────────── */}
       <section id="proyectos" className="relative">
         <SectionLine />
         <div className="container py-16 lg:py-24">
@@ -130,13 +113,13 @@ export default function Home() {
               <br />
               <span className="accent-word">proyectos</span>
             </RevealTitle>
-            <SectionNum n="04" />
+            <SectionNum n="03" />
           </div>
           <ProjectsShowcase />
         </div>
       </section>
 
-      {/* ── 05 CONTACTO ──────────────────────────────────────── */}
+      {/* ── 04 CONTACTO ──────────────────────────────────────── */}
       <section id="contacto" className="relative">
         <SectionLine />
         <div className="container py-16 lg:py-24">
@@ -146,7 +129,7 @@ export default function Home() {
               <br />
               <span className="accent-word">hoy</span>
             </RevealTitle>
-            <SectionNum n="05" />
+            <SectionNum n="04" />
           </div>
           <ContactForm />
           <div className="mt-10">
