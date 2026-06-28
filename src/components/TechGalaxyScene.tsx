@@ -66,11 +66,12 @@ const CATEGORIES: Category[] = [
     speed: 0.066,
     techs: ["n8n", "Airtable", "Trello", "Calendly", "UltraMsg", "API"],
     service: {
-      headline: "Automatización de procesos con n8n",
+      headline: "Automatización de procesos",
       summary:
-        "Sustituyo procesos manuales por flujos fiables que corren solos en producción.",
+        "Sustituyo procesos manuales por flujos fiables que corren solos en producción — con n8n o con código a medida cuando hace falta.",
       bullets: [
         "Flujos end-to-end con n8n y Airtable",
+        "Automatizaciones a medida por código (Node.js, Python, webhooks y APIs)",
         "Integraciones vía API, MCP o Skills (Teachable, Trello, Calendly, WhatsApp)",
         "Onboarding, facturación, avisos y seguimientos sin errores",
       ],
