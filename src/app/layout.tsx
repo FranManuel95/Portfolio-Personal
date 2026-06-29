@@ -8,18 +8,19 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Fran Perejón — Desarrollador Web & Especialista en IA",
+  title: "Fran Perejón — AI Engineer · Agentes de IA y Automatización",
   description:
-    "Desarrollador Web y Especialista en IA Aplicada. Diseño sistemas completos con Next.js, agentes conversacionales, automatización con n8n y arquitecturas RAG escalables.",
+    "AI Engineer especializado en agentes de IA y RAG en producción, automatización con n8n y código, y desarrollo full-stack con Next.js. Llevo sistemas de IA de la idea a producción.",
   keywords: [
-    "desarrollador web", "IA generativa", "automatización", "Next.js", "React",
-    "TypeScript", "Supabase", "n8n", "RAG", "agentes IA", "VAPI", "OpenAI", "Sevilla",
+    "AI Engineer", "agentes de IA", "RAG", "MCP Servers", "automatización", "n8n",
+    "Claude", "OpenAI", "Gemini", "Next.js", "React", "TypeScript", "Supabase",
+    "Pinecone", "full-stack", "Sevilla",
   ],
   authors: [{ name: "Francisco Manuel Perejón Carmona" }],
   openGraph: {
-    title: "Fran Perejón — Desarrollador Web & Especialista en IA",
+    title: "Fran Perejón — AI Engineer · Agentes de IA y Automatización",
     description:
-      "Diseño y construyo sistemas completos: apps web, agentes conversacionales, flujos automatizados y arquitecturas de IA escalables.",
+      "Agentes de IA y pipelines RAG en producción, automatización con n8n y código, y desarrollo full-stack. De la concepción a producción.",
     type: "website",
     locale: "es_ES",
   },
