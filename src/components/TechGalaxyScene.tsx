@@ -537,6 +537,7 @@ function Planet({
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
   const matRef = useRef<THREE.ShaderMaterial>(null);
+  const nameRef = useRef<THREE.Group>(null);
   const angleRef = useRef((index / category.techs.length) * Math.PI * 2);
   const [hover, setHover] = useState(false);
   const isSelected = selected?.category.name === category.name && selected.tech === tech;
@@ -580,6 +581,14 @@ function Planet({
       focusRef.current.pos.set(x, 0, z);
       focusRef.current.key = category.name + "/" + tech;
       focusRef.current.radius = PLANET_RADIUS * 1.35;
+    }
+    // De-clutter: hide the name when the planet is on the FAR half of its orbit
+    // (farther from the camera than the sun) unless it's hovered or selected.
+    if (nameRef.current) {
+      const far =
+        state.camera.position.distanceTo(groupRef.current.position) >
+        state.camera.position.length();
+      nameRef.current.visible = isSelected || hover || !far;
     }
   });
 
@@ -642,8 +651,9 @@ function Planet({
         </mesh>
       </Billboard>
 
-      {/* Name — ALWAYS visible: crisp outlined 3D text, brighter on hover/selection. */}
-      <Billboard position={[0, -(planetSize + 0.42), 0]}>
+      {/* Name — crisp outlined 3D text, brighter on hover/selection. Back-half names
+          hide each frame (see useFrame) to keep crowded inner orbits readable. */}
+      <Billboard ref={nameRef} position={[0, -(planetSize + 0.42), 0]}>
         <Text
           fontSize={isSelected ? 0.5 : hover ? 0.42 : 0.32}
           color="#ffffff"
@@ -792,10 +802,10 @@ function Cloud({ position, color, scale, seed }: { position: [number, number, nu
 
 // ─── COLORED STARS ─────────────────────────────────────────────────────────
 
-function ColoredStars() {
+function ColoredStars({ count = 110 }: { count?: number }) {
   // A handful of bright "named" stars in the field — red giants, blue giants, yellow stars
   const { positions, colors, sizes } = useMemo(() => {
-    const N = 110;
+    const N = count;
     const positions = new Float32Array(N * 3);
     const colors = new Float32Array(N * 3);
     const sizes = new Float32Array(N);
@@ -824,7 +834,7 @@ function ColoredStars() {
       sizes[i] = 0.5 + Math.random() * 1.3;
     }
     return { positions, colors, sizes };
-  }, []);
+  }, [count]);
 
   const matRef = useRef<THREE.ShaderMaterial>(null);
 
@@ -889,6 +899,7 @@ function Scene({
   speedMul,
   live,
   reduceMotion,
+  coarse,
   onActivate,
   controlsRef,
   focusRef,
@@ -901,6 +912,7 @@ function Scene({
   speedMul: number;
   live: boolean;
   reduceMotion: boolean;
+  coarse: boolean;
   onActivate: () => void;
   controlsRef: React.MutableRefObject<React.ComponentRef<typeof OrbitControls> | null>;
   focusRef: React.MutableRefObject<FocusState>;
@@ -912,9 +924,9 @@ function Scene({
     <>
       <ambientLight intensity={0.15} />
       <PaintedNebulae />
-      <Stars radius={100} depth={50} count={5500} factor={3.5} saturation={0} fade speed={reduceMotion ? 0 : 0.5} />
-      <ColoredStars />
-      {!reduceMotion && <Meteors />}
+      <Stars radius={100} depth={50} count={coarse ? 2200 : 5500} factor={3.5} saturation={0} fade speed={reduceMotion ? 0 : 0.5} />
+      <ColoredStars count={coarse ? 60 : 110} />
+      {!reduceMotion && <Meteors coarse={coarse} />}
       <SunMesh />
 
       <OrbitControls
@@ -1188,7 +1200,7 @@ function Meteor({ data, onDone }: { data: MeteorData; onDone: () => void }) {
   );
 }
 
-function Meteors() {
+function Meteors({ coarse = false }: { coarse?: boolean }) {
   const [list, setList] = useState<MeteorData[]>([]);
   const idRef = useRef(0);
 
@@ -1197,21 +1209,24 @@ function Meteors() {
     let timeout: ReturnType<typeof setTimeout>;
     const spawn = () => {
       if (!alive) return;
-      // occasionally a quick double/triple "shower"
-      const burst = Math.random() < 0.25 ? 2 : 1;
+      // occasionally a quick double "shower" (less often on mobile)
+      const burst = !coarse && Math.random() < 0.25 ? 2 : 1;
       setList((l) => {
         const next = [...l];
         for (let i = 0; i < burst; i++) next.push(makeMeteor(idRef.current++));
         return next;
       });
-      timeout = setTimeout(spawn, THREE.MathUtils.randFloat(1700, 4200));
+      timeout = setTimeout(
+        spawn,
+        coarse ? THREE.MathUtils.randFloat(3200, 6500) : THREE.MathUtils.randFloat(1700, 4200)
+      );
     };
     timeout = setTimeout(spawn, 700);
     return () => {
       alive = false;
       clearTimeout(timeout);
     };
-  }, []);
+  }, [coarse]);
 
   const remove = useCallback((id: number) => {
     setList((l) => l.filter((m) => m.id !== id));
@@ -1240,6 +1255,7 @@ export default function TechGalaxyScene() {
   const [sunDistance, setSunDistance] = useState(27);
   const [live, setLive] = useState(false);
   const [coarse, setCoarse] = useState(false);
+  const [inView, setInView] = useState(true);
   const [status, setStatus] = useState("");
   const reduceMotion = useReducedMotion() ?? false;
 
@@ -1366,9 +1382,11 @@ export default function TechGalaxyScene() {
     if (!el) return;
     const io = new IntersectionObserver(
       ([entry]) => {
+        // Pause WebGL rendering when the galaxy is scrolled off-screen (perf).
+        setInView(entry.intersectionRatio > 0.02);
         if (entry.intersectionRatio < 0.4) deactivate();
       },
-      { threshold: [0, 0.4, 1] }
+      { threshold: [0, 0.02, 0.4, 1] }
     );
     io.observe(el);
     return () => io.disconnect();
@@ -1451,6 +1469,7 @@ export default function TechGalaxyScene() {
         <Canvas
           camera={{ position: [0, 3.2, 27], fov: 52, near: 0.1, far: 200 }}
           dpr={coarse ? [1, 1.75] : [1, 2]}
+          frameloop={inView ? "always" : "never"}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         >
           <Suspense fallback={null}>
@@ -1464,6 +1483,7 @@ export default function TechGalaxyScene() {
               speedMul={speedMul}
               live={live}
               reduceMotion={reduceMotion}
+              coarse={coarse}
               onActivate={activate}
               controlsRef={controlsRef}
               focusRef={focusRef}
