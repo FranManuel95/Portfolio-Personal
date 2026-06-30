@@ -51,9 +51,9 @@ const About = () => {
               en la demo.
             </p>
             <p className="text-[var(--text-dim)] text-base leading-relaxed mb-5">
-              Controlo el sistema completo —de la interfaz a la infraestructura de modelos—, así que
-              puedo optimizar costes, cuidar la calidad de las respuestas y desplegar soluciones
-              estables y mantenibles.
+              Controlo el sistema completo, desde la interfaz hasta la infraestructura de modelos,
+              así que puedo optimizar costes, cuidar la calidad de las respuestas y desplegar
+              soluciones estables y mantenibles.
             </p>
             <p className="text-[var(--text-dim)] text-base leading-relaxed">
               En{" "}
