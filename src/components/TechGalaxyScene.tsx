@@ -1651,7 +1651,7 @@ export default function TechGalaxyScene() {
               transition={{ duration: 0.25 }}
             >
               <p className="text-center text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--text-dim)] mb-4">
-                Lo que hago · pulsa un área para ver más
+                Cada órbita, un área · cada planeta, una tecnología
               </p>
               <ul className="space-y-2 max-w-lg mx-auto">
                 {CATEGORIES.map((c) => (

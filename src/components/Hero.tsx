@@ -182,36 +182,45 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
               </p>
 
               <div className="flex flex-wrap gap-3">
+                {/* Primary — Descargar CV (la acción concreta) */}
+                <MagneticButton>
+                  <a
+                    href="/Fran%20Perej%C3%B3n%20%E2%80%94%20CV.pdf"
+                    download
+                    data-cursor
+                    aria-label="Descargar mi CV en PDF"
+                    className="group inline-flex items-center gap-2.5 bg-[var(--accent)] text-black px-5 py-3 font-semibold text-sm uppercase tracking-wider border border-[var(--accent)] transition-all duration-200 hover:shadow-[0_0_28px_-6px_var(--accent)] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
+                  >
+                    <FaDownload className="text-base transition-transform duration-200 group-hover:-translate-y-0.5" />
+                    Descargar CV
+                  </a>
+                </MagneticButton>
+
+                {/* LinkedIn */}
                 <MagneticButton>
                   <a
                     href="https://www.linkedin.com/in/francisco-manuel-perej%C3%B3n-carmona-7bbb1214a/"
                     target="_blank"
                     rel="noopener noreferrer"
                     data-cursor
-                    className="inline-flex items-center gap-2 bg-[var(--accent)] text-black px-4 py-2.5 font-semibold text-sm uppercase tracking-wider hover:opacity-90 transition-opacity"
+                    aria-label="Abrir mi perfil de LinkedIn"
+                    className="inline-flex items-center gap-2.5 border border-[var(--line)] text-[var(--text)] px-5 py-3 font-semibold text-sm uppercase tracking-wider transition-all duration-200 hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                   >
-                    <FaLinkedin /> LinkedIn
+                    <FaLinkedin className="text-base" /> LinkedIn
                   </a>
                 </MagneticButton>
+
+                {/* GitHub */}
                 <MagneticButton>
                   <a
                     href="https://github.com/FranManuel95"
                     target="_blank"
                     rel="noopener noreferrer"
                     data-cursor
-                    className="inline-flex items-center gap-2 border border-[var(--line)] text-[var(--text)] px-4 py-2.5 text-sm uppercase tracking-wider hover:border-[var(--text-dim)] transition-colors"
+                    aria-label="Abrir mi perfil de GitHub"
+                    className="inline-flex items-center gap-2.5 border border-[var(--line)] text-[var(--text)] px-5 py-3 font-semibold text-sm uppercase tracking-wider transition-all duration-200 hover:border-[var(--text)] hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
                   >
-                    <FaGithub /> GitHub
-                  </a>
-                </MagneticButton>
-                <MagneticButton>
-                  <a
-                    href="/Fran%20Perej%C3%B3n%20%E2%80%94%20CV.pdf"
-                    download
-                    data-cursor
-                    className="inline-flex items-center gap-2 border border-[var(--accent-2)] text-[var(--accent-2)] px-4 py-2.5 text-sm uppercase tracking-wider hover:bg-[var(--accent-2)] hover:text-black transition-colors"
-                  >
-                    <FaDownload /> Descargar CV
+                    <FaGithub className="text-base" /> GitHub
                   </a>
                 </MagneticButton>
               </div>
