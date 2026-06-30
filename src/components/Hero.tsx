@@ -137,7 +137,7 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
             <div>
               <p className="text-[var(--accent)] text-xs font-mono uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse-dot inline-block" />
-                Disponible · Sevilla, España
+                Disponible para proyectos
               </p>
 
               <h1
