@@ -612,7 +612,7 @@ function Planet({
   const logoOpacity = dimmed ? 0.18 : isSelected ? 1 : 0.95;
 
   return (
-    <group ref={groupRef} scale={dimmed ? 0.6 : 1} visible>
+    <group ref={groupRef} scale={dimmed ? 0.45 : 1} visible>
       <mesh ref={meshRef} onClick={handleClick} onPointerOver={handlePointerOver} onPointerOut={handlePointerOut}>
         <sphereGeometry args={[planetSize, isSelected ? 64 : 48, isSelected ? 64 : 48]} />
         <shaderMaterial
@@ -676,7 +676,17 @@ function Planet({
 
 // ─── ORBIT RINGS ────────────────────────────────────────────────────────────
 
-function OrbitRing({ radius, color, active }: { radius: number; color: string; active: boolean }) {
+function OrbitRing({
+  radius,
+  color,
+  active,
+  dimmed,
+}: {
+  radius: number;
+  color: string;
+  active: boolean;
+  dimmed: boolean;
+}) {
   const points = useMemo(() => {
     const pts: THREE.Vector3[] = [];
     for (let i = 0; i <= 128; i++) {
@@ -688,15 +698,23 @@ function OrbitRing({ radius, color, active }: { radius: number; color: string; a
 
   const geometry = useMemo(() => new THREE.BufferGeometry().setFromPoints(points), [points]);
 
+  // Active orbit pops; non-active orbits fade hard when a category is isolated.
+  const opacity = active ? 0.95 : dimmed ? 0.04 : 0.18;
+
   return (
-    <line>
-      <primitive object={geometry} attach="geometry" />
-      <lineBasicMaterial
-        color={active ? color : "#ffffff"}
-        transparent
-        opacity={active ? 0.6 : 0.18}
-      />
-    </line>
+    <group>
+      <line>
+        <primitive object={geometry} attach="geometry" />
+        <lineBasicMaterial color={active ? color : "#ffffff"} transparent opacity={opacity} toneMapped={false} />
+      </line>
+      {/* glow halo for the active orbit so the highlight is unmistakable */}
+      {active && (
+        <line>
+          <primitive object={geometry} attach="geometry" />
+          <lineBasicMaterial color={color} transparent opacity={0.35} toneMapped={false} blending={THREE.AdditiveBlending} />
+        </line>
+      )}
+    </group>
   );
 }
 
@@ -958,7 +976,7 @@ function Scene({
         const dimmed = filterCategory !== null && filterCategory !== c.name;
         return (
           <group key={c.name}>
-            <OrbitRing radius={c.radius} color={c.brand} active={active} />
+            <OrbitRing radius={c.radius} color={c.brand} active={active} dimmed={dimmed} />
             {c.techs.map((tech, i) => (
               <Planet
                 key={tech}
@@ -1257,6 +1275,7 @@ export default function TechGalaxyScene() {
   const [coarse, setCoarse] = useState(false);
   const [inView, setInView] = useState(true);
   const [status, setStatus] = useState("");
+  const [showHelp, setShowHelp] = useState(false);
   const reduceMotion = useReducedMotion() ?? false;
 
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -1277,16 +1296,29 @@ export default function TechGalaxyScene() {
 
   const activate = useCallback(() => {
     setLive((prev) => {
-      if (!prev) setStatus("Modo exploración activado. Arrastra para rotar, rueda o teclas + / − para zoom, flechas para girar, Escape para salir.");
+      if (!prev) {
+        setStatus("Modo exploración activado. Arrastra para rotar, rueda o teclas + / − para zoom, flechas para girar, Escape para salir.");
+        try {
+          if (!localStorage.getItem("galaxyHelpSeen")) setShowHelp(true);
+        } catch {}
+      }
       return true;
     });
   }, []);
 
   const deactivate = useCallback(() => {
+    setShowHelp(false);
     setLive((prev) => {
       if (prev) setStatus("Modo exploración desactivado. La página vuelve a desplazarse con normalidad.");
       return false;
     });
+  }, []);
+
+  const dismissHelp = useCallback(() => {
+    setShowHelp(false);
+    try {
+      localStorage.setItem("galaxyHelpSeen", "1");
+    } catch {}
   }, []);
 
   // ── Imperative camera helpers (keyboard + on-screen buttons) ──
@@ -1517,17 +1549,34 @@ export default function TechGalaxyScene() {
           </div>
         )}
 
-        {/* LIVE chrome: exit + accessible camera controls */}
+        {/* LIVE chrome: exit + help */}
         {live && (
-          <>
+          <div className="absolute top-3 right-3 flex items-center gap-2" style={{ zIndex: 7 }}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowHelp(true);
+              }}
+              onPointerDown={(e) => e.stopPropagation()}
+              aria-label="Cómo explorar la galaxia"
+              className="w-9 h-9 flex items-center justify-center text-sm"
+              style={{
+                color: "var(--text)",
+                background: "rgba(8,8,8,0.75)",
+                backdropFilter: "blur(6px)",
+                border: "1px solid var(--line)",
+              }}
+            >
+              ?
+            </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 deactivate();
               }}
-              className="absolute top-3 right-3 px-3 py-2 text-[10px] font-mono uppercase tracking-widest"
+              onPointerDown={(e) => e.stopPropagation()}
+              className="px-3 py-2 text-[10px] font-mono uppercase tracking-widest"
               style={{
-                zIndex: 6,
                 color: "var(--text)",
                 background: "rgba(8,8,8,0.75)",
                 backdropFilter: "blur(6px)",
@@ -1536,20 +1585,58 @@ export default function TechGalaxyScene() {
             >
               Salir · Esc
             </button>
+          </div>
+        )}
 
-            <div
-              className="absolute bottom-3 right-3 grid grid-cols-3 gap-1"
-              style={{ zIndex: 6 }}
-              onPointerDown={(e) => e.stopPropagation()}
-            >
-              <CamBtn label="Rotar arriba" onClick={() => rotatePolar(-0.12)} className="col-start-2">▲</CamBtn>
-              <CamBtn label="Rotar izquierda" onClick={() => rotateAzimuth(-0.2)} className="col-start-1 row-start-2">◀</CamBtn>
-              <CamBtn label="Acercar" onClick={() => dolly(0.85)} className="col-start-2 row-start-2">＋</CamBtn>
-              <CamBtn label="Rotar derecha" onClick={() => rotateAzimuth(0.2)} className="col-start-3 row-start-2">▶</CamBtn>
-              <CamBtn label="Rotar abajo" onClick={() => rotatePolar(0.12)} className="col-start-2 row-start-3">▼</CamBtn>
-              <CamBtn label="Alejar" onClick={() => dolly(1.18)} className="col-start-3 row-start-3">－</CamBtn>
+        {/* First-run onboarding / help overlay */}
+        {live && showHelp && (
+          <div
+            className="absolute inset-0 flex items-center justify-center p-6"
+            style={{ zIndex: 8, background: "rgba(8,8,8,0.6)", backdropFilter: "blur(2px)" }}
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            <div className="max-w-xs w-full border border-[var(--accent)]/40 bg-[var(--bg-elev-1)] p-5">
+              <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--accent)] mb-4 text-center">
+                Cómo explorar
+              </p>
+              <ul className="space-y-2.5 text-sm text-[var(--text-dim)] mb-5">
+                <li className="flex gap-2.5">
+                  <span className="text-[var(--accent)]">→</span>
+                  <span>
+                    <span className="text-[var(--text)]">Arrastra</span> para rotar el sistema
+                  </span>
+                </li>
+                <li className="flex gap-2.5">
+                  <span className="text-[var(--accent)]">→</span>
+                  <span>
+                    <span className="text-[var(--text)]">{coarse ? "Pellizca" : "Rueda"}</span> para
+                    hacer zoom{coarse ? " · 2 dedos para mover" : ""}
+                  </span>
+                </li>
+                <li className="flex gap-2.5">
+                  <span className="text-[var(--accent)]">→</span>
+                  <span>
+                    <span className="text-[var(--text)]">Pulsa un planeta</span> para enfocarlo y
+                    acercarte
+                  </span>
+                </li>
+                <li className="flex gap-2.5">
+                  <span className="text-[var(--accent)]">→</span>
+                  <span>
+                    <span className="text-[var(--text)]">{coarse ? "«Salir»" : "Esc o «Salir»"}</span>{" "}
+                    para terminar
+                  </span>
+                </li>
+              </ul>
+              <button
+                onClick={dismissHelp}
+                className="w-full py-2.5 bg-[var(--accent)] text-black text-xs font-semibold uppercase tracking-wider hover:brightness-110 transition-all"
+              >
+                Entendido
+              </button>
             </div>
-          </>
+          </div>
         )}
       </div>
 
@@ -1563,14 +1650,23 @@ export default function TechGalaxyScene() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.25 }}
-              className="flex flex-col items-center text-center"
+              className="text-center"
             >
-              <p
-                className="text-[10px] font-mono uppercase tracking-[0.3em] mb-2"
-                style={{ color: selected.category.brand }}
-              >
-                {selected.category.name}
-              </p>
+              <div className="flex items-center justify-between mb-3">
+                <p
+                  className="text-[10px] font-mono uppercase tracking-[0.3em]"
+                  style={{ color: selected.category.brand }}
+                >
+                  {selected.category.name}
+                </p>
+                <button
+                  onClick={() => setSelected(null)}
+                  aria-label="Cerrar"
+                  className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-mono uppercase tracking-widest text-[var(--text-dim)] border border-[var(--line)] hover:text-[var(--text)] hover:border-[var(--text-dim)] transition-colors"
+                >
+                  ✕ Cerrar
+                </button>
+              </div>
               <h4
                 className="font-black uppercase tracking-tight"
                 style={{
@@ -1581,14 +1677,6 @@ export default function TechGalaxyScene() {
               >
                 {selected.tech}
               </h4>
-              <div className="mt-4 flex items-center gap-4">
-                <button
-                  onClick={() => setSelected(null)}
-                  className="text-[10px] font-mono uppercase tracking-widest text-[var(--text-dim)] hover:text-[var(--text)] transition-colors"
-                >
-                  ← {selected.category.name}
-                </button>
-              </div>
             </motion.div>
           ) : activeCat ? (
             /* ── CATEGORY service detail ── */
@@ -1600,12 +1688,21 @@ export default function TechGalaxyScene() {
               transition={{ duration: 0.25 }}
               className="text-center"
             >
-              <p
-                className="text-[10px] font-mono uppercase tracking-[0.3em] mb-2"
-                style={{ color: activeCat.brand }}
-              >
-                {activeCat.name}
-              </p>
+              <div className="flex items-center justify-between mb-3">
+                <p
+                  className="text-[10px] font-mono uppercase tracking-[0.3em]"
+                  style={{ color: activeCat.brand }}
+                >
+                  {activeCat.name}
+                </p>
+                <button
+                  onClick={() => setFilterCategory(null)}
+                  aria-label="Cerrar"
+                  className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-mono uppercase tracking-widest text-[var(--text-dim)] border border-[var(--line)] hover:text-[var(--text)] hover:border-[var(--text-dim)] transition-colors"
+                >
+                  ✕ Cerrar
+                </button>
+              </div>
               <h4
                 className="font-black uppercase tracking-tight"
                 style={{ fontSize: "clamp(1.3rem, 3.5vw, 2rem)", letterSpacing: "-0.02em", color: "var(--text)" }}
@@ -1634,12 +1731,6 @@ export default function TechGalaxyScene() {
                   </button>
                 ))}
               </div>
-              <button
-                onClick={() => setFilterCategory(null)}
-                className="mt-5 text-[10px] font-mono uppercase tracking-widest text-[var(--text-dim)] hover:text-[var(--text)] transition-colors"
-              >
-                ← Volver al resumen
-              </button>
             </motion.div>
           ) : (
             /* ── OVERVIEW (always-visible summary + nav) ── */
@@ -1746,38 +1837,6 @@ export default function TechGalaxyScene() {
         </div>
       </div>
     </div>
-  );
-}
-
-// Small square camera-control button used in the LIVE on-canvas pad.
-function CamBtn({
-  children,
-  label,
-  onClick,
-  className,
-}: {
-  children: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  className?: string;
-}) {
-  return (
-    <button
-      aria-label={label}
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick();
-      }}
-      className={`w-9 h-9 flex items-center justify-center text-sm leading-none transition-all ${className ?? ""}`}
-      style={{
-        color: "var(--text)",
-        background: "rgba(8,8,8,0.72)",
-        backdropFilter: "blur(6px)",
-        border: "1px solid var(--line)",
-      }}
-    >
-      {children}
-    </button>
   );
 }
 
