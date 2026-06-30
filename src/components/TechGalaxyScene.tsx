@@ -1831,7 +1831,7 @@ export default function TechGalaxyScene() {
               <li className="flex gap-2.5">
                 <span className="text-[var(--accent)]">→</span>
                 <span>
-                  <span className="text-[var(--text)]">{coarse ? "«Salir»" : "Esc o «Salir»"}</span>{" "}
+                  <span className="text-[var(--text)]">{coarse ? "✕ arriba" : "Esc o ✕"}</span>{" "}
                   para terminar
                 </span>
               </li>
