@@ -1549,7 +1549,7 @@ export default function TechGalaxyScene() {
           </div>
         )}
 
-        {/* LIVE chrome: exit + help */}
+        {/* LIVE chrome: exit + help (matched 36px height) */}
         {live && (
           <div className="absolute top-3 right-3 flex items-center gap-2" style={{ zIndex: 7 }}>
             <button
@@ -1559,7 +1559,7 @@ export default function TechGalaxyScene() {
               }}
               onPointerDown={(e) => e.stopPropagation()}
               aria-label="Cómo explorar la galaxia"
-              className="w-9 h-9 flex items-center justify-center text-sm"
+              className="h-9 w-9 flex items-center justify-center text-sm"
               style={{
                 color: "var(--text)",
                 background: "rgba(8,8,8,0.75)",
@@ -1575,7 +1575,7 @@ export default function TechGalaxyScene() {
                 deactivate();
               }}
               onPointerDown={(e) => e.stopPropagation()}
-              className="px-3 py-2 text-[10px] font-mono uppercase tracking-widest"
+              className="h-9 px-3 flex items-center text-[10px] font-mono uppercase tracking-widest"
               style={{
                 color: "var(--text)",
                 background: "rgba(8,8,8,0.75)",
@@ -1585,57 +1585,6 @@ export default function TechGalaxyScene() {
             >
               Salir · Esc
             </button>
-          </div>
-        )}
-
-        {/* First-run onboarding / help overlay */}
-        {live && showHelp && (
-          <div
-            className="absolute inset-0 flex items-center justify-center p-6"
-            style={{ zIndex: 8, background: "rgba(8,8,8,0.6)", backdropFilter: "blur(2px)" }}
-            onClick={(e) => e.stopPropagation()}
-            onPointerDown={(e) => e.stopPropagation()}
-          >
-            <div className="max-w-xs w-full border border-[var(--accent)]/40 bg-[var(--bg-elev-1)] p-5">
-              <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--accent)] mb-4 text-center">
-                Cómo explorar
-              </p>
-              <ul className="space-y-2.5 text-sm text-[var(--text-dim)] mb-5">
-                <li className="flex gap-2.5">
-                  <span className="text-[var(--accent)]">→</span>
-                  <span>
-                    <span className="text-[var(--text)]">Arrastra</span> para rotar el sistema
-                  </span>
-                </li>
-                <li className="flex gap-2.5">
-                  <span className="text-[var(--accent)]">→</span>
-                  <span>
-                    <span className="text-[var(--text)]">{coarse ? "Pellizca" : "Rueda"}</span> para
-                    hacer zoom{coarse ? " · 2 dedos para mover" : ""}
-                  </span>
-                </li>
-                <li className="flex gap-2.5">
-                  <span className="text-[var(--accent)]">→</span>
-                  <span>
-                    <span className="text-[var(--text)]">Pulsa un planeta</span> para enfocarlo y
-                    acercarte
-                  </span>
-                </li>
-                <li className="flex gap-2.5">
-                  <span className="text-[var(--accent)]">→</span>
-                  <span>
-                    <span className="text-[var(--text)]">{coarse ? "«Salir»" : "Esc o «Salir»"}</span>{" "}
-                    para terminar
-                  </span>
-                </li>
-              </ul>
-              <button
-                onClick={dismissHelp}
-                className="w-full py-2.5 bg-[var(--accent)] text-black text-xs font-semibold uppercase tracking-wider hover:brightness-110 transition-all"
-              >
-                Entendido
-              </button>
-            </div>
           </div>
         )}
       </div>
@@ -1741,8 +1690,11 @@ export default function TechGalaxyScene() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
             >
-              <p className="text-center text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--text-dim)] mb-4">
+              <p className="text-center text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--text-dim)] mb-1.5">
                 Cada órbita, un área · cada planeta, una tecnología
+              </p>
+              <p className="text-center text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--text-dim)]/70 mb-4">
+                Pulsa un área para ver más y resaltar su órbita ↑
               </p>
               <ul className="space-y-2 max-w-lg mx-auto">
                 {CATEGORIES.map((c) => (
@@ -1836,6 +1788,61 @@ export default function TechGalaxyScene() {
           ))}
         </div>
       </div>
+
+      {/* Onboarding / help — a real centered modal (fixed) so it never overflows the
+          short canvas band or overlaps the content below it. */}
+      {live && showHelp && (
+        <div
+          className="fixed inset-0 flex items-center justify-center p-6"
+          style={{ zIndex: 110, background: "rgba(0,0,0,0.72)", backdropFilter: "blur(3px)" }}
+          onClick={dismissHelp}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <div
+            className="max-w-sm w-full border border-[var(--accent)]/40 bg-[var(--bg-elev-1)] p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--accent)] mb-4 text-center">
+              Cómo explorar
+            </p>
+            <ul className="space-y-3 text-sm text-[var(--text-dim)] mb-6">
+              <li className="flex gap-2.5">
+                <span className="text-[var(--accent)]">→</span>
+                <span>
+                  <span className="text-[var(--text)]">Arrastra</span> para rotar el sistema
+                </span>
+              </li>
+              <li className="flex gap-2.5">
+                <span className="text-[var(--accent)]">→</span>
+                <span>
+                  <span className="text-[var(--text)]">{coarse ? "Pellizca" : "Rueda"}</span> para
+                  hacer zoom{coarse ? " · 2 dedos para mover" : ""}
+                </span>
+              </li>
+              <li className="flex gap-2.5">
+                <span className="text-[var(--accent)]">→</span>
+                <span>
+                  <span className="text-[var(--text)]">Pulsa un planeta</span> para enfocarlo y
+                  acercarte
+                </span>
+              </li>
+              <li className="flex gap-2.5">
+                <span className="text-[var(--accent)]">→</span>
+                <span>
+                  <span className="text-[var(--text)]">{coarse ? "«Salir»" : "Esc o «Salir»"}</span>{" "}
+                  para terminar
+                </span>
+              </li>
+            </ul>
+            <button
+              onClick={dismissHelp}
+              className="w-full py-3 bg-[var(--accent)] text-black text-xs font-semibold uppercase tracking-wider hover:brightness-110 transition-all"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
