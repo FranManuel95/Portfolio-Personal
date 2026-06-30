@@ -1575,15 +1575,17 @@ export default function TechGalaxyScene() {
                 deactivate();
               }}
               onPointerDown={(e) => e.stopPropagation()}
-              className="h-9 px-3 flex items-center text-[10px] font-mono uppercase tracking-widest"
+              aria-label="Salir del modo exploración (Esc)"
+              title="Salir (Esc)"
+              className="h-9 w-9 flex items-center justify-center text-base leading-none"
               style={{
-                color: "var(--text)",
+                color: "var(--accent)",
                 background: "rgba(8,8,8,0.75)",
                 backdropFilter: "blur(6px)",
                 border: "1px solid var(--accent)",
               }}
             >
-              Salir · Esc
+              ✕
             </button>
           </div>
         )}
