@@ -31,6 +31,22 @@ const About = () => {
         </div>
       </Reveal>
 
+      {/* Galaxy title */}
+      <Reveal replay>
+        <div className="text-center mb-2">
+          <h3
+            className="font-black uppercase tracking-tight inline-block"
+            style={{ fontSize: "clamp(1.6rem, 5vw, 3rem)", letterSpacing: "-0.03em" }}
+          >
+            <span style={{ color: "var(--text)" }}>Mi </span>
+            <span style={{ color: "var(--accent)" }}>stack</span>
+          </h3>
+          <p className="mt-2 text-[11px] font-mono uppercase tracking-[0.3em] text-[var(--text-dim)]">
+            Un sistema solar de tecnologías · explóralo
+          </p>
+        </div>
+      </Reveal>
+
       {/* Tech Galaxy */}
       <Reveal replay delayMs={120}>
         <TechGalaxy />
