@@ -135,11 +135,6 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
 
             {/* LEFT: Editorial text */}
             <div>
-              <p className="text-[var(--accent)] text-xs font-mono uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse-dot inline-block" />
-                Disponible para proyectos
-              </p>
-
               <h1
                 className="font-black uppercase leading-none mb-2"
                 style={{ fontSize: "clamp(4rem, 12vw, 9rem)", letterSpacing: "-0.04em" }}
