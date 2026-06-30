@@ -8,9 +8,19 @@ const APTITUDES = [
   "Arquitectura de sistemas de IA",
   "Optimización de costes y procesos",
   "Resolución de problemas complejos",
-  "Aprendizaje continuo y autónomo",
   "Trabajo en equipo",
   "Adaptabilidad tecnológica",
+];
+
+const FORMACION = [
+  {
+    title: "Técnico Superior en Desarrollo de Aplicaciones Web (DAW)",
+    meta: "CESUR · 2023–2025",
+  },
+  {
+    title: "n8n: Agentes de IA Avanzados — MCP, WhatsApp, Voz",
+    meta: "Udemy · 2025",
+  },
 ];
 
 function FichaRow({ label, value }: { label: string; value: React.ReactNode }) {
@@ -71,7 +81,24 @@ const About = () => {
             <div className="h-px bg-[var(--line)]" />
             <FichaRow label="Idiomas" value="Español (nativo) · Inglés (B1)" />
             <div className="h-px bg-[var(--line)]" />
-            <FichaRow label="Formación" value="Técnico Superior en DAW · CESUR" />
+            <div>
+              <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--accent)] mb-2">
+                Formación
+              </p>
+              <ul className="space-y-2.5">
+                {FORMACION.map((f) => (
+                  <li key={f.title}>
+                    <p className="text-sm text-[var(--text)] leading-snug">{f.title}</p>
+                    <p className="text-xs text-[var(--text-dim)] mt-0.5">{f.meta}</p>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-3 text-xs text-[var(--text-dim)] leading-relaxed">
+                <span className="text-[var(--accent)] font-semibold">+ Autodidacta:</span> mi
+                especialización en IA, agentes y automatización es autoformación continua, afinada
+                cada día en producción.
+              </p>
+            </div>
             <div className="h-px bg-[var(--line)]" />
             <div>
               <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--accent)] mb-2.5">
