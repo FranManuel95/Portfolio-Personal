@@ -168,7 +168,7 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
 
               <p className="text-[var(--text-dim)] max-w-lg text-sm leading-relaxed mb-8">
                 Diseño y opero agentes de IA, pipelines RAG y automatizaciones que resuelven
-                problemas concretos y llegan a producción —software real en uso, no demos.
+                problemas concretos y llegan a producción, software real en uso, no demos.
                 De la interfaz al modelo, controlo el sistema completo.
               </p>
 
