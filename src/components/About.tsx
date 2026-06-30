@@ -33,22 +33,23 @@ const About = () => {
         <Reveal replay>
           <div>
             <p className="text-[var(--text)] text-lg leading-relaxed mb-5">
-              Construyo{" "}
-              <span className="text-[var(--accent-2)] font-medium">sistemas de IA aplicada</span>{" "}
-              que resuelven problemas concretos de negocio y llegan a producción: agentes
-              conversacionales, pipelines RAG y automatizaciones que sustituyen procesos manuales.
+              Empecé en el{" "}
+              <span className="text-[var(--accent-2)] font-medium">desarrollo full-stack</span>{" "}
+              y me especialicé en{" "}
+              <span className="text-[var(--accent-2)] font-medium">IA generativa aplicada</span>.
+              Esa doble base es lo que me permite llevar la IA a producción de verdad, no quedarme
+              en la demo.
             </p>
             <p className="text-[var(--text-dim)] text-base leading-relaxed mb-5">
-              Mi base{" "}
-              <span className="text-[var(--accent-2)] font-medium">full-stack</span>{" "}
-              me permite controlar el sistema completo —de la interfaz a la infraestructura de IA—,
-              optimizando costes de modelos y desplegando soluciones estables y mantenibles.
+              Controlo el sistema completo —de la interfaz a la infraestructura de modelos—, así que
+              puedo optimizar costes, cuidar la calidad de las respuestas y desplegar soluciones
+              estables y mantenibles.
             </p>
             <p className="text-[var(--text-dim)] text-base leading-relaxed">
-              Actualmente en{" "}
-              <span className="text-[var(--accent)] font-semibold">Derecho Virtual</span> como
-              AI Engineer, liderando proyectos en los sectores jurídico y educativo desde la
-              concepción hasta producción, con cientos de usuarios activos.
+              En{" "}
+              <span className="text-[var(--accent)] font-semibold">Derecho Virtual</span> lidero la
+              parte técnica de proyectos en los sectores jurídico y educativo, desde la concepción
+              hasta producción, operando una plataforma con cientos de usuarios activos.
             </p>
 
             <blockquote

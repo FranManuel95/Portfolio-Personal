@@ -38,7 +38,7 @@ const Footer = () => {
 
         {/* Tagline */}
         <p className="text-xs text-[var(--text-dim)] text-center hidden sm:block">
-          Desarrollador Web & Especialista en IA Aplicada · Sevilla, España
+          AI Engineer · Agentes de IA y Automatización · Sevilla, España
         </p>
 
         {/* Redes */}

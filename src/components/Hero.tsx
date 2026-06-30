@@ -84,14 +84,6 @@ function AnimatedStat({ num, suffix, label }: { num: number; suffix: string; lab
   );
 }
 
-const SKILLS = [
-  "Claude", "OpenAI", "Gemini", "MCP Servers", "RAG", "Pinecone",
-  "n8n", "Airtable", "OpenClaw", "Next.js", "TypeScript", "React",
-  "Node.js", "PHP / Symfony", "Django", "Supabase", "Docker", "Vercel",
-  "Cloudflare", "Azure", "Scrum", "Agentes IA",
-];
-const TICKER = [...SKILLS, ...SKILLS];
-
 const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
   const mx = useMotionValue(0.5);
   const my = useMotionValue(0.5);
@@ -175,10 +167,9 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
               />
 
               <p className="text-[var(--text-dim)] max-w-lg text-sm leading-relaxed mb-8">
-                Construyo sistemas de IA aplicada que llegan a producción: agentes conversacionales,
-                pipelines RAG y automatizaciones que sustituyen procesos manuales. Actualmente AI Engineer en{" "}
-                <span className="text-[var(--accent)] font-medium">Derecho Virtual</span>{" "}
-                —sectores jurídico y educativo— con cientos de usuarios activos.
+                Diseño y opero agentes de IA, pipelines RAG y automatizaciones que resuelven
+                problemas concretos y llegan a producción —software real en uso, no demos.
+                De la interfaz al modelo, controlo el sistema completo.
               </p>
 
               <div className="flex flex-wrap gap-3">
@@ -249,21 +240,6 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
               <AnimatedStat key={s.label} num={s.num} suffix={s.suffix} label={s.label} />
             ))}
           </div>
-        </div>
-      </div>
-
-      {/* SKILLS TICKER — bottom strip */}
-      <div className="border-t border-[var(--line)] py-3 overflow-hidden flex-shrink-0">
-        <div className="ticker-track select-none">
-          {TICKER.map((s, i) => (
-            <span
-              key={i}
-              className="inline-flex items-center gap-3 px-5 text-[11px] font-mono uppercase tracking-widest text-[var(--text-dim)]"
-            >
-              <span className="text-[var(--accent)] opacity-50">·</span>
-              {s}
-            </span>
-          ))}
         </div>
       </div>
     </section>
