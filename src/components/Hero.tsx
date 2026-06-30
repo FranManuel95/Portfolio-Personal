@@ -75,11 +75,11 @@ function AnimatedStat({ num, suffix, label }: { num: number; suffix: string; lab
   }, [inView, num]);
 
   return (
-    <div ref={ref} className="pr-6">
-      <p className="text-3xl font-black text-[var(--accent)]" style={{ letterSpacing: "-0.03em" }}>
+    <div ref={ref}>
+      <p className="text-2xl sm:text-3xl font-black text-[var(--accent)] tabular-nums" style={{ letterSpacing: "-0.03em" }}>
         {count}{suffix}
       </p>
-      <p className="text-[10px] uppercase tracking-widest text-[var(--text-dim)] mt-0.5">{label}</p>
+      <p className="text-[10px] uppercase tracking-widest text-[var(--text-dim)] mt-0.5 leading-tight">{label}</p>
     </div>
   );
 }
@@ -234,8 +234,8 @@ const Hero = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
             </div>
           </div>
 
-          {/* Stats row — animated counters */}
-          <div className="mt-12 grid grid-cols-4 gap-0 border-t border-[var(--line)] pt-8 max-w-lg">
+          {/* Stats row — animated counters (2×2 on mobile, 4 across on larger screens) */}
+          <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-6 border-t border-[var(--line)] pt-8 max-w-lg">
             {STATS.map((s) => (
               <AnimatedStat key={s.label} num={s.num} suffix={s.suffix} label={s.label} />
             ))}
